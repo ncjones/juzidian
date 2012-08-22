@@ -16,35 +16,52 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.cli;
+package org.juzidian.core;
 
 import java.util.List;
 
-import org.juzidian.core.ChineseEnglishDictionary;
-import org.juzidian.core.ChineseWord;
-
+/**
+ * A type of dictionary search: {@link #HANZI}, {@link #PINYIN} or
+ * {@link #REVERSE}.
+ */
 public enum SearchType {
 
+	/**
+	 * A search for Chinese characters.
+	 */
 	HANZI {
 		@Override
-		public List<ChineseWord> search(final ChineseEnglishDictionary dictionary, final String query) {
+		public List<ChineseWord> doSearch(final ChineseEnglishDictionary dictionary, final String query) {
 			return dictionary.findChinese(query);
 		}
 	},
 
+	/**
+	 * A search for Pinyin sounds.
+	 */
 	PINYIN {
 		@Override
-		public List<ChineseWord> search(final ChineseEnglishDictionary dictionary, final String query) {
+		public List<ChineseWord> doSearch(final ChineseEnglishDictionary dictionary, final String query) {
 			return dictionary.findPinyin(query);
 		}
 	},
 
+	/**
+	 * A search for definitions.
+	 */
 	REVERSE {
 		@Override
-		public List<ChineseWord> search(final ChineseEnglishDictionary dictionary, final String query) {
+		public List<ChineseWord> doSearch(final ChineseEnglishDictionary dictionary, final String query) {
 			return dictionary.findDefinitions(query);
 		}
 	};
 
-	public abstract List<ChineseWord> search(ChineseEnglishDictionary dictionary, String query);
+	/**
+	 * Perform the appropriate search on the dictionary for this search type.
+	 * 
+	 * @param dictionary a dictionary to search.
+	 * @param query the query string to search for.
+	 * @return the dictionary's search result.
+	 */
+	abstract List<ChineseWord> doSearch(ChineseEnglishDictionary dictionary, String query);
 }

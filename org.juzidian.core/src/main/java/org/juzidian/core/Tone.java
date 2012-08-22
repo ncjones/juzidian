@@ -48,6 +48,10 @@ public enum Tone {
 		return this.number;
 	}
 
+	public String getDisplayValue() {
+		return ANY.equals(this) ? "" : this.getNumber().toString();
+	}
+
 	/**
 	 * @param toneNumber the number (1-5) that represents a tone.
 	 * @return the tone with the given tone number.

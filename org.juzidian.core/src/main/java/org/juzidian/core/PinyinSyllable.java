@@ -67,7 +67,7 @@ public class PinyinSyllable {
 	 *         the tone representation.
 	 */
 	public String getDisplayValue() {
-		return this.letters + this.tone.getNumber();
+		return this.letters + this.tone.getDisplayValue();
 	}
 
 	@Override

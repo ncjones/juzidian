@@ -71,4 +71,9 @@ public class SimpleChineseEnglishDictionary implements ChineseEnglishDictionary 
 		return matchingWords;
 	}
 
+	@Override
+	public List<ChineseWord> find(final String queryString, final SearchType searchType) {
+		return searchType.doSearch(this, queryString);
+	}
+
 }

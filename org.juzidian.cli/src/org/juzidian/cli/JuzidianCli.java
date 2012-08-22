@@ -25,6 +25,7 @@ import java.util.List;
 import org.juzidian.cedict.CedictLoader;
 import org.juzidian.core.ChineseEnglishDictionary;
 import org.juzidian.core.ChineseWord;
+import org.juzidian.core.SearchType;
 import org.juzidian.core.SimpleChineseEnglishDictionary;
 import org.juzidian.core.SimpleChineseEnglishDictionaryLoadHandler;
 
@@ -47,7 +48,7 @@ public class JuzidianCli {
 
 		final String queryString = args[1];
 		final long start = System.nanoTime();
-		final List<ChineseWord> foundCharacters = searchType.search(dictionary, queryString);
+		final List<ChineseWord> foundCharacters = dictionary.find(queryString, searchType);
 		final long end = System.nanoTime();
 		printSearchResults(queryString, foundCharacters, end - start);
 	}

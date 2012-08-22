@@ -26,6 +26,16 @@ import java.util.List;
 public interface ChineseEnglishDictionary {
 
 	/**
+	 * Find all Chinese words that match the search criteria.
+	 * 
+	 * @param queryString Chinese characters, Pinyin syllables or English words.
+	 * @param searchType the {@link SearchType} indicating how to interpret the
+	 *        query string.
+	 * @return a list of {@link ChineseWord}.
+	 */
+	List<ChineseWord> find(String queryString, SearchType searchType);
+
+	/**
 	 * Find all Chinese words that begin with the given Chinese character query
 	 * string.
 	 * 
@@ -39,7 +49,7 @@ public interface ChineseEnglishDictionary {
 	 * Find all Chinese words whose sound begins with the given Pinyin
 	 * romanisation query string.
 	 * 
-	 * @param queryString Chinese words using .
+	 * @param queryString Pinyin syllables to search for.
 	 * @return a list of {@link ChineseWord}.
 	 */
 	List<ChineseWord> findPinyin(String queryString);
