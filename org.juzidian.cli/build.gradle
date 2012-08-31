@@ -1,0 +1,4 @@
+dependencies {
+	compile project(':org.juzidian.core')
+}
+

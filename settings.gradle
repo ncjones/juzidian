@@ -1,0 +1,3 @@
+include "org.juzidian.cedict",
+	"org.juzidian.core",
+	"org.juzidian.cli"
