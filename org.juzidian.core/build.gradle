@@ -7,17 +7,19 @@ dependencies {
 	generate project(':org.juzidian.build')
 }
 
+def genSrcDir = "$buildDir/generated/java"
+
 sourceSets {
     main {
         java {
-            srcDirs 'src/generated/java'
+            srcDirs "$genSrcDir"
         }
     }
 }
 
 task generateSources (type: JavaExec) {
 	ext.srcFile = file('../cedict_1_0_ts_utf-8_mdbg.txt')
-	ext.destDir = new File('src/generated/java')
+	ext.destDir = new File("$genSrcDir")
 	inputs.file srcFile
 	outputs.dir destDir
 	classpath = configurations.generate
