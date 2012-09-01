@@ -18,7 +18,7 @@ sourceSets {
 }
 
 task generateSources (type: JavaExec) {
-	ext.srcFile = file('../cedict_1_0_ts_utf-8_mdbg.txt')
+	ext.srcFile = file('../cedict-data.txt')
 	ext.destDir = new File("$genSrcDir")
 	inputs.file srcFile
 	outputs.dir destDir
