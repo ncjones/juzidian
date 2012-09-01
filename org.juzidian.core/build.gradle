@@ -1,4 +1,28 @@
-dependencies {
-	compile project(':org.juzidian.cedict')
+configurations {
+	generate
 }
 
+dependencies {
+	compile project(':org.juzidian.cedict')
+	generate project(':org.juzidian.build')
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs 'src/generated/java'
+        }
+    }
+}
+
+task generateSources (type: JavaExec) {
+	ext.srcFile = file('../cedict_1_0_ts_utf-8_mdbg.txt')
+	ext.destDir = new File('src/generated/java')
+	inputs.file srcFile
+	outputs.dir destDir
+	classpath = configurations.generate
+	main = 	'org.juzidian.build.PinyinHelperGenerator'
+	args srcFile, destDir, 'org.juzidian.core'
+}
+
+compileJava.dependsOn generateSources
