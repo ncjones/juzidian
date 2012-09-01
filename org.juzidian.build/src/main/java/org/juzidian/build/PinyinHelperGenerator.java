@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.build;
+package org.juzidian.build;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -51,6 +51,10 @@ public class PinyinHelperGenerator {
 		final String cedictFile = args[0];
 		final String outputDir = args[1];
 		final String packageName = args[2];
+		generatePinyinHelper(cedictFile, outputDir, packageName);
+	}
+
+	private static void generatePinyinHelper(final String cedictFile, final String outputDir, final String packageName) throws IOException {
 		if (!new File(cedictFile).exists()) {
 			System.out.println("Input file does not exist: " + cedictFile);
 			return;
