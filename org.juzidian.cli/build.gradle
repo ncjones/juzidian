@@ -2,3 +2,8 @@ dependencies {
 	compile project(':org.juzidian.core')
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.juzidian.cli.JuzidianCli'
+    }
+}
