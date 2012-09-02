@@ -1,3 +1,16 @@
+
+def genDir = "$buildDir/generated"
+
+def genSrcDir = "$genDir/java"
+
+def genResDir = "$genDir/resources"
+
+def cedictDataPath = "$genResDir/cedict-data.txt"
+
+def cedictCompressedDataPath = "cedict-data.gz"
+
+def cedictDataUrl = 'http://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz'
+
 configurations {
 	generate
 }
@@ -7,19 +20,48 @@ dependencies {
 	generate project(':org.juzidian.build')
 }
 
-def genSrcDir = "$buildDir/generated/java"
-
 sourceSets {
     main {
         java {
-            srcDirs "$genSrcDir"
+            srcDirs "$genSrcDir" 
         }
+        resources {
+        	srcDirs "$genResDir"
+    	}
     }
 }
 
-task generateSources (type: JavaExec) {
-	ext.srcFile = file('../cedict-data.txt')
-	ext.destDir = new File("$genSrcDir")
+task fetchCedictData {
+	ext.srcUrl = "$cedictDataUrl"
+	ext.destFile = file("$cedictCompressedDataPath")
+	inputs.property 'srcUrl', srcUrl
+	outputs.file destFile
+	doLast {
+		def outputStream = new FileOutputStream(destFile)
+		println "Downloading CEDict data from $srcUrl"
+		new URL("$srcUrl").withInputStream({
+			outputStream << it
+		})
+	}
+}
+
+task uncompressCedictData {
+	dependsOn fetchCedictData
+	ext.srcFile = file("$cedictCompressedDataPath")
+	ext.destFile = file("$cedictDataPath")
+	inputs.file srcFile
+	outputs.file destFile
+	doLast {
+		file(destFile.parent).mkdirs()
+		println "Uncompressing $srcFile to $destFile"
+		def inputStream = new java.util.zip.GZIPInputStream(new FileInputStream(srcFile))
+		new FileOutputStream(destFile) << inputStream
+	}
+}
+
+task generateSources (type: JavaExec, dependsOn: uncompressCedictData) {
+	ext.srcFile = file("$cedictDataPath")
+	ext.destDir = file("$genSrcDir")
 	inputs.file srcFile
 	outputs.dir destDir
 	classpath = configurations.generate

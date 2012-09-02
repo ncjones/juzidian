@@ -57,7 +57,7 @@ public class JuzidianCli {
 		final SimpleChineseEnglishDictionary dictionary = new SimpleChineseEnglishDictionary();
 		final SimpleChineseEnglishDictionaryLoadHandler handler = new SimpleChineseEnglishDictionaryLoadHandler(dictionary);
 		final CedictLoader cedictFileLoader = new CedictLoader();
-		final InputStream inputStream = JuzidianCli.class.getResourceAsStream("/cedict_1_0_ts_utf-8_mdbg.txt");
+		final InputStream inputStream = JuzidianCli.class.getResourceAsStream("/cedict-data.txt");
 		cedictFileLoader.loadEntries(inputStream, handler);
 		System.out.println(String.format("Loaded %d entries in %.3f seconds", handler.getEntryCount(),
 				handler.getDuration() / 1000 / 1000 / 1000d));

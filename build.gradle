@@ -13,35 +13,3 @@ subprojects {
 	version = '0.1.0'
 }
 
-def cedictDataUrl = 'http://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz'
-
-def cedictDataFileCompressed = "$buildDir/cedict-data.gz"
-
-def cedictDataFile = "$buildDir/cedict-data.txt"
-
-task fetchCedictData {
-	ext.srcUrl = "$cedictDataUrl"
-	ext.destFile = new File("$cedictDataFileCompressed")
-	inputs.property 'srcUrl', srcUrl
-	outputs.file destFile
-	doLast {
-		def outputStream = new FileOutputStream(destFile)
-		println "Downloading CEDict data from $srcUrl"
-		new URL("$srcUrl").withInputStream({
-			outputStream << it
-		})
-	}
-}
-
-task uncompressCedictData (dependsOn: fetchCedictData) {
-	ext.srcFile = file("$cedictDataFileCompressed")
-	ext.destFile = new File("$cedictDataFile")
-	inputs.file srcFile
-	outputs.file destFile
-	doLast {
-		println "Uncompressing $srcFile to $destFile"
-		def inputStream = new java.util.zip.GZIPInputStream(new FileInputStream(srcFile))
-		new FileOutputStream(destFile) << inputStream
-	}
-}
-

@@ -90,7 +90,7 @@ public class MainActivity extends Activity {
 		final ChineseEnglishDictionary dictionary = new StreamingChineseEnglishDictionary(new CedictLoader(), new InputStreamProvider() {
 			@Override
 			public InputStream getInputStream() {
-				return MainActivity.class.getResourceAsStream("/cedict_1_0_ts_utf-8_mdbg.txt");
+				return MainActivity.class.getResourceAsStream("/cedict-data.txt");
 			}
 		});
 		return dictionary;
