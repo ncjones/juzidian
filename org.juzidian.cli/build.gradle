@@ -1,5 +1,5 @@
 dependencies {
-	compile project(':org.juzidian.core')
+	compile project(':org.juzidian.cedict'), project(':org.juzidian.core')
 }
 
 jar {

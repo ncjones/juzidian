@@ -11,5 +11,11 @@ subprojects {
 	}
 
 	version = '0.1.0'
+
+	eclipse.classpath.file {
+		whenMerged { classpath ->
+			classpath.entries.findAll { entry -> entry.kind != 'output' }*.exported = false
+		}
+	}
 }
 
