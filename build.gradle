@@ -31,5 +31,10 @@ subprojects {
 			classpath.entries.findAll { entry -> entry.kind != 'output' }*.exported = false
 		}
 	}
+
+	task createAndroidResourcesDir << {
+		ext.resourcesDir = new File("$projectDir/res")
+		resourcesDir.mkdirs()
+	}
 }
 

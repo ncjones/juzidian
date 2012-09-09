@@ -72,3 +72,5 @@ task generateSources (type: JavaExec, dependsOn: uncompressCedictData) {
 }
 
 compileJava.dependsOn generateSources
+
+androidProcessResources.dependsOn createAndroidResourcesDir
