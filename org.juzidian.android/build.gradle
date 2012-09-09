@@ -17,11 +17,3 @@ eclipse.classpath.file {
 		classpath.entries.removeAll { it.path.contains('org.juzidian.core-') }
 	}
 }
-
-sourceSets {
-	main {
-		java {
-			srcDir 'src'
-		}
-	}
-}
