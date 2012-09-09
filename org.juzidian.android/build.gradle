@@ -17,3 +17,6 @@ eclipse.classpath.file {
 		classpath.entries.removeAll { it.path.contains('org.juzidian.core-') }
 	}
 }
+
+compileJava.dependsOn ':org.juzidian.cedict:install'
+compileJava.dependsOn ':org.juzidian.core:install'
