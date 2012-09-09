@@ -1,3 +1,5 @@
+apply plugin: 'android'
+apply plugin: 'maven'
 
 def genDir = "$buildDir/generated"
 

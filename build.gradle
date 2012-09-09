@@ -1,14 +1,28 @@
+buildscript {
+	repositories {
+		flatDir {
+			dirs "$rootProject.rootDir/gradle-android-plugin/build/libs"
+		}
+	}
+	dependencies {
+		classpath 'org.gradle.api.plugins:gradle-android-plugin:1.2.0-SNAPSHOT'
+	}
+}
+
 subprojects {
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
 
 	repositories {
+		mavenLocal()
 		mavenCentral()
 	}
 
 	dependencies {
 		testCompile 'junit:junit:4.+'
 	}
+
+	group = 'org.juzidian'
 
 	version = '0.1.0'
 

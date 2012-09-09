@@ -1,3 +1,4 @@
+include "org.juzidian.android"
 include "org.juzidian.build"
 include "org.juzidian.cedict"
 include "org.juzidian.cli"

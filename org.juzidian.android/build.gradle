@@ -1,0 +1,27 @@
+apply plugin: 'android'
+
+dependencies {
+	compile files("${ant['sdk.dir']}/extras/android/support/v4/android-support-v4.jar")
+	compile project(':org.juzidian.cedict'), project(':org.juzidian.core')
+	/*
+	 * gradle-android does not handle library projects well so we pull project
+	 * dependencies from local maven repository when building.
+	 */
+	compile 'org.juzidian:org.juzidian.cedict:0.+'
+	compile 'org.juzidian:org.juzidian.core:0.+'
+}
+
+eclipse.classpath.file {
+	whenMerged { classpath ->
+		classpath.entries.removeAll { it.path.contains('org.juzidian.cedict-') }
+		classpath.entries.removeAll { it.path.contains('org.juzidian.core-') }
+	}
+}
+
+sourceSets {
+	main {
+		java {
+			srcDir 'src'
+		}
+	}
+}
