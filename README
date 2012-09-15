@@ -1,0 +1,63 @@
+About
+=====
+
+Juzidian is a Chinese-English dictionary for Android, targetted at English-speaking learners of Mandarin Chinese.
+
+
+License
+=======
+
+GPL Version 3
+
+
+Features
+========
+
+ * Search for definitions by Pinyin, Hanzi or English
+
+
+Dependencies
+============
+
+ * Java 1.6
+ * Gradle 1.1
+ * Android SDK 
+
+
+Building
+========
+
+ * clone gradle-android-plugin:
+
+	$ git clone https://github.com/ncjones/gradle-android-plugin.git
+
+ * build gradle-android-plugin:
+
+	$ gradle -p gradle-android-plugin build
+
+ * Set Android SDK home environment variable:
+
+	$ export ANDROID_HOME=~/android-sdk-linux
+
+ * build Juzidian:
+
+	$ gradle build
+
+
+Installing
+==========
+
+Install the built APK on to a connected Android device:
+
+	$ adb install org.juzidian.android/build/distributions/*.apk
+
+
+IDE Setup
+=========
+
+To setup Eclipse projects with correct natures and class paths, run
+
+	$ gradle eclipse
+
+and then import all projects into Eclipse from the project root directory. The Android Eclipse plugin is required.
+
