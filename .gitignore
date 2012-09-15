@@ -2,9 +2,6 @@
 */bin/
 */gen/
 *~
-.gradle
-.project
-.classpath
-.settings
+.*
 cedict-data.*
 gradle-android-plugin
