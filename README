@@ -1,7 +1,8 @@
 About
 =====
 
-Juzidian is a Chinese-English dictionary for Android, targetted at English-speaking learners of Mandarin Chinese.
+Juzidian is a Chinese-English dictionary for Android, targetted at English-
+speaking learners of Mandarin Chinese.
 
 
 License
@@ -59,5 +60,6 @@ To setup Eclipse projects with correct natures and class paths, run
 
 	$ gradle eclipse
 
-and then import all projects into Eclipse from the project root directory. The Android Eclipse plugin is required.
+and then import all projects into Eclipse from the project root directory. The
+Android Eclipse plugin is required.
 
