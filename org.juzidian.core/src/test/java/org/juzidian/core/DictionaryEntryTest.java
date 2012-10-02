@@ -28,89 +28,89 @@ import org.junit.Test;
 import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictPinyinSyllable;
 
-public class ChineseWordTest {
+public class DictionaryEntryTest {
 
 	@Test
 	public void pinyinStartsWithShouldMatchTonedSyllable() {
-		final ChineseWord chineseWord = createChineseWord(new CedictPinyinSyllable("hao", 3));
+		final DictionaryEntry entry = createChineseWord(new CedictPinyinSyllable("hao", 3));
 		final List<PinyinSyllable> pinyinSyllables = Arrays.asList(new PinyinSyllable("hao", Tone.THIRD));
-		assertTrue(chineseWord.pinyinStartsWith(pinyinSyllables));
+		assertTrue(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
 	@Test
 	public void pinyinStartsWithShouldMatchMultipleTonedSyllables() {
-		final ChineseWord chineseWord = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
+		final DictionaryEntry entry = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
 		final List<PinyinSyllable> pinyinSyllables = Arrays.asList(new PinyinSyllable("ni", Tone.THIRD), new PinyinSyllable("hao",
 				Tone.THIRD));
-		assertTrue(chineseWord.pinyinStartsWith(pinyinSyllables));
+		assertTrue(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
 	@Test
 	public void pinyinStartsWithShouldMatchTonelessSyllable() {
-		final ChineseWord chineseWord = createChineseWord(new CedictPinyinSyllable("hao", 3));
+		final DictionaryEntry entry = createChineseWord(new CedictPinyinSyllable("hao", 3));
 		final List<PinyinSyllable> pinyinSyllables = Arrays.asList(new PinyinSyllable("hao"));
-		assertTrue(chineseWord.pinyinStartsWith(pinyinSyllables));
+		assertTrue(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
 	@Test
 	public void pinyinStartsWithShouldMatchMultipleTonelessSyllables() {
-		final ChineseWord chineseWord = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
+		final DictionaryEntry entry = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
 		final List<PinyinSyllable> pinyinSyllables = Arrays.asList(new PinyinSyllable("ni"), new PinyinSyllable("hao"));
-		assertTrue(chineseWord.pinyinStartsWith(pinyinSyllables));
+		assertTrue(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
 	@Test
 	public void pinyinStartsWithShouldMatchTonedAndTonelessSyllables() {
-		final ChineseWord chineseWord = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
+		final DictionaryEntry entry = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
 		final List<PinyinSyllable> pinyinSyllables = Arrays.asList(new PinyinSyllable("ni", Tone.THIRD), new PinyinSyllable("hao"));
-		assertTrue(chineseWord.pinyinStartsWith(pinyinSyllables));
+		assertTrue(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
 	@Test
 	public void pinyinStartsWithShouldMatchTonelessAndTonedSyllables() {
-		final ChineseWord chineseWord = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
+		final DictionaryEntry entry = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
 		final List<PinyinSyllable> pinyinSyllables = Arrays.asList(new PinyinSyllable("ni"), new PinyinSyllable("hao", Tone.THIRD));
-		assertTrue(chineseWord.pinyinStartsWith(pinyinSyllables));
+		assertTrue(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
 	@Test
 	public void pinyinStartsWithShouldMatchTonedFirstSyllable() {
-		final ChineseWord chineseWord = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
+		final DictionaryEntry entry = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
 		final List<PinyinSyllable> pinyinSyllables = Arrays.asList(new PinyinSyllable("ni", Tone.THIRD));
-		assertTrue(chineseWord.pinyinStartsWith(pinyinSyllables));
+		assertTrue(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
 	@Test
 	public void pinyinStartsWithShouldMatchTonelessFirstSyllable() {
-		final ChineseWord chineseWord = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
+		final DictionaryEntry entry = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
 		final List<PinyinSyllable> pinyinSyllables = Arrays.asList(new PinyinSyllable("ni"));
-		assertTrue(chineseWord.pinyinStartsWith(pinyinSyllables));
+		assertTrue(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
 	@Test
 	public void pinyinStartsWithShouldNotMatchIncorrectSyllable() {
-		final ChineseWord chineseWord = createChineseWord(new CedictPinyinSyllable("hao", 3));
+		final DictionaryEntry entry = createChineseWord(new CedictPinyinSyllable("hao", 3));
 		final List<PinyinSyllable> pinyinSyllables = Arrays.asList(new PinyinSyllable("han", Tone.THIRD));
-		assertFalse(chineseWord.pinyinStartsWith(pinyinSyllables));
+		assertFalse(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
 	@Test
 	public void pinyinStartsWithShouldNotMatchIncorrectTone() {
-		final ChineseWord chineseWord = createChineseWord(new CedictPinyinSyllable("hao", 3));
+		final DictionaryEntry entry = createChineseWord(new CedictPinyinSyllable("hao", 3));
 		final List<PinyinSyllable> pinyinSyllables = Arrays.asList(new PinyinSyllable("hao", Tone.FIRST));
-		assertFalse(chineseWord.pinyinStartsWith(pinyinSyllables));
+		assertFalse(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
 	@Test
 	public void pinyinStartsWithShouldNotMatchMoreSyllables() {
-		final ChineseWord chineseWord = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
+		final DictionaryEntry entry = createChineseWord(new CedictPinyinSyllable("ni", 3), new CedictPinyinSyllable("hao", 3));
 		final List<PinyinSyllable> pinyinSyllables = Arrays.asList(new PinyinSyllable("ni"), new PinyinSyllable("hao"),
 				new PinyinSyllable("ma"));
-		assertFalse(chineseWord.pinyinStartsWith(pinyinSyllables));
+		assertFalse(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
-	private ChineseWord createChineseWord(final CedictPinyinSyllable... cedictPinyinSyllable) {
-		return new ChineseWord(createMockCedictEntry(cedictPinyinSyllable));
+	private DictionaryEntry createChineseWord(final CedictPinyinSyllable... cedictPinyinSyllable) {
+		return new DictionaryEntry(createMockCedictEntry(cedictPinyinSyllable));
 	}
 
 	private CedictEntry createMockCedictEntry(final CedictPinyinSyllable... pinyinSyllables) {

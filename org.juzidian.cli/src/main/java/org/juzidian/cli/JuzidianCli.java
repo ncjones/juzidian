@@ -24,11 +24,11 @@ import java.text.MessageFormat;
 import java.util.List;
 
 import org.juzidian.cedict.CedictLoader;
-import org.juzidian.core.ChineseEnglishDictionary;
-import org.juzidian.core.ChineseWord;
+import org.juzidian.core.Dictionary;
+import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.InMemoryDictionary;
+import org.juzidian.core.InMemoryDictionaryLoadHandler;
 import org.juzidian.core.SearchType;
-import org.juzidian.core.SimpleChineseEnglishDictionary;
-import org.juzidian.core.SimpleChineseEnglishDictionaryLoadHandler;
 
 /**
  * A basic command-line interface for performing dictionary searches.
@@ -45,18 +45,18 @@ public class JuzidianCli {
 			return;
 		}
 		final SearchType searchType = SearchType.valueOf(args[0]);
-		final ChineseEnglishDictionary dictionary = createDictionary();
+		final Dictionary dictionary = createDictionary();
 
 		final String queryString = args[1];
 		final long start = System.nanoTime();
-		final List<ChineseWord> foundCharacters = dictionary.find(queryString, searchType);
+		final List<DictionaryEntry> foundCharacters = dictionary.find(queryString, searchType);
 		final long end = System.nanoTime();
 		printSearchResults(queryString, foundCharacters, end - start);
 	}
 
-	private static ChineseEnglishDictionary createDictionary() throws IOException {
-		final SimpleChineseEnglishDictionary dictionary = new SimpleChineseEnglishDictionary();
-		final SimpleChineseEnglishDictionaryLoadHandler handler = new SimpleChineseEnglishDictionaryLoadHandler(dictionary);
+	private static Dictionary createDictionary() throws IOException {
+		final InMemoryDictionary dictionary = new InMemoryDictionary();
+		final InMemoryDictionaryLoadHandler handler = new InMemoryDictionaryLoadHandler(dictionary);
 		final CedictLoader cedictFileLoader = new CedictLoader();
 		final InputStream inputStream = JuzidianCli.class.getResourceAsStream("/cedict-data.txt");
 		cedictFileLoader.loadEntries(inputStream, handler);
@@ -69,11 +69,11 @@ public class JuzidianCli {
 		return dictionary;
 	}
 
-	private static void printSearchResults(final String query, final List<ChineseWord> words, final long searchDuration) {
-		System.out.println(String.format("Found %d words matching '%s' in %.3f seconds:", words.size(), query,
+	private static void printSearchResults(final String query, final List<DictionaryEntry> entries, final long searchDuration) {
+		System.out.println(String.format("Found %d words matching '%s' in %.3f seconds:", entries.size(), query,
 				searchDuration / 1000 / 1000 / 1000f));
-		for (final ChineseWord chineseWord : words) {
-			System.out.println(chineseWord);
+		for (final DictionaryEntry entry : entries) {
+			System.out.println(entry);
 		}
 	}
 }

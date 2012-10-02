@@ -23,11 +23,11 @@ import org.juzidian.cedict.CedictLoadHandler;
 
 /**
  * A {@link CedictLoadHandler} which populates a
- * {@link SimpleChineseEnglishDictionary}.
+ * {@link InMemoryDictionary}.
  */
-public class SimpleChineseEnglishDictionaryLoadHandler implements CedictLoadHandler {
+public class InMemoryDictionaryLoadHandler implements CedictLoadHandler {
 
-	private final SimpleChineseEnglishDictionary dictionary;
+	private final InMemoryDictionary dictionary;
 
 	private int entryCount = 0;
 
@@ -35,13 +35,13 @@ public class SimpleChineseEnglishDictionaryLoadHandler implements CedictLoadHand
 
 	private long finishNanoTime;
 
-	public SimpleChineseEnglishDictionaryLoadHandler(final SimpleChineseEnglishDictionary dictionary) {
+	public InMemoryDictionaryLoadHandler(final InMemoryDictionary dictionary) {
 		this.dictionary = dictionary;
 	}
 
 	@Override
 	public void entryLoaded(final CedictEntry cedictEntry) {
-		this.dictionary.addWord(new ChineseWord(cedictEntry));
+		this.dictionary.addWord(new DictionaryEntry(cedictEntry));
 		this.entryCount += 1;
 	}
 

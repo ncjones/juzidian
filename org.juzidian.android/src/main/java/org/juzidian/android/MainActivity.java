@@ -4,12 +4,12 @@ import java.io.InputStream;
 import java.util.List;
 
 import org.juzidian.cedict.CedictLoader;
-import org.juzidian.core.ChineseEnglishDictionary;
-import org.juzidian.core.ChineseWord;
+import org.juzidian.core.Dictionary;
+import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.InputStreamProvider;
 import org.juzidian.core.PinyinSyllable;
 import org.juzidian.core.SearchType;
-import org.juzidian.core.StreamingChineseEnglishDictionary;
+import org.juzidian.core.StreamingDictionary;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -44,11 +44,11 @@ public class MainActivity extends Activity {
 		final ProgressBar progressBar = new ProgressBar(searchResultLayout.getContext());
 		searchResultLayout.addView(progressBar);
 
-		final ChineseEnglishDictionary dictionary = createDictionary();
-		final List<ChineseWord> words = dictionary.find(searchInput.getText().toString(), selectedSearchType);
+		final Dictionary dictionary = createDictionary();
+		final List<DictionaryEntry> words = dictionary.find(searchInput.getText().toString(), selectedSearchType);
 
 		searchResultLayout.removeAllViews();
-		for (final ChineseWord chineseWord : words) {
+		for (final DictionaryEntry chineseWord : words) {
 			final TextView textView = new TextView(searchResultLayout.getContext());
 			final String pinyinDisplay = this.createPinyinDisplay(chineseWord);
 			final String englishDefinitionDisplay = this.createEnglishDefinitionDisplay(chineseWord);
@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
 		throw new IllegalArgumentException("Invalid search type radio button id: " + searchTypeRadioButtonId);
 	}
 
-	private String createEnglishDefinitionDisplay(final ChineseWord chineseWord) {
+	private String createEnglishDefinitionDisplay(final DictionaryEntry chineseWord) {
 		final List<String> definitions = chineseWord.getDefinitions();
 		final StringBuilder stringBuilder = new StringBuilder();
 		for (final String definition : definitions) {
@@ -78,7 +78,7 @@ public class MainActivity extends Activity {
 		return stringBuilder.substring(0, stringBuilder.length() - 2);
 	}
 
-	private String createPinyinDisplay(final ChineseWord chineseWord) {
+	private String createPinyinDisplay(final DictionaryEntry chineseWord) {
 		final StringBuilder stringBuilder = new StringBuilder();
 		for (final PinyinSyllable syllable : chineseWord.getPinyin()) {
 			stringBuilder.append(syllable.getDisplayValue()).append(" ");
@@ -86,8 +86,8 @@ public class MainActivity extends Activity {
 		return stringBuilder.toString().trim();
 	}
 
-	private static ChineseEnglishDictionary createDictionary() {
-		final ChineseEnglishDictionary dictionary = new StreamingChineseEnglishDictionary(new CedictLoader(), new InputStreamProvider() {
+	private static Dictionary createDictionary() {
+		final Dictionary dictionary = new StreamingDictionary(new CedictLoader(), new InputStreamProvider() {
 			@Override
 			public InputStream getInputStream() {
 				return MainActivity.class.getResourceAsStream("/cedict-data.txt");

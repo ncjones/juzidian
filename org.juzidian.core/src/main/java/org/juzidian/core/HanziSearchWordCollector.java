@@ -30,7 +30,7 @@ public class HanziSearchWordCollector extends SearchWordCollector {
 	}
 
 	@Override
-	protected boolean matches(final ChineseWord word) {
+	protected boolean matches(final DictionaryEntry word) {
 		return word.getSimplified().startsWith(this.searchQuery) || word.getTraditional().startsWith(this.searchQuery);
 	}
 

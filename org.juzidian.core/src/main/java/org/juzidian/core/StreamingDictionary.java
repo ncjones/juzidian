@@ -27,39 +27,39 @@ import org.juzidian.cedict.CedictLoader;
  * A basic sequential search dictionary that does not load all words into
  * memory.
  */
-public class StreamingChineseEnglishDictionary implements ChineseEnglishDictionary {
+public class StreamingDictionary implements Dictionary {
 
 	private final CedictLoader cedictLoader;
 
 	private final InputStreamProvider inputStreamProvider;
 
-	public StreamingChineseEnglishDictionary(final CedictLoader cedictLoader, final InputStreamProvider inputStreamProvider) {
+	public StreamingDictionary(final CedictLoader cedictLoader, final InputStreamProvider inputStreamProvider) {
 		this.cedictLoader = cedictLoader;
 		this.inputStreamProvider = inputStreamProvider;
 	}
 
 	@Override
-	public List<ChineseWord> find(final String queryString, final SearchType searchType) {
+	public List<DictionaryEntry> find(final String queryString, final SearchType searchType) {
 		return searchType.doSearch(this, queryString);
 	}
 
 	@Override
-	public List<ChineseWord> findChinese(final String queryString) {
+	public List<DictionaryEntry> findChinese(final String queryString) {
 		return this.findWords(new HanziSearchWordCollector(queryString));
 	}
 
 	@Override
-	public List<ChineseWord> findPinyin(final String queryString) {
+	public List<DictionaryEntry> findPinyin(final String queryString) {
 		final List<PinyinSyllable> pinyinSyllables = new PinyinParser(queryString).parse();
 		return this.findWords(new PinyinSearchWordCollector(pinyinSyllables));
 	}
 
 	@Override
-	public List<ChineseWord> findDefinitions(final String queryString) {
+	public List<DictionaryEntry> findDefinitions(final String queryString) {
 		return this.findWords(new DefinitionSearchWordCollector(queryString));
 	}
 
-	private List<ChineseWord> findWords(final SearchWordCollector wordCollector) {
+	private List<DictionaryEntry> findWords(final SearchWordCollector wordCollector) {
 		try {
 			this.cedictLoader.loadEntries(this.inputStreamProvider.getInputStream(), wordCollector);
 		} catch (final IOException e) {

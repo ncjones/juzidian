@@ -28,11 +28,11 @@ import org.juzidian.cedict.CedictPinyinSyllable;
 /**
  * A dictionary definition of a Chinese word.
  */
-public class ChineseWord {
+public class DictionaryEntry {
 
 	private final CedictEntry cedictEntry;
 
-	public ChineseWord(final CedictEntry cedictEntry) {
+	public DictionaryEntry(final CedictEntry cedictEntry) {
 		this.cedictEntry = cedictEntry;
 	}
 
@@ -95,7 +95,7 @@ public class ChineseWord {
 
 	@Override
 	public String toString() {
-		return "ChineseWord [" + this.getTraditional() + ", " + this.getSimplified() + ", " + this.getPinyinString() + ", " + this.getDefinitions() + "]";
+		return "DictionaryEntry [" + this.getTraditional() + ", " + this.getSimplified() + ", " + this.getPinyinString() + ", " + this.getDefinitions() + "]";
 	}
 
 	private String getPinyinString() {

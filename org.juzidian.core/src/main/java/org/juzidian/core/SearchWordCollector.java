@@ -26,20 +26,20 @@ import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictLoadHandler;
 
 /**
- * A {@link CedictLoadHandler} that collects {@link ChineseWord}s that match
+ * A {@link CedictLoadHandler} that collects {@link DictionaryEntry}s that match
  * some search criteria.
  */
 abstract class SearchWordCollector implements CedictLoadHandler {
 
-	private final List<ChineseWord> words = new ArrayList<ChineseWord>();
+	private final List<DictionaryEntry> words = new ArrayList<DictionaryEntry>();
 
 	private long startNanos;
 
 	/**
-	 * @param word a {@link ChineseWord}.
+	 * @param word a {@link DictionaryEntry}.
 	 * @return <code>true</code> if the word matches search criteria.
 	 */
-	protected abstract boolean matches(ChineseWord word);
+	protected abstract boolean matches(DictionaryEntry word);
 
 	@Override
 	public void loadingStarted() {
@@ -48,7 +48,7 @@ abstract class SearchWordCollector implements CedictLoadHandler {
 
 	@Override
 	public void entryLoaded(final CedictEntry cedictEntry) {
-		final ChineseWord word = new ChineseWord(cedictEntry);
+		final DictionaryEntry word = new DictionaryEntry(cedictEntry);
 		if (this.matches(word)) {
 			this.words.add(word);
 		}
@@ -63,7 +63,7 @@ abstract class SearchWordCollector implements CedictLoadHandler {
 
 	protected abstract String getSearchCriteriaDisplay();
 
-	public List<ChineseWord> getWords() {
+	public List<DictionaryEntry> getWords() {
 		return Collections.unmodifiableList(this.words);
 	}
 

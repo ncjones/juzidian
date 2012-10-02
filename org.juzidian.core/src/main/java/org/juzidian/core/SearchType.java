@@ -31,7 +31,7 @@ public enum SearchType {
 	 */
 	HANZI {
 		@Override
-		public List<ChineseWord> doSearch(final ChineseEnglishDictionary dictionary, final String query) {
+		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query) {
 			return dictionary.findChinese(query);
 		}
 	},
@@ -41,7 +41,7 @@ public enum SearchType {
 	 */
 	PINYIN {
 		@Override
-		public List<ChineseWord> doSearch(final ChineseEnglishDictionary dictionary, final String query) {
+		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query) {
 			return dictionary.findPinyin(query);
 		}
 	},
@@ -51,7 +51,7 @@ public enum SearchType {
 	 */
 	REVERSE {
 		@Override
-		public List<ChineseWord> doSearch(final ChineseEnglishDictionary dictionary, final String query) {
+		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query) {
 			return dictionary.findDefinitions(query);
 		}
 	};
@@ -63,5 +63,5 @@ public enum SearchType {
 	 * @param query the query string to search for.
 	 * @return the dictionary's search result.
 	 */
-	abstract List<ChineseWord> doSearch(ChineseEnglishDictionary dictionary, String query);
+	abstract List<DictionaryEntry> doSearch(Dictionary dictionary, String query);
 }

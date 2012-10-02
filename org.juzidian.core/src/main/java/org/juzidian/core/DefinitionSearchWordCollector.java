@@ -30,7 +30,7 @@ class DefinitionSearchWordCollector extends SearchWordCollector {
 	}
 
 	@Override
-	protected boolean matches(final ChineseWord chineseWord) {
+	protected boolean matches(final DictionaryEntry chineseWord) {
 		return chineseWord.getDefinitions().contains(this.searchQuery);
 	}
 

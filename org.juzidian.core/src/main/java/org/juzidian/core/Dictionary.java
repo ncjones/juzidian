@@ -23,7 +23,7 @@ import java.util.List;
 /**
  * A searchable Chinese-English dictionary.
  */
-public interface ChineseEnglishDictionary {
+public interface Dictionary {
 
 	/**
 	 * Find all Chinese words that match the search criteria.
@@ -31,9 +31,9 @@ public interface ChineseEnglishDictionary {
 	 * @param queryString Chinese characters, Pinyin syllables or English words.
 	 * @param searchType the {@link SearchType} indicating how to interpret the
 	 *        query string.
-	 * @return a list of {@link ChineseWord}.
+	 * @return a list of {@link DictionaryEntry}.
 	 */
-	List<ChineseWord> find(String queryString, SearchType searchType);
+	List<DictionaryEntry> find(String queryString, SearchType searchType);
 
 	/**
 	 * Find all Chinese words that begin with the given Chinese character query
@@ -41,26 +41,26 @@ public interface ChineseEnglishDictionary {
 	 * 
 	 * @param queryString Chinese characters (simplified or traditional) to
 	 *        search for.
-	 * @return a list of {@link ChineseWord}.
+	 * @return a list of {@link DictionaryEntry}.
 	 */
-	List<ChineseWord> findChinese(String queryString);
+	List<DictionaryEntry> findChinese(String queryString);
 
 	/**
 	 * Find all Chinese words whose sound begins with the given Pinyin
 	 * romanisation query string.
 	 * 
 	 * @param queryString Pinyin syllables to search for.
-	 * @return a list of {@link ChineseWord}.
+	 * @return a list of {@link DictionaryEntry}.
 	 */
-	List<ChineseWord> findPinyin(String queryString);
+	List<DictionaryEntry> findPinyin(String queryString);
 
 	/**
 	 * Find all Chinese words with definitions that contain the given English
 	 * word query string.
 	 * 
 	 * @param queryString English words or partial words.
-	 * @return a list of {@link ChineseWord}.
+	 * @return a list of {@link DictionaryEntry}.
 	 */
-	List<ChineseWord> findDefinitions(String queryString);
+	List<DictionaryEntry> findDefinitions(String queryString);
 
 }
