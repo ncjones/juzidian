@@ -1,15 +1,12 @@
 package org.juzidian.android;
 
-import java.io.InputStream;
 import java.util.List;
 
-import org.juzidian.cedict.CedictLoader;
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.InputStreamProvider;
 import org.juzidian.core.PinyinSyllable;
 import org.juzidian.core.SearchType;
-import org.juzidian.core.StreamingDictionary;
+import org.juzidian.core.StreamingDictionaryFactory;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -44,7 +41,7 @@ public class MainActivity extends Activity {
 		final ProgressBar progressBar = new ProgressBar(searchResultLayout.getContext());
 		searchResultLayout.addView(progressBar);
 
-		final Dictionary dictionary = createDictionary();
+		final Dictionary dictionary = new StreamingDictionaryFactory().createDictionary();
 		final List<DictionaryEntry> words = dictionary.find(searchInput.getText().toString(), selectedSearchType);
 
 		searchResultLayout.removeAllViews();
@@ -84,16 +81,6 @@ public class MainActivity extends Activity {
 			stringBuilder.append(syllable.getDisplayValue()).append(" ");
 		}
 		return stringBuilder.toString().trim();
-	}
-
-	private static Dictionary createDictionary() {
-		final Dictionary dictionary = new StreamingDictionary(new CedictLoader(), new InputStreamProvider() {
-			@Override
-			public InputStream getInputStream() {
-				return MainActivity.class.getResourceAsStream("/cedict-data.txt");
-			}
-		});
-		return dictionary;
 	}
 
 }

@@ -19,15 +19,12 @@
 package org.juzidian.cli;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.List;
 
-import org.juzidian.cedict.CedictLoader;
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.InMemoryDictionary;
-import org.juzidian.core.InMemoryDictionaryLoadHandler;
+import org.juzidian.core.InMemoryDictionaryFactory;
 import org.juzidian.core.SearchType;
 
 /**
@@ -45,28 +42,16 @@ public class JuzidianCli {
 			return;
 		}
 		final SearchType searchType = SearchType.valueOf(args[0]);
-		final Dictionary dictionary = createDictionary();
-
+		final Dictionary dictionary = new InMemoryDictionaryFactory().createDictionary();
+		final Runtime runtime = Runtime.getRuntime();
+		final long totalMemory = runtime.totalMemory();
+		final long freeMemory = runtime.freeMemory();
+		System.out.println(MessageFormat.format("Memory used: {0}KB", (totalMemory - freeMemory) / 1024));
 		final String queryString = args[1];
 		final long start = System.nanoTime();
 		final List<DictionaryEntry> foundCharacters = dictionary.find(queryString, searchType);
 		final long end = System.nanoTime();
 		printSearchResults(queryString, foundCharacters, end - start);
-	}
-
-	private static Dictionary createDictionary() throws IOException {
-		final InMemoryDictionary dictionary = new InMemoryDictionary();
-		final InMemoryDictionaryLoadHandler handler = new InMemoryDictionaryLoadHandler(dictionary);
-		final CedictLoader cedictFileLoader = new CedictLoader();
-		final InputStream inputStream = JuzidianCli.class.getResourceAsStream("/cedict-data.txt");
-		cedictFileLoader.loadEntries(inputStream, handler);
-		System.out.println(MessageFormat.format("Loaded {0} entries in {1, number, #.###} seconds", handler.getEntryCount(),
-				handler.getDuration() / 1000 / 1000 / 1000d));
-		final Runtime runtime = Runtime.getRuntime();
-		final long totalMemory = runtime.totalMemory();
-		final long freeMemory = runtime.freeMemory();
-		System.out.println(MessageFormat.format("Memory used: {0}KB", (totalMemory - freeMemory) / 1024));
-		return dictionary;
 	}
 
 	private static void printSearchResults(final String query, final List<DictionaryEntry> entries, final long searchDuration) {
