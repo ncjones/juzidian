@@ -20,6 +20,7 @@ package org.juzidian.cli;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.text.MessageFormat;
 import java.util.List;
 
 import org.juzidian.cedict.CedictLoader;
@@ -59,8 +60,12 @@ public class JuzidianCli {
 		final CedictLoader cedictFileLoader = new CedictLoader();
 		final InputStream inputStream = JuzidianCli.class.getResourceAsStream("/cedict-data.txt");
 		cedictFileLoader.loadEntries(inputStream, handler);
-		System.out.println(String.format("Loaded %d entries in %.3f seconds", handler.getEntryCount(),
+		System.out.println(MessageFormat.format("Loaded {0} entries in {1, number, #.###} seconds", handler.getEntryCount(),
 				handler.getDuration() / 1000 / 1000 / 1000d));
+		final Runtime runtime = Runtime.getRuntime();
+		final long totalMemory = runtime.totalMemory();
+		final long freeMemory = runtime.freeMemory();
+		System.out.println(MessageFormat.format("Memory used: {0}KB", (totalMemory - freeMemory) / 1024));
 		return dictionary;
 	}
 
