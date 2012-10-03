@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.text.MessageFormat;
 
+import org.juzidian.cedict.CedictInputStreamProvider;
 import org.juzidian.cedict.CedictLoader;
 
 public class InMemoryDictionaryFactory implements DictionaryFactory {
@@ -31,11 +32,16 @@ public class InMemoryDictionaryFactory implements DictionaryFactory {
 	public InMemoryDictionary createDictionary() {
 		final InMemoryDictionary dictionary = new InMemoryDictionary();
 		final InMemoryDictionaryLoadHandler handler = new InMemoryDictionaryLoadHandler(dictionary);
-		final CedictLoader cedictFileLoader = new CedictLoader();
-		final InputStream inputStream = InMemoryDictionaryFactory.class.getResourceAsStream("/cedict-data.txt");
+		final CedictLoader cedictFileLoader = new CedictLoader(new CedictInputStreamProvider() {
+
+			@Override
+			public InputStream getInputStream() {
+				return this.getClass().getResourceAsStream("/cedict-data.txt");
+			}
+		});
 		try {
-			cedictFileLoader.loadEntries(inputStream, handler);
-		} catch (IOException e) {
+			cedictFileLoader.loadEntries(handler);
+		} catch (final IOException e) {
 			throw new RuntimeException("Failed to load cedict entries.", e);
 		}
 		System.out.println(MessageFormat.format("Loaded {0} entries in {1, number, #.###} seconds", handler.getEntryCount(),

@@ -31,11 +31,8 @@ public class StreamingDictionary implements Dictionary {
 
 	private final CedictLoader cedictLoader;
 
-	private final InputStreamProvider inputStreamProvider;
-
-	public StreamingDictionary(final CedictLoader cedictLoader, final InputStreamProvider inputStreamProvider) {
+	public StreamingDictionary(final CedictLoader cedictLoader) {
 		this.cedictLoader = cedictLoader;
-		this.inputStreamProvider = inputStreamProvider;
 	}
 
 	@Override
@@ -61,7 +58,7 @@ public class StreamingDictionary implements Dictionary {
 
 	private List<DictionaryEntry> findWords(final SearchWordCollector wordCollector) {
 		try {
-			this.cedictLoader.loadEntries(this.inputStreamProvider.getInputStream(), wordCollector);
+			this.cedictLoader.loadEntries(wordCollector);
 		} catch (final IOException e) {
 			throw new RuntimeException("Failed to load cedict entries", e);
 		}

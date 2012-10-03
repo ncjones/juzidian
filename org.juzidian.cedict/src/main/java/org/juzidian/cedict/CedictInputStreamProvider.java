@@ -16,11 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.cedict;
 
+import java.io.IOException;
 import java.io.InputStream;
 
-public interface InputStreamProvider {
+/**
+ * Provides input streams containing UTF8-encoded CEDict entries.
+ * <p>
+ * A valid CEDict entry is expected to have the following format:
+ * 
+ * <pre>
+ * {traditional characters} {space} {simplified characters} {space}
+ *    {left bracket} {pinyin word} {right bracket} {space} ({slash}
+ *    {english meaning})+ {slash}
+ * </pre>
+ * 
+ * See <a href="http://cc-cedict.org/wiki/format:syntax">CC-CEDict Wiki</a> for
+ * more information.
+ */
+public interface CedictInputStreamProvider {
 
-	InputStream getInputStream();
+	InputStream getInputStream() throws IOException;
 }

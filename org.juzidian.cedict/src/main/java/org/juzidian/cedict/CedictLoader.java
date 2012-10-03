@@ -20,42 +20,36 @@ package org.juzidian.cedict;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 
 /**
- * Reads CEDict entries from an input stream.
- * <p>
- * A valid CEDict entry is expected to have the following format:
- * 
- * <pre>
- * {traditional characters} {space} {simplified characters} {space}
- *    {left bracket} {pinyin word} {right bracket} {space} ({slash}
- *    {english meaning})+ {slash}
- * </pre>
- * 
- * See <a href="http://cc-cedict.org/wiki/format:syntax">CC-CEDict Wiki</a> for
- * more information.
+ * Loads CEDict data from an input stream provided by an
+ * {@link CedictInputStreamProvider}.
  */
 public class CedictLoader {
 
+	private final CedictInputStreamProvider inputStreamProvider;
+
+	public CedictLoader(final CedictInputStreamProvider inputStreamProvider) {
+		this.inputStreamProvider = inputStreamProvider;
+	}
+
 	/**
-	 * Read entries from a valid, UTF8-encoded CEDict input stream and notify a
-	 * {@link CedictLoadHandler} of each entry.
+	 * Read entries from an input stream and notify a {@link CedictLoadHandler}
+	 * of each entry.
 	 * <p>
 	 * Lines read from the input stream beginning with "#" are ignored.
 	 * <p>
 	 * No validation is performed on the input; behaviour is undefined for
 	 * invalid input.
 	 * 
-	 * @param inputStream an input stream to read lines from.
 	 * @param loadHandler an {@link CedictLoadHandler} to notify of entry
 	 *        loading events.
 	 * @throws IOException if an entry fails to be read.
 	 */
-	public void loadEntries(final InputStream inputStream, final CedictLoadHandler loadHandler) throws IOException {
-		final Reader fileReader = new InputStreamReader(inputStream, "UTF-8");
+	public void loadEntries(final CedictLoadHandler loadHandler) throws IOException {
+		final Reader fileReader = new InputStreamReader(this.inputStreamProvider.getInputStream(), "UTF-8");
 		final BufferedReader bufferedReader = new BufferedReader(fileReader);
 		loadHandler.loadingStarted();
 		String line = bufferedReader.readLine();

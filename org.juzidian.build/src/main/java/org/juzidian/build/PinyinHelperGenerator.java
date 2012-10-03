@@ -32,6 +32,7 @@ import java.util.Date;
 import java.util.Set;
 
 import org.juzidian.cedict.CedictLoader;
+import org.juzidian.cedict.CedictInputStreamProvider;
 
 public class PinyinHelperGenerator {
 
@@ -129,10 +130,14 @@ public class PinyinHelperGenerator {
 	}
 
 	private static Set<String> getUniquePinyinSyllables(final String cedictFile) throws IOException {
-		final CedictLoader cedictFileLoader = new CedictLoader();
-		final InputStream inputStream = new FileInputStream(cedictFile);
+		final CedictLoader cedictFileLoader = new CedictLoader(new CedictInputStreamProvider() {
+			@Override
+			public InputStream getInputStream() throws IOException {
+				return new FileInputStream(cedictFile);
+			}
+		});
 		final PinyinSyllableCaptor pinyinCaptor = new PinyinSyllableCaptor();
-		cedictFileLoader.loadEntries(inputStream, pinyinCaptor);
+		cedictFileLoader.loadEntries(pinyinCaptor);
 		return pinyinCaptor.getUniquePinyinSyllables();
 	}
 }
