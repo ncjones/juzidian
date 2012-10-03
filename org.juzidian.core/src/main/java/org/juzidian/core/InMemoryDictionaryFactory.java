@@ -20,27 +20,24 @@
 package org.juzidian.core;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.text.MessageFormat;
 
-import org.juzidian.cedict.CedictInputStreamProvider;
 import org.juzidian.cedict.CedictLoader;
 
 public class InMemoryDictionaryFactory implements DictionaryFactory {
+
+	private final CedictLoader cedictLoader;
+
+	public InMemoryDictionaryFactory(final CedictLoader cedictLoader) {
+		this.cedictLoader = cedictLoader;
+	}
 
 	@Override
 	public InMemoryDictionary createDictionary() {
 		final InMemoryDictionary dictionary = new InMemoryDictionary();
 		final InMemoryDictionaryLoadHandler handler = new InMemoryDictionaryLoadHandler(dictionary);
-		final CedictLoader cedictFileLoader = new CedictLoader(new CedictInputStreamProvider() {
-
-			@Override
-			public InputStream getInputStream() {
-				return this.getClass().getResourceAsStream("/cedict-data.txt");
-			}
-		});
 		try {
-			cedictFileLoader.loadEntries(handler);
+			this.cedictLoader.loadEntries(handler);
 		} catch (final IOException e) {
 			throw new RuntimeException("Failed to load cedict entries.", e);
 		}

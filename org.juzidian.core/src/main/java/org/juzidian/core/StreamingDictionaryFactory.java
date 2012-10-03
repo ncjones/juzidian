@@ -19,21 +19,19 @@
 
 package org.juzidian.core;
 
-import java.io.InputStream;
-
-import org.juzidian.cedict.CedictInputStreamProvider;
 import org.juzidian.cedict.CedictLoader;
 
 public class StreamingDictionaryFactory implements DictionaryFactory {
 
+	private final CedictLoader cedictLoader;
+
+	public StreamingDictionaryFactory(final CedictLoader cedictLoader) {
+		this.cedictLoader = cedictLoader;
+	}
+
 	@Override
 	public StreamingDictionary createDictionary() {
-		final StreamingDictionary dictionary = new StreamingDictionary(new CedictLoader(new CedictInputStreamProvider() {
-			@Override
-			public InputStream getInputStream() {
-				return this.getClass().getResourceAsStream("/cedict-data.txt");
-			}
-		}));
+		final StreamingDictionary dictionary = new StreamingDictionary(this.cedictLoader);
 		return dictionary;
 	}
 

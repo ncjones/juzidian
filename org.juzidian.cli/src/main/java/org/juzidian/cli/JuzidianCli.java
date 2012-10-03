@@ -18,10 +18,12 @@
  */
 package org.juzidian.cli;
 
-import java.io.IOException;
+import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.List;
 
+import org.juzidian.cedict.CedictInputStreamProvider;
+import org.juzidian.cedict.CedictLoader;
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.InMemoryDictionaryFactory;
@@ -32,7 +34,7 @@ import org.juzidian.core.SearchType;
  */
 public class JuzidianCli {
 
-	public static void main(final String[] args) throws IOException {
+	public static void main(final String[] args) {
 		if (args.length < 1) {
 			System.out.println("Search type must be specified.");
 			return;
@@ -42,7 +44,12 @@ public class JuzidianCli {
 			return;
 		}
 		final SearchType searchType = SearchType.valueOf(args[0]);
-		final Dictionary dictionary = new InMemoryDictionaryFactory().createDictionary();
+		final Dictionary dictionary = new InMemoryDictionaryFactory(new CedictLoader(new CedictInputStreamProvider() {
+			@Override
+			public InputStream getInputStream() {
+				return this.getClass().getResourceAsStream("/cedict-data.txt");
+			}
+		})).createDictionary();
 		final Runtime runtime = Runtime.getRuntime();
 		final long totalMemory = runtime.totalMemory();
 		final long freeMemory = runtime.freeMemory();
