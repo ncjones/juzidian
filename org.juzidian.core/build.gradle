@@ -74,3 +74,13 @@ task generateSources (type: JavaExec, dependsOn: uncompressCedictData) {
 compileJava.dependsOn generateSources
 
 androidProcessResources.dependsOn createAndroidResourcesDir
+
+def androidProperties = new Properties();
+file("${projectDir}/project.properties").withInputStream { androidProperties.load(it) }
+androidProperties.each({ project.ext[it.key] = it.value })
+
+[proguard, androidPackage, androidSignAndAlign]*.onlyIf {
+	!project.hasProperty('android.library') ||
+	!project['android.library']
+}
+
