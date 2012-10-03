@@ -16,26 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
+package org.juzidian.core.inject;
 
-package org.juzidian.core;
+import java.io.InputStream;
 
-import javax.inject.Inject;
-
+import org.juzidian.cedict.CedictInputStreamProvider;
 import org.juzidian.cedict.CedictLoader;
+import org.juzidian.core.DictionaryFactory;
 
-public class StreamingDictionaryFactory implements DictionaryFactory {
+import com.google.inject.AbstractModule;
 
-	private final CedictLoader cedictLoader;
-
-	@Inject
-	public StreamingDictionaryFactory(final CedictLoader cedictLoader) {
-		this.cedictLoader = cedictLoader;
-	}
+public abstract class DictionaryModule<T extends DictionaryFactory> extends AbstractModule {
 
 	@Override
-	public StreamingDictionary createDictionary() {
-		final StreamingDictionary dictionary = new StreamingDictionary(this.cedictLoader);
-		return dictionary;
+	protected void configure() {
+		this.bind(CedictLoader.class).toInstance(new CedictLoader(new CedictInputStreamProvider() {
+			@Override
+			public InputStream getInputStream() {
+				return this.getClass().getResourceAsStream("/cedict-data.txt");
+			}
+		}));
+		this.bind(DictionaryFactory.class).to(this.getDictionaryFactoryClass());
 	}
+
+	protected abstract Class<T> getDictionaryFactoryClass();
 
 }

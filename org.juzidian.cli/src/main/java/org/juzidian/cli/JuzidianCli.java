@@ -18,16 +18,17 @@
  */
 package org.juzidian.cli;
 
-import java.io.InputStream;
 import java.text.MessageFormat;
 import java.util.List;
 
-import org.juzidian.cedict.CedictInputStreamProvider;
-import org.juzidian.cedict.CedictLoader;
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.InMemoryDictionaryFactory;
+import org.juzidian.core.DictionaryFactory;
 import org.juzidian.core.SearchType;
+import org.juzidian.core.inject.InMemoryDictionaryModule;
+
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 /**
  * A basic command-line interface for performing dictionary searches.
@@ -44,12 +45,9 @@ public class JuzidianCli {
 			return;
 		}
 		final SearchType searchType = SearchType.valueOf(args[0]);
-		final Dictionary dictionary = new InMemoryDictionaryFactory(new CedictLoader(new CedictInputStreamProvider() {
-			@Override
-			public InputStream getInputStream() {
-				return this.getClass().getResourceAsStream("/cedict-data.txt");
-			}
-		})).createDictionary();
+		final Injector injector = Guice.createInjector(new InMemoryDictionaryModule());
+		final DictionaryFactory dictionaryFactory = injector.getInstance(DictionaryFactory.class);
+		final Dictionary dictionary = dictionaryFactory.createDictionary();
 		final Runtime runtime = Runtime.getRuntime();
 		final long totalMemory = runtime.totalMemory();
 		final long freeMemory = runtime.freeMemory();

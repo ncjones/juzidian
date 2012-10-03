@@ -22,12 +22,15 @@ package org.juzidian.core;
 import java.io.IOException;
 import java.text.MessageFormat;
 
+import javax.inject.Inject;
+
 import org.juzidian.cedict.CedictLoader;
 
 public class InMemoryDictionaryFactory implements DictionaryFactory {
 
 	private final CedictLoader cedictLoader;
 
+	@Inject
 	public InMemoryDictionaryFactory(final CedictLoader cedictLoader) {
 		this.cedictLoader = cedictLoader;
 	}

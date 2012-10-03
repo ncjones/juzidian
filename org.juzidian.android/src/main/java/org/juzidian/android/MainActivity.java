@@ -1,15 +1,13 @@
 package org.juzidian.android;
 
-import java.io.InputStream;
 import java.util.List;
 
-import org.juzidian.cedict.CedictInputStreamProvider;
-import org.juzidian.cedict.CedictLoader;
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.DictionaryFactory;
 import org.juzidian.core.PinyinSyllable;
 import org.juzidian.core.SearchType;
-import org.juzidian.core.StreamingDictionaryFactory;
+import org.juzidian.core.inject.StreamingDictionaryModule;
 
 import android.app.Activity;
 import android.os.Bundle;
@@ -21,12 +19,20 @@ import android.widget.ProgressBar;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+
 public class MainActivity extends Activity {
+
+	private Dictionary dictionary;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_main);
+		final Injector injector = Guice.createInjector(new StreamingDictionaryModule());
+		final DictionaryFactory dictionaryFactory = injector.getInstance(DictionaryFactory.class);
+		this.dictionary = dictionaryFactory.createDictionary();
 	}
 
 	@Override
@@ -43,15 +49,7 @@ public class MainActivity extends Activity {
 		searchResultLayout.removeAllViews();
 		final ProgressBar progressBar = new ProgressBar(searchResultLayout.getContext());
 		searchResultLayout.addView(progressBar);
-
-		final Dictionary dictionary = new StreamingDictionaryFactory(new CedictLoader(new CedictInputStreamProvider() {
-			@Override
-			public InputStream getInputStream() {
-				return this.getClass().getResourceAsStream("/cedict-data.txt");
-			}
-		})).createDictionary();
-		final List<DictionaryEntry> words = dictionary.find(searchInput.getText().toString(), selectedSearchType);
-
+		final List<DictionaryEntry> words = this.dictionary.find(searchInput.getText().toString(), selectedSearchType);
 		searchResultLayout.removeAllViews();
 		for (final DictionaryEntry chineseWord : words) {
 			final TextView textView = new TextView(searchResultLayout.getContext());
