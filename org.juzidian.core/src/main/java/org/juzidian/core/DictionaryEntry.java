@@ -18,60 +18,33 @@
  */
 package org.juzidian.core;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-
-import org.juzidian.cedict.CedictEntry;
-import org.juzidian.cedict.CedictPinyinSyllable;
 
 /**
  * A dictionary definition of a Chinese word.
  */
-public class DictionaryEntry {
-
-	private final CedictEntry cedictEntry;
-
-	public DictionaryEntry(final CedictEntry cedictEntry) {
-		this.cedictEntry = cedictEntry;
-	}
+public abstract class DictionaryEntry {
 
 	/**
 	 * @return the traditional Chinese representation of the word.
 	 */
-	public String getTraditional() {
-		return this.cedictEntry.getTraditionalCharacters();
-	}
+	public abstract String getTraditional();
 
 	/**
 	 * @return the simplified Chinese representation of the word.
 	 */
-	public String getSimplified() {
-		return this.cedictEntry.getSimplifiedCharacters();
-	}
+	public abstract String getSimplified();
 
 	/**
 	 * @return the Pinyin phonetic representation of the word.
 	 */
-	public List<PinyinSyllable> getPinyin() {
-		return this.createPinyinSyllables(this.cedictEntry.getPinyinSyllables());
-	}
+	public abstract List<PinyinSyllable> getPinyin();
 
 	/**
 	 * @return a list of English definitions for the word.
 	 */
-	public List<String> getDefinitions() {
-		return this.cedictEntry.getDefinitions();
-	}
-
-	private List<PinyinSyllable> createPinyinSyllables(final List<CedictPinyinSyllable> pinyinSyllables) {
-		final List<PinyinSyllable> syllables = new ArrayList<PinyinSyllable>();
-		for (final CedictPinyinSyllable cedictSyllable : pinyinSyllables) {
-			final PinyinSyllable syllable = new PinyinSyllable(cedictSyllable.getLetters(), Tone.valueOf(cedictSyllable.getToneNumber()));
-			syllables.add(syllable);
-		}
-		return syllables;
-	}
+	public abstract List<String> getDefinitions();
 
 	/**
 	 * @param pinyinSyllables a list of {@link PinyinSyllable}.
@@ -95,7 +68,8 @@ public class DictionaryEntry {
 
 	@Override
 	public String toString() {
-		return "DictionaryEntry [" + this.getTraditional() + ", " + this.getSimplified() + ", " + this.getPinyinString() + ", " + this.getDefinitions() + "]";
+		return this.getClass().getSimpleName() + " [" + this.getTraditional() + ", " + this.getSimplified() + ", " + this.getPinyinString()
+				+ ", " + this.getDefinitions() + "]";
 	}
 
 	private String getPinyinString() {

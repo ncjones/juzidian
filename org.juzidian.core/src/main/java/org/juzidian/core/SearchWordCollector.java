@@ -48,7 +48,7 @@ abstract class SearchWordCollector implements CedictLoadHandler {
 
 	@Override
 	public void entryLoaded(final CedictEntry cedictEntry) {
-		final DictionaryEntry word = new DictionaryEntry(cedictEntry);
+		final DictionaryEntry word = new CedictDictionaryEntryAdaptor(cedictEntry);
 		if (this.matches(word)) {
 			this.words.add(word);
 		}
