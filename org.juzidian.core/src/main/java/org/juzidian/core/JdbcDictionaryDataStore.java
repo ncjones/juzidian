@@ -125,8 +125,8 @@ public class JdbcDictionaryDataStore implements DictionaryDataStore, CedictLoadH
 	public List<DictionaryEntry> findPinyin(final List<PinyinSyllable> pinyin) {
 		final List<DictionaryEntry> entries = new LinkedList<DictionaryEntry>();
 		try {
-			final PreparedStatement statement = this.connection.prepareStatement("select * from entry where pinyin = ?");
-			statement.setString(1, this.formatPinyin(pinyin));
+			final PreparedStatement statement = this.connection.prepareStatement("select * from entry where pinyin like ?");
+			statement.setString(1, "%" + this.formatPinyin(pinyin) + "%");
 			final ResultSet rs = statement.executeQuery();
 			while (rs.next()) {
 				final DictionaryEntry entry = this.createEntry(rs);
@@ -148,14 +148,36 @@ public class JdbcDictionaryDataStore implements DictionaryDataStore, CedictLoadH
 
 	@Override
 	public List<DictionaryEntry> findChinese(final String chineseCharacters) {
-		// TODO Auto-generated method stub
-		return null;
+		final List<DictionaryEntry> entries = new LinkedList<DictionaryEntry>();
+		try {
+			final PreparedStatement statement = this.connection.prepareStatement("select * from entry where hanzi_simplified like ?");
+			statement.setString(1, "%" + chineseCharacters + "%");
+			final ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				final DictionaryEntry entry = this.createEntry(rs);
+				entries.add(entry);
+			}
+			return entries;
+		} catch (final SQLException e) {
+			throw new DictionaryDataStoreException("Failed to execute query", e);
+		}
 	}
 
 	@Override
 	public List<DictionaryEntry> findDefinitions(final String englishWords) {
-		// TODO Auto-generated method stub
-		return null;
+		final List<DictionaryEntry> entries = new LinkedList<DictionaryEntry>();
+		try {
+			final PreparedStatement statement = this.connection.prepareStatement("select * from entry where english like ?");
+			statement.setString(1, "%" + englishWords + "%");
+			final ResultSet rs = statement.executeQuery();
+			while (rs.next()) {
+				final DictionaryEntry entry = this.createEntry(rs);
+				entries.add(entry);
+			}
+			return entries;
+		} catch (final SQLException e) {
+			throw new DictionaryDataStoreException("Failed to execute query", e);
+		}
 	}
 
 }

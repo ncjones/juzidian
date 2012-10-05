@@ -38,8 +38,7 @@ public class DataStoreDictionary implements Dictionary {
 
 	@Override
 	public List<DictionaryEntry> findChinese(final String queryString) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.dataStore.findChinese(queryString);
 	}
 
 	@Override
@@ -50,8 +49,7 @@ public class DataStoreDictionary implements Dictionary {
 
 	@Override
 	public List<DictionaryEntry> findDefinitions(final String queryString) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.dataStore.findDefinitions(queryString);
 	}
 
 
