@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.core.datastore;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,6 +24,8 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.juzidian.cedict.CedictLoader;
+import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.PinyinSyllable;
 
 /**
  * A basic sequential search dictionary that does not load all words into

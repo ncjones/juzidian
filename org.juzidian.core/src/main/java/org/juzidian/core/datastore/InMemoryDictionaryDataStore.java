@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.core.datastore;
 
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -26,6 +26,9 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.juzidian.cedict.CedictLoader;
+import org.juzidian.core.Dictionary;
+import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.PinyinSyllable;
 
 /**
  * A simple {@link Dictionary} which keeps all data in-memory and

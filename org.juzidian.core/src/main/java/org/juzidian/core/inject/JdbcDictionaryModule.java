@@ -22,7 +22,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import org.juzidian.core.JdbcDictionaryDataStore;
+import org.juzidian.core.datastore.JdbcDictionaryDataStore;
 
 public class JdbcDictionaryModule extends DictionaryModule<JdbcDictionaryDataStore> {
 

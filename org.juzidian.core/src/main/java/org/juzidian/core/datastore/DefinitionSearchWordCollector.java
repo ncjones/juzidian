@@ -16,14 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.core.datastore;
 
-public class DictionaryDataStoreException extends RuntimeException {
+import org.juzidian.core.DictionaryEntry;
 
-	private static final long serialVersionUID = 1L;
+/**
+ * A {@link DefinitionSearchWordCollector} that matches word definitions.
+ */
+class DefinitionSearchWordCollector extends SearchWordCollector {
 
-	public DictionaryDataStoreException(final String detailMessage, final Throwable throwable) {
-		super(detailMessage, throwable);
+	private final String searchQuery;
+
+	public DefinitionSearchWordCollector(final String searchQuery) {
+		this.searchQuery = searchQuery;
+	}
+
+	@Override
+	protected boolean matches(final DictionaryEntry chineseWord) {
+		return chineseWord.getDefinitions().contains(this.searchQuery);
+	}
+
+	@Override
+	protected String getSearchCriteriaDisplay() {
+		return this.searchQuery;
 	}
 
 }

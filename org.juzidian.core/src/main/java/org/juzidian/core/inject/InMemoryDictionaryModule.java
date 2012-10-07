@@ -18,7 +18,7 @@
  */
 package org.juzidian.core.inject;
 
-import org.juzidian.core.InMemoryDictionaryDataStore;
+import org.juzidian.core.datastore.InMemoryDictionaryDataStore;
 
 public class InMemoryDictionaryModule extends DictionaryModule<InMemoryDictionaryDataStore> {
 

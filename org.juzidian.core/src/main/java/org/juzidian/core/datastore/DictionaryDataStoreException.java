@@ -16,27 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.core.datastore;
 
-/**
- * A {@link DefinitionSearchWordCollector} that matches Hanzi characters.
- */
-public class HanziSearchWordCollector extends SearchWordCollector {
+public class DictionaryDataStoreException extends RuntimeException {
 
-	private final String searchQuery;
+	private static final long serialVersionUID = 1L;
 
-	public HanziSearchWordCollector(final String searchQuery) {
-		this.searchQuery = searchQuery;
-	}
-
-	@Override
-	protected boolean matches(final DictionaryEntry word) {
-		return word.getSimplified().startsWith(this.searchQuery) || word.getTraditional().startsWith(this.searchQuery);
-	}
-
-	@Override
-	protected String getSearchCriteriaDisplay() {
-		return this.searchQuery;
+	public DictionaryDataStoreException(final String detailMessage, final Throwable throwable) {
+		super(detailMessage, throwable);
 	}
 
 }

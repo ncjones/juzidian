@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.core.datastore;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -33,6 +33,8 @@ import javax.inject.Inject;
 import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictLoadHandler;
 import org.juzidian.cedict.CedictLoader;
+import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.PinyinSyllable;
 
 public class JdbcDictionaryDataStore implements DictionaryDataStore, CedictLoadHandler {
 

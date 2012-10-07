@@ -16,33 +16,29 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.core.datastore;
 
-import java.util.List;
+import org.juzidian.core.DictionaryEntry;
 
 /**
- * A {@link DefinitionSearchWordCollector} that matches Pinyin.
+ * A {@link DefinitionSearchWordCollector} that matches Hanzi characters.
  */
-public class PinyinSearchWordCollector extends SearchWordCollector {
+public class HanziSearchWordCollector extends SearchWordCollector {
 
-	private final List<PinyinSyllable> pinyinSyllables;
+	private final String searchQuery;
 
-	public PinyinSearchWordCollector(final List<PinyinSyllable> pinyinSyllables) {
-		this.pinyinSyllables = pinyinSyllables;
+	public HanziSearchWordCollector(final String searchQuery) {
+		this.searchQuery = searchQuery;
 	}
 
 	@Override
-	protected boolean matches(final DictionaryEntry chineseWord) {
-		return chineseWord.pinyinStartsWith(this.pinyinSyllables);
+	protected boolean matches(final DictionaryEntry word) {
+		return word.getSimplified().startsWith(this.searchQuery) || word.getTraditional().startsWith(this.searchQuery);
 	}
 
 	@Override
 	protected String getSearchCriteriaDisplay() {
-		final StringBuilder stringBuilder = new StringBuilder();
-		for (final PinyinSyllable syllable : this.pinyinSyllables) {
-			stringBuilder.append(syllable.getDisplayValue()).append(" ");
-		}
-		return stringBuilder.toString().trim();
+		return this.searchQuery;
 	}
 
 }

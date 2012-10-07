@@ -18,7 +18,7 @@
  */
 package org.juzidian.core.inject;
 
-import org.juzidian.core.StreamingDictionaryDataStore;
+import org.juzidian.core.datastore.StreamingDictionaryDataStore;
 
 public class StreamingDictionaryModule extends DictionaryModule<StreamingDictionaryDataStore> {
 
