@@ -23,11 +23,11 @@ import org.juzidian.cedict.CedictLoadHandler;
 
 /**
  * A {@link CedictLoadHandler} which populates a
- * {@link InMemoryDictionary}.
+ * {@link InMemoryDictionaryDataStore}.
  */
-public class InMemoryDictionaryLoadHandler implements CedictLoadHandler {
+public class InMemoryDictionaryDataStoreLoadHandler implements CedictLoadHandler {
 
-	private final InMemoryDictionary dictionary;
+	private final InMemoryDictionaryDataStore dictionary;
 
 	private int entryCount = 0;
 
@@ -35,7 +35,7 @@ public class InMemoryDictionaryLoadHandler implements CedictLoadHandler {
 
 	private long finishNanoTime;
 
-	public InMemoryDictionaryLoadHandler(final InMemoryDictionary dictionary) {
+	public InMemoryDictionaryDataStoreLoadHandler(final InMemoryDictionaryDataStore dictionary) {
 		this.dictionary = dictionary;
 	}
 

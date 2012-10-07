@@ -27,14 +27,6 @@ import java.util.List;
 public interface DictionaryDataStore {
 
 	/**
-	 * Initialize the data store.
-	 * <p>
-	 * Once this method has been called the data store will be ready to be
-	 * queried against.
-	 */
-	void initialize();
-
-	/**
 	 * Find dictionary entries in the data store that begin with the given
 	 * pinyin syllables.
 	 * 

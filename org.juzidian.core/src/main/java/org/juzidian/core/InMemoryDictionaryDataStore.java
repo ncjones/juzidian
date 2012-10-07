@@ -18,16 +18,37 @@
  */
 package org.juzidian.core;
 
+import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.inject.Inject;
+
+import org.juzidian.cedict.CedictLoader;
 
 /**
  * A simple {@link Dictionary} which keeps all data in-memory and
  * finds words using sequential search.
  */
-public class InMemoryDictionary implements Dictionary {
+public class InMemoryDictionaryDataStore implements DictionaryDataStore {
 
 	private final List<DictionaryEntry> words = new ArrayList<DictionaryEntry>();
+
+	private final CedictLoader cedictLoader;
+
+	@Inject
+	public InMemoryDictionaryDataStore(final CedictLoader cedictLoader) {
+		this.cedictLoader = cedictLoader;
+		final InMemoryDictionaryDataStoreLoadHandler handler = new InMemoryDictionaryDataStoreLoadHandler(this);
+		try {
+			this.cedictLoader.loadEntries(handler);
+		} catch (final IOException e) {
+			throw new RuntimeException("Failed to load cedict entries.", e);
+		}
+		System.out.println(MessageFormat.format("Loaded {0} entries in {1, number, #.###} seconds", handler.getEntryCount(),
+				handler.getDuration() / 1000 / 1000 / 1000d));
+	}
 
 	public void addWord(final DictionaryEntry word) {
 		this.words.add(word);
@@ -49,9 +70,8 @@ public class InMemoryDictionary implements Dictionary {
 	}
 
 	@Override
-	public List<DictionaryEntry> findPinyin(final String queryString) {
+	public List<DictionaryEntry> findPinyin(final List<PinyinSyllable> pinyinSyllables) {
 		final List<DictionaryEntry> matchingWords = new ArrayList<DictionaryEntry>();
-		final List<PinyinSyllable> pinyinSyllables = new PinyinParser(queryString).parse();
 		for (final DictionaryEntry word : this.words) {
 			if (word.pinyinStartsWith(pinyinSyllables)) {
 				matchingWords.add(word);
@@ -69,11 +89,6 @@ public class InMemoryDictionary implements Dictionary {
 			}
 		}
 		return matchingWords;
-	}
-
-	@Override
-	public List<DictionaryEntry> find(final String queryString, final SearchType searchType) {
-		return searchType.doSearch(this, queryString);
 	}
 
 }

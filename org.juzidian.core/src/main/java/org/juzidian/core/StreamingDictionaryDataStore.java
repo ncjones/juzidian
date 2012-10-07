@@ -21,23 +21,21 @@ package org.juzidian.core;
 import java.io.IOException;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.juzidian.cedict.CedictLoader;
 
 /**
  * A basic sequential search dictionary that does not load all words into
  * memory.
  */
-public class StreamingDictionary implements Dictionary {
+public class StreamingDictionaryDataStore implements DictionaryDataStore {
 
 	private final CedictLoader cedictLoader;
 
-	public StreamingDictionary(final CedictLoader cedictLoader) {
+	@Inject
+	public StreamingDictionaryDataStore(final CedictLoader cedictLoader) {
 		this.cedictLoader = cedictLoader;
-	}
-
-	@Override
-	public List<DictionaryEntry> find(final String queryString, final SearchType searchType) {
-		return searchType.doSearch(this, queryString);
 	}
 
 	@Override
@@ -46,8 +44,7 @@ public class StreamingDictionary implements Dictionary {
 	}
 
 	@Override
-	public List<DictionaryEntry> findPinyin(final String queryString) {
-		final List<PinyinSyllable> pinyinSyllables = new PinyinParser(queryString).parse();
+	public List<DictionaryEntry> findPinyin(final List<PinyinSyllable> pinyinSyllables) {
 		return this.findWords(new PinyinSearchWordCollector(pinyinSyllables));
 	}
 

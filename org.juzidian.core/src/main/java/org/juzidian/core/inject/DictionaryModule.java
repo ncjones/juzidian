@@ -22,11 +22,11 @@ import java.io.InputStream;
 
 import org.juzidian.cedict.CedictInputStreamProvider;
 import org.juzidian.cedict.CedictLoader;
-import org.juzidian.core.DictionaryFactory;
+import org.juzidian.core.DictionaryDataStore;
 
 import com.google.inject.AbstractModule;
 
-public abstract class DictionaryModule<T extends DictionaryFactory> extends AbstractModule {
+public abstract class DictionaryModule<T extends DictionaryDataStore> extends AbstractModule {
 
 	@Override
 	protected void configure() {
@@ -36,9 +36,12 @@ public abstract class DictionaryModule<T extends DictionaryFactory> extends Abst
 				return this.getClass().getResourceAsStream("/cedict-data.txt");
 			}
 		}));
-		this.bind(DictionaryFactory.class).to(this.getDictionaryFactoryClass());
+		this.bind(DictionaryDataStore.class).to(this.getDictionaryDataStoreClass());
+		this.configureAdditionalDependencies();
 	}
 
-	protected abstract Class<T> getDictionaryFactoryClass();
+	protected abstract Class<T> getDictionaryDataStoreClass();
+
+	protected abstract void configureAdditionalDependencies();
 
 }

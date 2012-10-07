@@ -18,13 +18,18 @@
  */
 package org.juzidian.core.inject;
 
-import org.juzidian.core.StreamingDictionaryFactory;
+import org.juzidian.core.StreamingDictionaryDataStore;
 
-public class StreamingDictionaryModule extends DictionaryModule<StreamingDictionaryFactory> {
+public class StreamingDictionaryModule extends DictionaryModule<StreamingDictionaryDataStore> {
 
 	@Override
-	protected Class<StreamingDictionaryFactory> getDictionaryFactoryClass() {
-		return StreamingDictionaryFactory.class;
+	protected Class<StreamingDictionaryDataStore> getDictionaryDataStoreClass() {
+		return StreamingDictionaryDataStore.class;
+	}
+
+	@Override
+	protected void configureAdditionalDependencies() {
+
 	}
 
 }

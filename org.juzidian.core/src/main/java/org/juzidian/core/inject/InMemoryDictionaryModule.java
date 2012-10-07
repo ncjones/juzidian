@@ -18,13 +18,18 @@
  */
 package org.juzidian.core.inject;
 
-import org.juzidian.core.InMemoryDictionaryFactory;
+import org.juzidian.core.InMemoryDictionaryDataStore;
 
-public class InMemoryDictionaryModule extends DictionaryModule<InMemoryDictionaryFactory> {
+public class InMemoryDictionaryModule extends DictionaryModule<InMemoryDictionaryDataStore> {
 
 	@Override
-	protected Class<InMemoryDictionaryFactory> getDictionaryFactoryClass() {
-		return InMemoryDictionaryFactory.class;
+	protected Class<InMemoryDictionaryDataStore> getDictionaryDataStoreClass() {
+		return InMemoryDictionaryDataStore.class;
+	}
+
+	@Override
+	protected void configureAdditionalDependencies() {
+
 	}
 
 }

@@ -20,10 +20,19 @@ package org.juzidian.core;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 /**
  * A searchable Chinese-English dictionary.
  */
-public interface Dictionary {
+public class Dictionary {
+
+	private final DictionaryDataStore dataStore;
+
+	@Inject
+	public Dictionary(final DictionaryDataStore dataStore) {
+		this.dataStore = dataStore;
+	}
 
 	/**
 	 * Find all Chinese words that match the search criteria.
@@ -33,7 +42,9 @@ public interface Dictionary {
 	 *        query string.
 	 * @return a list of {@link DictionaryEntry}.
 	 */
-	List<DictionaryEntry> find(String queryString, SearchType searchType);
+	public List<DictionaryEntry> find(final String queryString, final SearchType searchType) {
+		return searchType.doSearch(this, queryString);
+	}
 
 	/**
 	 * Find all Chinese words that begin with the given Chinese character query
@@ -43,7 +54,9 @@ public interface Dictionary {
 	 *        search for.
 	 * @return a list of {@link DictionaryEntry}.
 	 */
-	List<DictionaryEntry> findChinese(String queryString);
+	List<DictionaryEntry> findChinese(final String queryString) {
+		return this.dataStore.findChinese(queryString);
+	}
 
 	/**
 	 * Find all Chinese words whose sound begins with the given Pinyin
@@ -52,7 +65,10 @@ public interface Dictionary {
 	 * @param queryString Pinyin syllables to search for.
 	 * @return a list of {@link DictionaryEntry}.
 	 */
-	List<DictionaryEntry> findPinyin(String queryString);
+	List<DictionaryEntry> findPinyin(final String queryString) {
+		final List<PinyinSyllable> pinyinSyllables = new PinyinParser(queryString).parse();
+		return this.dataStore.findPinyin(pinyinSyllables);
+	}
 
 	/**
 	 * Find all Chinese words with definitions that contain the given English
@@ -61,6 +77,8 @@ public interface Dictionary {
 	 * @param queryString English words or partial words.
 	 * @return a list of {@link DictionaryEntry}.
 	 */
-	List<DictionaryEntry> findDefinitions(String queryString);
+	List<DictionaryEntry> findDefinitions(final String queryString) {
+		return this.dataStore.findDefinitions(queryString);
+	}
 
 }

@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.DictionaryFactory;
 import org.juzidian.core.SearchType;
 import org.juzidian.core.inject.InMemoryDictionaryModule;
 
@@ -46,8 +45,7 @@ public class JuzidianCli {
 		}
 		final SearchType searchType = SearchType.valueOf(args[0]);
 		final Injector injector = Guice.createInjector(new InMemoryDictionaryModule());
-		final DictionaryFactory dictionaryFactory = injector.getInstance(DictionaryFactory.class);
-		final Dictionary dictionary = dictionaryFactory.createDictionary();
+		final Dictionary dictionary = injector.getInstance(Dictionary.class);
 		final Runtime runtime = Runtime.getRuntime();
 		final long totalMemory = runtime.totalMemory();
 		final long freeMemory = runtime.freeMemory();

@@ -16,27 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.core.inject;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 
-import javax.inject.Inject;
+import org.juzidian.core.JdbcDictionaryDataStore;
 
-import org.juzidian.cedict.CedictLoader;
+public class JdbcDictionaryModule extends DictionaryModule<JdbcDictionaryDataStore> {
 
-public class DataStoreDictionaryFactory implements DictionaryFactory {
-
-	private final CedictLoader cedictLoader;
-
-	@Inject
-	public DataStoreDictionaryFactory(final CedictLoader cedictLoader) {
-		this.cedictLoader = cedictLoader;
+	@Override
+	protected Class<JdbcDictionaryDataStore> getDictionaryDataStoreClass() {
+		return JdbcDictionaryDataStore.class;
 	}
 
 	@Override
-	public Dictionary createDictionary() {
+	protected void configureAdditionalDependencies() {
 		final Connection connection;
 		try {
 			Class.forName("org.sqlite.JDBC");
@@ -46,9 +42,7 @@ public class DataStoreDictionaryFactory implements DictionaryFactory {
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
-		final DictionaryDataStore dataStore = new JdbcDictionaryDataStore(connection, this.cedictLoader);
-		dataStore.initialize();
-		return new DataStoreDictionary(dataStore);
+		this.bind(Connection.class).toInstance(connection);
 	}
 
 }

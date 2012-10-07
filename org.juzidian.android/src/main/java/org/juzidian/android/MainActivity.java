@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.DictionaryFactory;
 import org.juzidian.core.PinyinSyllable;
 import org.juzidian.core.SearchType;
 import org.juzidian.core.inject.StreamingDictionaryModule;
@@ -31,8 +30,7 @@ public class MainActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_main);
 		final Injector injector = Guice.createInjector(new StreamingDictionaryModule());
-		final DictionaryFactory dictionaryFactory = injector.getInstance(DictionaryFactory.class);
-		this.dictionary = dictionaryFactory.createDictionary();
+		this.dictionary = injector.getInstance(Dictionary.class);
 	}
 
 	@Override

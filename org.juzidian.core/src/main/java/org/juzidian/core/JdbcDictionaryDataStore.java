@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictLoadHandler;
 import org.juzidian.cedict.CedictLoader;
@@ -40,13 +42,10 @@ public class JdbcDictionaryDataStore implements DictionaryDataStore, CedictLoadH
 
 	private int count;
 
+	@Inject
 	public JdbcDictionaryDataStore(final Connection connection, final CedictLoader cedictLoader) {
 		this.connection = connection;
 		this.cedictLoader = cedictLoader;
-	}
-
-	@Override
-	public void initialize() {
 		try {
 			final Statement statement = this.connection.createStatement();
 			statement.executeUpdate("drop table if exists entry");
