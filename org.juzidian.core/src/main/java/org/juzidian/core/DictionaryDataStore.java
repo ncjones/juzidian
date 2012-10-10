@@ -23,7 +23,7 @@ import java.util.List;
 
 
 /**
- * A persisted, searchable Chinese {@link DictionaryEntry} data store.
+ * A searchable Chinese {@link DictionaryEntry} data store.
  */
 public interface DictionaryDataStore {
 
