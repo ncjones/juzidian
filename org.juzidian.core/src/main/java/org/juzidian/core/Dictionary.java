@@ -22,7 +22,6 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.juzidian.core.datastore.DictionaryDataStore;
 
 /**
  * A searchable Chinese-English dictionary.

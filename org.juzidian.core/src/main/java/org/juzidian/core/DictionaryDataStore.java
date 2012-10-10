@@ -17,12 +17,10 @@
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package org.juzidian.core.datastore;
+package org.juzidian.core;
 
 import java.util.List;
 
-import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.PinyinSyllable;
 
 /**
  * A persisted, searchable Chinese {@link DictionaryEntry} data store.

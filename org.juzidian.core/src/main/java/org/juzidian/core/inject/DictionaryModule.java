@@ -22,7 +22,7 @@ import java.io.InputStream;
 
 import org.juzidian.cedict.CedictInputStreamProvider;
 import org.juzidian.cedict.CedictLoader;
-import org.juzidian.core.datastore.DictionaryDataStore;
+import org.juzidian.core.DictionaryDataStore;
 
 import com.google.inject.AbstractModule;
 

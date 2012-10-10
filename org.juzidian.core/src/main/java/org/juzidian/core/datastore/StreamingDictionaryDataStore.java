@@ -24,6 +24,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.juzidian.cedict.CedictLoader;
+import org.juzidian.core.DictionaryDataStore;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.PinyinSyllable;
 
