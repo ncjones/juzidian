@@ -49,7 +49,11 @@ public abstract class OrmLiteDictionaryModule extends DictionaryModule<DbDiction
 
 	private Dao<DbDictionaryEntry, Long> createEntryDao(final ConnectionSource connectionSource) {
 		try {
-			return DaoManager.createDao(connectionSource, DbDictionaryEntry.class);
+			/*
+			 * Explicit type parameters are necessary to prevent compilation
+			 * error on open jdk 6.
+			 */
+			return DaoManager.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry> createDao(connectionSource, DbDictionaryEntry.class);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
