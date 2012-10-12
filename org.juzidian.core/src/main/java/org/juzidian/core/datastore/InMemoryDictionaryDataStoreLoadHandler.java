@@ -41,7 +41,7 @@ public class InMemoryDictionaryDataStoreLoadHandler implements CedictLoadHandler
 
 	@Override
 	public void entryLoaded(final CedictEntry cedictEntry) {
-		this.dictionary.addWord(new CedictDictionaryEntryAdaptor(cedictEntry));
+		this.dictionary.add(new CedictDictionaryEntryAdaptor(cedictEntry));
 		this.entryCount += 1;
 	}
 

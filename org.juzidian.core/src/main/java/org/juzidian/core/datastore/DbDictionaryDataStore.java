@@ -41,10 +41,47 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		this.dictionaryEntryDao = ormLiteDao;
 	}
 
+	@Override
+	public void add(final DictionaryEntry entry) {
+		final DbDictionaryEntry dbEntry = this.createDbEntry(entry);
+		try {
+			this.dictionaryEntryDao.create(dbEntry);
+		} catch (final SQLException e) {
+			throw new DictionaryDataStoreException("Failed to add dictionary entry: " + entry, e);
+		}
+	}
+
+	private DbDictionaryEntry createDbEntry(final DictionaryEntry entry) {
+		final DbDictionaryEntry dbEntry = new DbDictionaryEntry();
+		dbEntry.setTraditional(entry.getTraditional());
+		dbEntry.setSimplified(entry.getSimplified());
+		dbEntry.setPinyin(this.formatPinyin(entry.getPinyin()));
+		dbEntry.setEnglish(this.formatDefinitions(entry.getDefinitions()));
+		return dbEntry;
+	}
+
 	private String formatPinyin(final List<PinyinSyllable> list) {
 		final StringBuilder sb = new StringBuilder();
 		for (final PinyinSyllable pinyinSyllable : list) {
 			sb.append(pinyinSyllable.getLetters()).append(" ");
+		}
+		return sb.toString();
+	}
+
+	private List<PinyinSyllable> unformatPinyin(final String pinyin) {
+		final String[] rawPinyin = pinyin.split("  ");
+		final List<PinyinSyllable> syllables = new LinkedList<PinyinSyllable>();
+		for (final String letters : rawPinyin) {
+			final PinyinSyllable syllable = new PinyinSyllable(letters);
+			syllables.add(syllable);
+		}
+		return syllables;
+	}
+
+	private String formatDefinitions(final List<String> definitions) {
+		final StringBuilder sb = new StringBuilder();
+		for (final String definition : definitions) {
+			sb.append(definition).append("/");
 		}
 		return sb.toString();
 	}
@@ -79,16 +116,6 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		final String pinyin = dbEntry.getPinyin();
 		final String english = dbEntry.getEnglish();
 		return new BasicDictionaryEntry(traditional, simplified, this.unformatPinyin(pinyin), this.unformatDefinitions(english));
-	}
-
-	private List<PinyinSyllable> unformatPinyin(final String pinyin) {
-		final String[] rawPinyin = pinyin.split("  ");
-		final List<PinyinSyllable> syllables = new LinkedList<PinyinSyllable>();
-		for (final String letters : rawPinyin) {
-			final PinyinSyllable syllable = new PinyinSyllable(letters);
-			syllables.add(syllable);
-		}
-		return syllables;
 	}
 
 	@Override

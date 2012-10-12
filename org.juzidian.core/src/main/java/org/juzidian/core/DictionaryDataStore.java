@@ -21,11 +21,17 @@ package org.juzidian.core;
 
 import java.util.List;
 
-
 /**
  * A searchable Chinese {@link DictionaryEntry} data store.
  */
 public interface DictionaryDataStore {
+
+	/**
+	 * Add an entry to the datastore.
+	 * 
+	 * @param entry a {@link DictionaryEntry}.
+	 */
+	void add(DictionaryEntry entry);
 
 	/**
 	 * Find dictionary entries in the data store that begin with the given

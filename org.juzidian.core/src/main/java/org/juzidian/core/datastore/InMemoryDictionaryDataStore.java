@@ -54,7 +54,8 @@ public class InMemoryDictionaryDataStore implements DictionaryDataStore {
 				handler.getDuration() / 1000 / 1000 / 1000d));
 	}
 
-	public void addWord(final DictionaryEntry word) {
+	@Override
+	public void add(final DictionaryEntry word) {
 		this.words.add(word);
 	}
 

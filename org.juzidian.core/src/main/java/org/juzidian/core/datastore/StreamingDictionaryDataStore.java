@@ -65,4 +65,9 @@ public class StreamingDictionaryDataStore implements DictionaryDataStore {
 		return wordCollector.getWords();
 	}
 
+	@Override
+	public void add(final DictionaryEntry entry) {
+		throw new UnsupportedOperationException("Cannot add entry to streaming dictionary.");
+	}
+
 }
