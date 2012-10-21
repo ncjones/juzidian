@@ -19,14 +19,21 @@
 package org.juzidian.core.inject;
 
 import java.io.InputStream;
+import java.sql.SQLException;
 
 import org.juzidian.cedict.CedictInputStreamProvider;
 import org.juzidian.cedict.CedictLoader;
 import org.juzidian.core.DictionaryDataStore;
+import org.juzidian.core.datastore.DbDictionaryDataStore;
+import org.juzidian.core.datastore.DbDictionaryEntry;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.TypeLiteral;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.DaoManager;
+import com.j256.ormlite.support.ConnectionSource;
 
-public abstract class DictionaryModule<T extends DictionaryDataStore> extends AbstractModule {
+public abstract class DictionaryModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
@@ -36,12 +43,30 @@ public abstract class DictionaryModule<T extends DictionaryDataStore> extends Ab
 				return this.getClass().getResourceAsStream("/cedict-data.txt");
 			}
 		}));
-		this.bind(DictionaryDataStore.class).to(this.getDictionaryDataStoreClass());
-		this.configureAdditionalDependencies();
+		this.bind(DictionaryDataStore.class).to(DbDictionaryDataStore.class);
+		final ConnectionSource connectionSource;
+		try {
+			connectionSource = this.createConnectionSource("jdbc:sqlite:juzidian.db");
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
+		}
+		final Dao<DbDictionaryEntry, Long> entryDao = this.createEntryDao(connectionSource);
+		this.bind(new TypeLiteral<Dao<DbDictionaryEntry, Long>>() {
+		}).toInstance(entryDao);
 	}
 
-	protected abstract Class<T> getDictionaryDataStoreClass();
+	private Dao<DbDictionaryEntry, Long> createEntryDao(final ConnectionSource connectionSource) {
+		try {
+			/*
+			 * Explicit type parameters are necessary to prevent compilation
+			 * error on open jdk 6.
+			 */
+			return DaoManager.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry> createDao(connectionSource, DbDictionaryEntry.class);
+		} catch (final SQLException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-	protected abstract void configureAdditionalDependencies();
+	protected abstract ConnectionSource createConnectionSource(String jdbcUrl) throws SQLException;
 
 }
