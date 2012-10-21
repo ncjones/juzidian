@@ -21,7 +21,7 @@ dependencies {
 	compile project(':org.juzidian.cedict')
 	compile 'com.google.inject:guice:3.0:no_aop'
 	compile 'com.j256.ormlite:ormlite-core:4.42'
-	generate project(':org.juzidian.build')
+	generate project(':org.juzidian.build.pinyin')
 }
 
 sourceSets {
