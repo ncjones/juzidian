@@ -4,6 +4,7 @@ dependencies {
 	compile files("${ant['sdk.dir']}/extras/android/support/v4/android-support-v4.jar")
 	compile project(':org.juzidian.cedict'), project(':org.juzidian.core')
 	compile 'com.google.inject:guice:3.0:no_aop'
+	compile 'com.j256.ormlite:ormlite-android:4.42'
 	/*
 	 * gradle-android does not handle library projects well so we pull project
 	 * dependencies from local maven repository when building.

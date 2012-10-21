@@ -18,16 +18,19 @@
  */
 package org.juzidian.cli;
 
+import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.List;
 
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.SearchType;
-import org.juzidian.core.inject.InMemoryDictionaryModule;
+import org.juzidian.core.inject.DictionaryModule;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import com.j256.ormlite.jdbc.JdbcConnectionSource;
+import com.j256.ormlite.support.ConnectionSource;
 
 /**
  * A basic command-line interface for performing dictionary searches.
@@ -44,7 +47,12 @@ public class JuzidianCli {
 			return;
 		}
 		final SearchType searchType = SearchType.valueOf(args[0]);
-		final Injector injector = Guice.createInjector(new InMemoryDictionaryModule());
+		final Injector injector = Guice.createInjector(new DictionaryModule() {
+			@Override
+			protected ConnectionSource createConnectionSource(final String jdbcUrl) throws SQLException {
+				return new JdbcConnectionSource(jdbcUrl);
+			}
+		});
 		final Dictionary dictionary = injector.getInstance(Dictionary.class);
 		final Runtime runtime = Runtime.getRuntime();
 		final long totalMemory = runtime.totalMemory();
