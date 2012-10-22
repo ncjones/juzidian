@@ -20,8 +20,10 @@ package org.juzidian.core.datastore;
 
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import javax.inject.Inject;
 
@@ -30,6 +32,7 @@ import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.PinyinSyllable;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.misc.TransactionManager;
 import com.j256.ormlite.stmt.PreparedQuery;
 
 public class DbDictionaryDataStore implements DictionaryDataStore {
@@ -42,6 +45,32 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	}
 
 	@Override
+	public void add(final Collection<DictionaryEntry> entries) {
+		try {
+			TransactionManager.callInTransaction(this.dictionaryEntryDao.getConnectionSource(), new BulkEntryAdd(entries));
+		} catch (final SQLException e) {
+			throw new DictionaryDataStoreException("Failed to add dictionary entries", e);
+		}
+	}
+
+	private class BulkEntryAdd implements Callable<Void> {
+
+		private final Collection<DictionaryEntry> entries;
+
+		public BulkEntryAdd(final Collection<DictionaryEntry> entries) {
+			this.entries = entries;
+		}
+
+		@Override
+		public Void call() throws Exception {
+			for (final DictionaryEntry dictionaryEntry : this.entries) {
+				DbDictionaryDataStore.this.add(dictionaryEntry);
+			}
+			return null;
+		}
+
+	}
+
 	public void add(final DictionaryEntry entry) {
 		final DbDictionaryEntry dbEntry = this.createDbEntry(entry);
 		try {

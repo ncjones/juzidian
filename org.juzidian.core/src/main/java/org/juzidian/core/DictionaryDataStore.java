@@ -19,6 +19,7 @@
 
 package org.juzidian.core;
 
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -27,11 +28,11 @@ import java.util.List;
 public interface DictionaryDataStore {
 
 	/**
-	 * Add an entry to the datastore.
+	 * Add a collection of entries to the datastore.
 	 * 
-	 * @param entry a {@link DictionaryEntry}.
+	 * @param entries a collection of {@link DictionaryEntry}.
 	 */
-	void add(DictionaryEntry entry);
+	void add(Collection<DictionaryEntry> entries);
 
 	/**
 	 * Find dictionary entries in the data store that begin with the given

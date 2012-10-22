@@ -22,11 +22,8 @@ import java.io.IOException;
 
 import javax.inject.Inject;
 
-import org.juzidian.cedict.CedictEntry;
-import org.juzidian.cedict.CedictLoadHandler;
 import org.juzidian.cedict.CedictLoader;
 import org.juzidian.core.DictionaryDataStore;
-import org.juzidian.core.DictionaryEntry;
 
 /**
  * Populates entries into a {@link DictionaryDataStore} from a
@@ -42,37 +39,13 @@ public class DbDictionaryDataStoreEntryPopulator {
 	}
 
 	public void populateEntries(final DictionaryDataStore dictionaryDataStore) {
+		final EntryCollector entryCollector = new EntryCollector();
 		try {
-			this.cedictLoader.loadEntries(new DataLoadHandler(dictionaryDataStore));
+			this.cedictLoader.loadEntries(entryCollector);
 		} catch (final IOException e) {
 			throw new RuntimeException("Failed to load entries", e);
 		}
-	}
-
-	private static class DataLoadHandler implements CedictLoadHandler {
-
-		private final DictionaryDataStore dictionaryDataStore;
-
-		public DataLoadHandler(final DictionaryDataStore dictionaryDataStore) {
-			this.dictionaryDataStore = dictionaryDataStore;
-		}
-
-		@Override
-		public void loadingStarted() {
-
-		}
-
-		@Override
-		public void entryLoaded(final CedictEntry cedictEntry) {
-			final DictionaryEntry entry = new CedictDictionaryEntryAdaptor(cedictEntry);
-			this.dictionaryDataStore.add(entry);
-		}
-
-		@Override
-		public void loadingFinished() {
-
-		}
-
+		dictionaryDataStore.add(entryCollector.getEntries());
 	}
 
 }
