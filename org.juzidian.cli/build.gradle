@@ -4,7 +4,7 @@ def genResDir = "$genDir/resources"
 
 def dictionaryDbPath = "$genResDir/juzidian-dictionary.db"
 
-def cedictDataPath = "${project(':org.juzidian.core').projectDir}/build/main/resources/cedict-data.txt"
+def cedictDataPath = "${project(':org.juzidian.core').projectDir}/cedict-data.txt"
 
 dependencies {
 	compile project(':org.juzidian.core')
@@ -36,7 +36,7 @@ task generateResources {
 		javaexec {
 			main = 	'org.juzidian.build.data.DictionaryDataBaseCreator'
 			classpath = sourceSets.main.runtimeClasspath
-			args dictionaryDbPath
+			args cedictDataPath, dictionaryDbPath
 		}
 	}
 }

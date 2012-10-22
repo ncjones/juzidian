@@ -18,6 +18,8 @@
  */
 package org.juzidian.core.inject;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.sql.SQLException;
 
@@ -35,12 +37,44 @@ import com.j256.ormlite.support.ConnectionSource;
 
 public abstract class DictionaryModule extends AbstractModule {
 
+	private final String cedictDataPath;
+
+	/**
+	 * Create a dictionary module which will not use any {@link CedictLoader}
+	 * instances.
+	 */
+	public DictionaryModule() {
+		this(null);
+	}
+
+	/**
+	 * Create a dictionary module which will use the given cedict data file for
+	 * providing input streams to {@link CedictLoader} instances.
+	 * 
+	 * @param cedictDataPath the path to a cedict data file.
+	 */
+	public DictionaryModule(final String cedictDataPath) {
+		this.cedictDataPath = cedictDataPath;
+	}
+
+	String getCedictDataPath() {
+		return this.cedictDataPath;
+	}
+
 	@Override
 	protected void configure() {
 		this.bind(CedictLoader.class).toInstance(new CedictLoader(new CedictInputStreamProvider() {
 			@Override
 			public InputStream getInputStream() {
-				return this.getClass().getResourceAsStream("/cedict-data.txt");
+				final String cedictDataPath = DictionaryModule.this.getCedictDataPath();
+				if (cedictDataPath == null) {
+					throw new IllegalStateException("Dictionary Guice module was not provided with a cedict data path.");
+				}
+				try {
+					return new FileInputStream(cedictDataPath);
+				} catch (final FileNotFoundException e) {
+					throw new IllegalStateException("Cedict data file does not exist: " + cedictDataPath, e);
+				}
 			}
 		}));
 		this.bind(DictionaryDataStore.class).to(DbDictionaryDataStore.class);

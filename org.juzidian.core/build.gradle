@@ -5,9 +5,7 @@ def genDir = "$buildDir/generated"
 
 def genSrcDir = "$genDir/java"
 
-def genResDir = "$genDir/resources"
-
-def cedictDataPath = "$genResDir/cedict-data.txt"
+def cedictDataPath = "cedict-data.txt"
 
 def cedictCompressedDataPath = "cedict-data.gz"
 
@@ -29,9 +27,6 @@ sourceSets {
         java {
             srcDirs "$genSrcDir" 
         }
-        resources {
-        	srcDirs "$genResDir"
-    	}
     }
 }
 
@@ -56,7 +51,6 @@ task uncompressCedictData {
 	inputs.file srcFile
 	outputs.file destFile
 	doLast {
-		file(destFile.parent).mkdirs()
 		println "Uncompressing $srcFile to $destFile"
 		def inputStream = new java.util.zip.GZIPInputStream(new FileInputStream(srcFile))
 		new FileOutputStream(destFile) << inputStream

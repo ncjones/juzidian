@@ -35,13 +35,17 @@ public class DictionaryDataBaseCreator {
 
 	public static void main(final String[] args) {
 		if (args.length < 1) {
+			System.out.println("Path to CEDict data file must be specified.");
+			return;
+		}
+		if (args.length < 2) {
 			System.out.println("Path to database file must be specified.");
 			return;
 		}
-		final String dbFileName = args[0];
+		final String cedictDataFile = args[0];
+		final String dbFileName = args[1];
 		final String jdbcUrl = "jdbc:sqlite:" + dbFileName;
-		System.out.println(jdbcUrl);
-		final Injector injector = Guice.createInjector(new DictionaryModule() {
+		final Injector injector = Guice.createInjector(new DictionaryModule(cedictDataFile) {
 			@Override
 			protected ConnectionSource createConnectionSource(final String s) throws SQLException {
 				return new JdbcConnectionSource(jdbcUrl);

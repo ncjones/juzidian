@@ -4,7 +4,7 @@ def rawResDir = "res/raw"
 
 def dictionaryDbPath = "$rawResDir/juzidian_dictionary.db"
 
-def cedictDataPath = "${project(':org.juzidian.core').projectDir}/build/main/resources/cedict-data.txt"
+def cedictDataPath = "${project(':org.juzidian.core').projectDir}/cedict-data.txt"
 
 configurations {
 	generate
@@ -34,7 +34,7 @@ task generateResources {
 		javaexec {
 			main = 	'org.juzidian.build.data.DictionaryDataBaseCreator'
 			classpath = configurations.generate
-			args dictionaryDbPath
+			args cedictDataPath, dictionaryDbPath
 		}
 	}
 }
