@@ -3,5 +3,6 @@
 */gen/
 *~
 .*
+*.db
 cedict-data.*
 gradle-android-plugin

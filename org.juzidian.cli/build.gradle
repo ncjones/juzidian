@@ -1,8 +1,25 @@
+def genDir = "$buildDir/generated"
+
+def genResDir = "$genDir/resources"
+
+def dictionaryDbPath = "$genResDir/juzidian-dictionary.db"
+
+def cedictDataPath = "${project(':org.juzidian.core').projectDir}/build/main/resources/cedict-data.txt"
+
 dependencies {
-	compile project(':org.juzidian.cedict'), project(':org.juzidian.core')
+	compile project(':org.juzidian.core')
+	compile project(':org.juzidian.build.data')
 	compile 'com.google.inject:guice:3.0:no_aop'
 	compile 'org.xerial:sqlite-jdbc:3.7.2'
 	compile 'com.j256.ormlite:ormlite-jdbc:4.42'
+}
+
+sourceSets {
+	main {
+		resources {
+			srcDirs "$genResDir"
+		}
+	}
 }
 
 jar {
@@ -10,3 +27,18 @@ jar {
         attributes 'Main-Class': 'org.juzidian.cli.JuzidianCli'
     }
 }
+
+task generateResources {
+	inputs.file file("$cedictDataPath")
+	outputs.file file("$dictionaryDbPath")
+	doLast {
+		mkdir("$genResDir")
+		javaexec {
+			main = 	'org.juzidian.build.data.DictionaryDataBaseCreator'
+			classpath = sourceSets.main.runtimeClasspath
+			args dictionaryDbPath
+		}
+	}
+}
+
+compileJava.dependsOn generateResources

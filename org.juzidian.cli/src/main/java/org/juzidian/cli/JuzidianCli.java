@@ -18,6 +18,11 @@
  */
 package org.juzidian.cli;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.List;
@@ -37,7 +42,9 @@ import com.j256.ormlite.support.ConnectionSource;
  */
 public class JuzidianCli {
 
-	public static void main(final String[] args) {
+	private static final String DICTIONARY_DB_FILENAME = "juzidian-dictionary.db";
+
+	public static void main(final String[] args) throws IOException {
 		if (args.length < 1) {
 			System.out.println("Search type must be specified.");
 			return;
@@ -46,11 +53,12 @@ public class JuzidianCli {
 			System.out.println("Search query must be specified.");
 			return;
 		}
+		initializeDbFile();
 		final SearchType searchType = SearchType.valueOf(args[0]);
 		final Injector injector = Guice.createInjector(new DictionaryModule() {
 			@Override
 			protected ConnectionSource createConnectionSource(final String jdbcUrl) throws SQLException {
-				return new JdbcConnectionSource(jdbcUrl);
+				return new JdbcConnectionSource("jdbc:sqlite:" + DICTIONARY_DB_FILENAME);
 			}
 		});
 		final Dictionary dictionary = injector.getInstance(Dictionary.class);
@@ -63,6 +71,24 @@ public class JuzidianCli {
 		final List<DictionaryEntry> foundCharacters = dictionary.find(queryString, searchType);
 		final long end = System.nanoTime();
 		printSearchResults(queryString, foundCharacters, end - start);
+	}
+
+	private static void initializeDbFile() throws IOException {
+		final InputStream inputStream = JuzidianCli.class.getResourceAsStream("/" + DICTIONARY_DB_FILENAME);
+		final File dbFile = new File(DICTIONARY_DB_FILENAME);
+		dbFile.delete();
+		dbFile.createNewFile();
+		copy(inputStream, new FileOutputStream(dbFile));
+	}
+
+	public static void copy(final InputStream in, final OutputStream out) throws IOException {
+		final byte[] buf = new byte[10000];
+		int len;
+		while ((len = in.read(buf)) > 0) {
+			out.write(buf, 0, len);
+		}
+		in.close();
+		out.close();
 	}
 
 	private static void printSearchResults(final String query, final List<DictionaryEntry> entries, final long searchDuration) {
