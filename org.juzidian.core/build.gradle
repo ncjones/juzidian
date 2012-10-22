@@ -69,7 +69,7 @@ task generateSources (type: JavaExec, dependsOn: uncompressCedictData) {
 	inputs.file srcFile
 	outputs.dir destDir
 	classpath = configurations.generate
-	main = 	'org.juzidian.build.PinyinHelperGenerator'
+	main = 	'org.juzidian.build.pinyin.PinyinHelperGenerator'
 	args srcFile, destDir, 'org.juzidian.core'
 }
 
