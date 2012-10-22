@@ -27,6 +27,7 @@ dependencies {
 }
 
 task generateResources {
+	dependsOn ':org.juzidian.build.data:build'
 	inputs.file file("$cedictDataPath")
 	outputs.file file("$dictionaryDbPath")
 	doLast {
@@ -46,6 +47,6 @@ eclipse.classpath.file {
 	}
 }
 
-compileJava.dependsOn generateResources
-compileJava.dependsOn ':org.juzidian.cedict:install'
+clean.dependsOn cleanGenerateResources
+androidProcessResources.dependsOn generateResources
 compileJava.dependsOn ':org.juzidian.core:install'
