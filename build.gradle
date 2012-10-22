@@ -24,7 +24,7 @@ subprojects {
 
 	group = 'org.juzidian'
 
-	version = '0.2.0'
+	version = '0.3.0'
 
 	eclipse.classpath.file {
 		whenMerged { classpath ->
