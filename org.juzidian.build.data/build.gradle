@@ -1,0 +1,10 @@
+apply plugin: 'maven'
+
+dependencies {
+	compile project(':org.juzidian.cedict')
+	compile project(':org.juzidian.core')
+	compile 'com.google.inject:guice:3.0:no_aop'
+	compile 'com.j256.ormlite:ormlite-jdbc:4.42'
+	compile 'org.xerial:sqlite-jdbc:3.7.2'
+}
+
