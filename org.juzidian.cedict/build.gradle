@@ -1,4 +1,0 @@
-apply plugin: 'android'
-apply plugin: 'maven'
-
-androidProcessResources.dependsOn createAndroidResourcesDir

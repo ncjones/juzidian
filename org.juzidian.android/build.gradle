@@ -19,7 +19,6 @@ dependencies {
 	 * gradle-android does not handle library projects well so we pull project
 	 * dependencies from local maven repository when building.
 	 */
-	compile 'org.juzidian:org.juzidian.cedict:0.+'
 	compile 'org.juzidian:org.juzidian.core:0.+'
 	generate project(':org.juzidian.build.data')
 	generate 'org.xerial:sqlite-jdbc:3.7.2'
@@ -42,7 +41,6 @@ task generateResources {
 
 eclipse.classpath.file {
 	whenMerged { classpath ->
-		classpath.entries.removeAll { it.path.contains('org.juzidian.cedict-') }
 		classpath.entries.removeAll { it.path.contains('org.juzidian.core-') }
 	}
 }
