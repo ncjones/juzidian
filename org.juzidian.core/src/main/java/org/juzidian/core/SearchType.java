@@ -18,6 +18,9 @@
  */
 package org.juzidian.core;
 
+import java.lang.Character.UnicodeBlock;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -56,6 +59,22 @@ public enum SearchType {
 		}
 	};
 
+	private static final Collection<UnicodeBlock> CHINESE_UNICODE_BLOCKS = Arrays.asList(
+			UnicodeBlock.CJK_COMPATIBILITY,
+			UnicodeBlock.CJK_COMPATIBILITY_FORMS,
+			UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS,
+			UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT,
+			UnicodeBlock.CJK_RADICALS_SUPPLEMENT,
+			UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION,
+			UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS,
+			UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A,
+			UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
+			UnicodeBlock.KANGXI_RADICALS,
+			UnicodeBlock.IDEOGRAPHIC_DESCRIPTION_CHARACTERS
+		);
+
+	private static final PinyinParser PINYIN_PARSER = new PinyinParser();
+
 	/**
 	 * Perform the appropriate search on the dictionary for this search type.
 	 * 
@@ -64,4 +83,34 @@ public enum SearchType {
 	 * @return the dictionary's search result.
 	 */
 	abstract List<DictionaryEntry> doSearch(Dictionary dictionary, String query);
+
+	/**
+	 * Get the search type that most likely matches the given text.
+	 * 
+	 * @param searchText a search query input.
+	 * @return a {@link SearchType} or <code>null</code> if the input is
+	 *         <code>null</code>, is empty or contains only whitespace.
+	 */
+	public static SearchType forText(final String searchText) {
+		if (searchText == null || "".equals(searchText.trim())) {
+			return null;
+		}
+		for (final char c : searchText.toCharArray()) {
+			if (isChineseCharacter(c)) {
+				return HANZI;
+			}
+		}
+		if (PINYIN_PARSER.isValid(searchText)) {
+			return PINYIN;
+		}
+		return REVERSE;
+	}
+
+	private static boolean isChineseCharacter(final char c) {
+		/*
+		 * http://stackoverflow.com/questions/1675739/to-split-only-chinese-characters-in-java
+		 */
+		return CHINESE_UNICODE_BLOCKS.contains(UnicodeBlock.of(c));
+	}
+
 }
