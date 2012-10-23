@@ -22,84 +22,92 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 public class PinyinParserTest {
 
+	private PinyinParser pinyinParser;
+
+	@Before
+	public void setUp() {
+		this.pinyinParser = new PinyinParser();
+	}
+
 	@Test(expected = PinyinParseException.class)
 	public void parseShouldRejectDigit() {
-		new PinyinParser("2").parse();
+		this.pinyinParser.parse("2");
 	}
 
 	@Test(expected = PinyinParseException.class)
 	public void parseShouldRejectPunctuation() {
-		new PinyinParser("!").parse();
+		this.pinyinParser.parse("!");
 	}
 
 	@Test(expected = PinyinParseException.class)
 	public void parseShouldRejectLeadingPunctuation() {
-		new PinyinParser("!hao").parse();
+		this.pinyinParser.parse("!hao");
 	}
 
 	@Test(expected = PinyinParseException.class)
 	public void parseShouldRejectTrailingPunctuation() {
-		new PinyinParser("hao!").parse();
+		this.pinyinParser.parse("hao!");
 	}
 
 	@Test(expected = PinyinParseException.class)
 	public void parseShouldRejectNonPinyinWord() {
-		new PinyinParser("hi").parse();
+		this.pinyinParser.parse("hi");
 	}
 
 	@Test(expected = PinyinParseException.class)
 	public void parseShouldRejectIncompleteWord() {
-		new PinyinParser("guangzh").parse();
+		this.pinyinParser.parse("guangzh");
 	}
 
 	@Test
 	public void parseShouldNotContainAdditionalSyllables() {
-		Assert.assertEquals(1, new PinyinParser("hao").parse().size());
+		Assert.assertEquals(1, this.pinyinParser.parse("hao").size());
 	}
 
 	@Test
 	public void parseShouldHandleLetters() {
-		final List<PinyinSyllable> parsedSyllables = new PinyinParser("hao").parse();
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("hao");
 		Assert.assertEquals("hao", parsedSyllables.get(0).getLetters());
 	}
 
 	@Test
 	public void parseShouldIgnoreLeadingSpace() {
-		final List<PinyinSyllable> parsedSyllables = new PinyinParser("  hao").parse();
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("  hao");
 		Assert.assertEquals("hao", parsedSyllables.get(0).getLetters());
 	}
 
 	@Test
 	public void parseShouldIgnoreTrailingSpace() {
-		final List<PinyinSyllable> parsedSyllables = new PinyinParser("hao  ").parse();
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("hao  ");
 		Assert.assertEquals("hao", parsedSyllables.get(0).getLetters());
 	}
 
 	@Test
 	public void parseShouldHandleTone() {
-		final List<PinyinSyllable> parsedSyllables = new PinyinParser("hao3").parse();
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("hao3");
 		final PinyinSyllable expectedSyllable = new PinyinSyllable("hao", Tone.THIRD);
 		Assert.assertEquals(Arrays.asList(expectedSyllable), parsedSyllables);
 	}
 
 	@Test(expected = PinyinParseException.class)
 	public void parseShouldRejectInvalidTone() {
-		new PinyinParser("hao6").parse();
+		this.pinyinParser.parse("hao6");
 	}
 
 	@Test
 	public void parseShouldPreferLessSyllablesForAmbiguousInput() {
-		final List<PinyinSyllable> parsedSyllables = new PinyinParser("xian").parse();
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("xian");
 		Assert.assertEquals("xian", parsedSyllables.get(0).getLetters());
 	}
 
 	@Test
 	public void parseShouldSplitSyllablesOnSpace() {
-		final List<PinyinSyllable> parsedSyllables = new PinyinParser("xi an").parse();
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("xi an");
 		final PinyinSyllable xi = new PinyinSyllable("xi");
 		final PinyinSyllable an = new PinyinSyllable("an");
 		Assert.assertEquals(Arrays.asList(xi, an), parsedSyllables);
@@ -107,7 +115,7 @@ public class PinyinParserTest {
 
 	@Test
 	public void parseShouldSplitSyllablesOnMultipleSpaces() {
-		final List<PinyinSyllable> parsedSyllables = new PinyinParser("xi  an").parse();
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("xi  an");
 		final PinyinSyllable xi = new PinyinSyllable("xi");
 		final PinyinSyllable an = new PinyinSyllable("an");
 		Assert.assertEquals(Arrays.asList(xi, an), parsedSyllables);
@@ -115,7 +123,7 @@ public class PinyinParserTest {
 
 	@Test
 	public void parseShouldSplitSyllablesWithTonesOnSpaces() {
-		final List<PinyinSyllable> parsedSyllables = new PinyinParser("xi1 an1").parse();
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("xi1 an1");
 		final PinyinSyllable xi = new PinyinSyllable("xi", Tone.FIRST);
 		final PinyinSyllable an = new PinyinSyllable("an", Tone.FIRST);
 		Assert.assertEquals(Arrays.asList(xi, an), parsedSyllables);
@@ -123,7 +131,7 @@ public class PinyinParserTest {
 
 	@Test
 	public void parseShouldSplitSyllablesOnApostrophe() {
-		final List<PinyinSyllable> parsedSyllables = new PinyinParser("xi'an").parse();
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("xi'an");
 		final PinyinSyllable xi = new PinyinSyllable("xi");
 		final PinyinSyllable an = new PinyinSyllable("an");
 		Assert.assertEquals(Arrays.asList(xi, an), parsedSyllables);
@@ -131,7 +139,7 @@ public class PinyinParserTest {
 
 	@Test
 	public void parseShouldHandleMultipleSyllables() {
-		final List<PinyinSyllable> parsedSyllables = new PinyinParser("nihao").parse();
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("nihao");
 		final PinyinSyllable ni = new PinyinSyllable("ni");
 		final PinyinSyllable hao = new PinyinSyllable("hao");
 		Assert.assertEquals(Arrays.asList(ni, hao), parsedSyllables);
@@ -139,7 +147,7 @@ public class PinyinParserTest {
 
 	@Test
 	public void parseShouldHandleMultipleSyllablesWithTones() {
-		final List<PinyinSyllable> parsedSyllables = new PinyinParser("ni3hao3").parse();
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("ni3hao3");
 		final PinyinSyllable ni = new PinyinSyllable("ni", Tone.THIRD);
 		final PinyinSyllable hao = new PinyinSyllable("hao", Tone.THIRD);
 		Assert.assertEquals(Arrays.asList(ni, hao), parsedSyllables);

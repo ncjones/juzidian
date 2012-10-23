@@ -30,6 +30,8 @@ public class Dictionary {
 
 	private final DictionaryDataStore dataStore;
 
+	private final PinyinParser pinyinParser = new PinyinParser();
+
 	@Inject
 	public Dictionary(final DictionaryDataStore dataStore) {
 		this.dataStore = dataStore;
@@ -67,7 +69,7 @@ public class Dictionary {
 	 * @return a list of {@link DictionaryEntry}.
 	 */
 	List<DictionaryEntry> findPinyin(final String queryString) {
-		final List<PinyinSyllable> pinyinSyllables = new PinyinParser(queryString).parse();
+		final List<PinyinSyllable> pinyinSyllables = this.pinyinParser.parse(queryString);
 		return this.dataStore.findPinyin(pinyinSyllables);
 	}
 
