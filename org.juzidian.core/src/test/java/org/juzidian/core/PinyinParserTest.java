@@ -153,4 +153,14 @@ public class PinyinParserTest {
 		Assert.assertEquals(Arrays.asList(ni, hao), parsedSyllables);
 	}
 
+	@Test
+	public void isValidShouldBeFalseForInvalidInput() {
+		Assert.assertFalse(this.pinyinParser.isValid("hello"));
+	}
+
+	@Test
+	public void isValidShouldBeTrueForValidInput() {
+		Assert.assertTrue(this.pinyinParser.isValid("ni3hao3"));
+	}
+
 }

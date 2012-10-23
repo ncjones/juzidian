@@ -37,10 +37,20 @@ import java.util.List;
 public class PinyinParser {
 
 	/**
+	 * Check if the input text is parseable as Pinyin.
+	 * 
+	 * @return <code>true</code> if the input text can be parsed.
+	 */
+	public boolean isValid(final String text) {
+		return new ParseInstance(text).getSyllables() != null;
+	}
+
+	/**
 	 * Parse the input text as Pinyin.
 	 * 
 	 * @return a list of {@link PinyinSyllable}.
 	 * @throws PinyinParseException if the input is not valid Pinyin.
+	 * @see #isValid(String)
 	 */
 	public List<PinyinSyllable> parse(final String text) {
 		final List<PinyinSyllable> syllables = new ParseInstance(text).getSyllables();
