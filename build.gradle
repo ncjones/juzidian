@@ -19,7 +19,7 @@ subprojects {
 	}
 
 	dependencies {
-		testCompile 'junit:junit:4.+'
+		testCompile 'junit:junit:4.11+'
 	}
 
 	group = 'org.juzidian'
