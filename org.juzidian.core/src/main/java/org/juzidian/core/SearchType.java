@@ -21,7 +21,10 @@ package org.juzidian.core;
 import java.lang.Character.UnicodeBlock;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A type of dictionary search: {@link #HANZI}, {@link #PINYIN} or
@@ -71,9 +74,11 @@ public enum SearchType {
 			UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
 			UnicodeBlock.KANGXI_RADICALS,
 			UnicodeBlock.IDEOGRAPHIC_DESCRIPTION_CHARACTERS
-		);
+			);
 
 	private static final PinyinParser PINYIN_PARSER = new PinyinParser();
+
+	private static Set<SearchType> PINYIN_AND_REVERSE = new HashSet<SearchType>(Arrays.asList(PINYIN, REVERSE));
 
 	/**
 	 * Perform the appropriate search on the dictionary for this search type.
@@ -85,25 +90,28 @@ public enum SearchType {
 	abstract List<DictionaryEntry> doSearch(Dictionary dictionary, String query);
 
 	/**
-	 * Get the search type that most likely matches the given text.
+	 * Get the search types that are applicable for the given text.
+	 * <p>
+	 * If the input is <code>null</code> or empty or contains only whitespace
+	 * then no search types are considered applicable and an empty set is
+	 * returned.
 	 * 
 	 * @param searchText a search query input.
-	 * @return a {@link SearchType} or <code>null</code> if the input is
-	 *         <code>null</code>, is empty or contains only whitespace.
+	 * @return a Set of {@link SearchType}.
 	 */
-	public static SearchType forText(final String searchText) {
+	public static Set<SearchType> allApplicableFor(final String searchText) {
 		if (searchText == null || "".equals(searchText.trim())) {
-			return null;
+			return Collections.emptySet();
 		}
 		for (final char c : searchText.toCharArray()) {
 			if (isChineseCharacter(c)) {
-				return HANZI;
+				return Collections.singleton(HANZI);
 			}
 		}
 		if (PINYIN_PARSER.isValid(searchText)) {
-			return PINYIN;
+			return Collections.unmodifiableSet(PINYIN_AND_REVERSE);
 		}
-		return REVERSE;
+		return Collections.singleton(REVERSE);
 	}
 
 	private static boolean isChineseCharacter(final char c) {

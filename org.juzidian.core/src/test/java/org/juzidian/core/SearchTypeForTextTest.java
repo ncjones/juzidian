@@ -24,6 +24,9 @@ import static org.juzidian.core.SearchType.REVERSE;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -34,64 +37,72 @@ import org.junit.runners.Parameterized.Parameters;
 @RunWith(Parameterized.class)
 public class SearchTypeForTextTest {
 
+	private static Set<SearchType> NONE = Collections.emptySet();
+
+	private static Set<SearchType> HANZI_ONLY = Collections.singleton(HANZI);
+
+	private static Set<SearchType> REVERSE_ONLY = Collections.singleton(REVERSE);
+
+	private static Set<SearchType> PINYIN_AND_REVERSE = new HashSet<SearchType>(Arrays.asList(PINYIN, REVERSE));
+
 	private final String inputText;
 
-	private final SearchType expectedType;
+	private final Set<SearchType> expectedTypes;
 
-	public SearchTypeForTextTest(final String inputText, final SearchType expectedType) {
+	public SearchTypeForTextTest(final String inputText, final Set<SearchType> expectedType) {
 		this.inputText = inputText;
-		this.expectedType = expectedType;
+		this.expectedTypes = expectedType;
 	}
 
-	@Parameters(name = "''{0}'' should have search type {1}")
+	@Parameters(name = "''{0}'' should have applicable search types: {1}")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
-				{ null, null },
-				{ "", null },
-				{ " ", null },
-				{ "a", PINYIN },
-				{ " a ", PINYIN },
-				{ "ni", PINYIN },
-				// { "nih", PINYIN },
-				{ "niha", PINYIN },
-				{ "nihao", PINYIN },
-				// { "ni-hao", PINYIN },
-				// { "ni.hao", PINYIN },
-				// { "ni*hao", PINYIN },
-				{ "ni'hao", PINYIN },
-				{ "ni3", PINYIN },
-				{ "nihao3", PINYIN },
-				{ "ni2hao3", PINYIN },
-				{ "ni2 hao3", PINYIN },
-				// { "ni h", PINYIN },
-				{ "ni hao", PINYIN },
-				// { "nǐhǎo", PINYIN },
-				// { "lv", PINYIN },
-				{ "nihi", REVERSE },
-				{ "v", REVERSE },
-				{ "un", REVERSE },
-				{ "xa", REVERSE },
-				{ "app", REVERSE },
-				{ "2", REVERSE },
-				{ "你", HANZI },
-				{ "你好", HANZI },
-				{ " 你好 ", HANZI },
-				{ "你 好", HANZI },
-				{ "你好。", HANZI },
-				{ "你，好", HANZI },
-				{ "+你", HANZI },
-				{ "hello你好", HANZI },
-				{ "你好(hello)", HANZI },
-				{ "酒dian", HANZI },
-				{ "jiu店", HANZI },
-				{ "200米", HANZI }
+				{ null, NONE },
+				{ "", NONE },
+				{ " ", NONE },
+				{ "a", PINYIN_AND_REVERSE },
+				{ " a ", PINYIN_AND_REVERSE },
+				{ "ni", PINYIN_AND_REVERSE },
+				// { "nih", PINYIN_AND_REVERSE },
+				{ "niha", PINYIN_AND_REVERSE },
+				{ "nihao", PINYIN_AND_REVERSE },
+				// { "ni-hao", PINYIN_AND_REVERSE },
+				// { "ni.hao", PINYIN_AND_REVERSE },
+				// { "ni*hao", PINYIN_AND_REVERSE },
+				{ "ni'hao", PINYIN_AND_REVERSE },
+				{ "ni3", PINYIN_AND_REVERSE },
+				{ "nihao3", PINYIN_AND_REVERSE },
+				{ "ni2hao3", PINYIN_AND_REVERSE },
+				{ "ni2 hao3", PINYIN_AND_REVERSE },
+				// { "ni h", PINYIN_AND_REVERSE },
+				{ "ni hao", PINYIN_AND_REVERSE },
+				// { "nǐhǎo", PINYIN_AND_REVERSE },
+				// { "lv", PINYIN_AND_REVERSE },
+				{ "nihi", REVERSE_ONLY },
+				{ "v", REVERSE_ONLY },
+				{ "un", REVERSE_ONLY },
+				{ "xa", REVERSE_ONLY },
+				{ "app", REVERSE_ONLY },
+				{ "2", REVERSE_ONLY },
+				{ "你", HANZI_ONLY },
+				{ "你好", HANZI_ONLY },
+				{ " 你好 ", HANZI_ONLY },
+				{ "你 好", HANZI_ONLY },
+				{ "你好。", HANZI_ONLY },
+				{ "你，好", HANZI_ONLY },
+				{ "+你", HANZI_ONLY },
+				{ "hello你好", HANZI_ONLY },
+				{ "你好(hello)", HANZI_ONLY },
+				{ "酒dian", HANZI_ONLY },
+				{ "jiu店", HANZI_ONLY },
+				{ "200米", HANZI_ONLY }
 		});
 	}
 
 	@Test
 	public void test() {
-		final SearchType searchType = SearchType.forText(this.inputText);
-		Assert.assertEquals("Search type for " + this.inputText, this.expectedType, searchType);
+		final Set<SearchType> searchTypes = SearchType.allApplicableFor(this.inputText);
+		Assert.assertEquals(this.inputText, this.expectedTypes, searchTypes);
 	}
 
 }
