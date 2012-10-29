@@ -27,6 +27,7 @@
 
         <RadioButton
             android:id="@+id/pinyinSearchTypeRadio"
+        	android:enabled="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="true"
@@ -34,12 +35,14 @@
 
         <RadioButton
             android:id="@+id/reverseSearchTypeRadio"
+        	android:enabled="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/search_type_reverse" />
 
         <RadioButton
             android:id="@+id/hanziSearchTypeRadio"
+        	android:enabled="false"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/search_type_hanzi" />
@@ -66,6 +69,7 @@
     <Button
         android:id="@+id/searchButton"
         style="?android:attr/buttonStyleSmall"
+        android:enabled="false"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@+id/searchTypeRadioGroup"
