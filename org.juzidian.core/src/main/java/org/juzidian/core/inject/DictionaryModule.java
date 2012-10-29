@@ -63,20 +63,22 @@ public abstract class DictionaryModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		this.bind(CedictLoader.class).toInstance(new CedictLoader(new CedictInputStreamProvider() {
-			@Override
-			public InputStream getInputStream() {
-				final String cedictDataPath = DictionaryModule.this.getCedictDataPath();
-				if (cedictDataPath == null) {
-					throw new IllegalStateException("Dictionary Guice module was not provided with a cedict data path.");
+		if (this.getCedictDataPath() != null) {
+			this.bind(CedictLoader.class).toInstance(new CedictLoader(new CedictInputStreamProvider() {
+				@Override
+				public InputStream getInputStream() {
+					final String cedictDataPath = DictionaryModule.this.getCedictDataPath();
+					if (cedictDataPath == null) {
+						throw new IllegalStateException("Dictionary Guice module was not provided with a cedict data path.");
+					}
+					try {
+						return new FileInputStream(cedictDataPath);
+					} catch (final FileNotFoundException e) {
+						throw new IllegalStateException("Cedict data file does not exist: " + cedictDataPath, e);
+					}
 				}
-				try {
-					return new FileInputStream(cedictDataPath);
-				} catch (final FileNotFoundException e) {
-					throw new IllegalStateException("Cedict data file does not exist: " + cedictDataPath, e);
-				}
-			}
-		}));
+			}));
+		}
 		this.bind(DictionaryDataStore.class).to(DbDictionaryDataStore.class);
 		final ConnectionSource connectionSource;
 		try {
