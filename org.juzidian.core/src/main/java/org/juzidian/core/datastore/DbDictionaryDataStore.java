@@ -30,12 +30,16 @@ import javax.inject.Inject;
 import org.juzidian.core.DictionaryDataStore;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.PinyinSyllable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.misc.TransactionManager;
 import com.j256.ormlite.stmt.PreparedQuery;
 
 public class DbDictionaryDataStore implements DictionaryDataStore {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DbDictionaryDataStore.class);
 
 	private final Dao<DbDictionaryEntry, Long> dictionaryEntryDao;
 
@@ -46,6 +50,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 
 	@Override
 	public void add(final Collection<DictionaryEntry> entries) {
+		LOGGER.debug(String.format("Adding %d entries to dictionary DB.", entries.size()));
 		try {
 			TransactionManager.callInTransaction(this.dictionaryEntryDao.getConnectionSource(), new BulkEntryAdd(entries));
 		} catch (final SQLException e) {
@@ -72,6 +77,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	}
 
 	public void add(final DictionaryEntry entry) {
+		LOGGER.debug("Adding entry to dictionary DB: " + entry);
 		final DbDictionaryEntry dbEntry = this.createDbEntry(entry);
 		try {
 			this.dictionaryEntryDao.create(dbEntry);
@@ -122,6 +128,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 
 	@Override
 	public List<DictionaryEntry> findPinyin(final List<PinyinSyllable> pinyin) {
+		LOGGER.debug("Finding pinyin: " + pinyin);
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder().where()
 					.like(DbDictionaryEntry.COLUMN_PINYIN, "%" + this.formatPinyin(pinyin) + "%").prepare();
@@ -149,6 +156,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 
 	@Override
 	public List<DictionaryEntry> findChinese(final String chineseCharacters) {
+		LOGGER.debug("Finding Chinese characters: " + chineseCharacters);
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder().where()
 					.like(DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED, "%" + chineseCharacters + "%").prepare();
@@ -160,6 +168,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 
 	@Override
 	public List<DictionaryEntry> findDefinitions(final String englishWords) {
+		LOGGER.debug("Finding definitions: " + englishWords);
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder().where()
 					.like(DbDictionaryEntry.COLUMN_ENGLISH, "%" + englishWords + "%").prepare();

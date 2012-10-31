@@ -22,11 +22,15 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A searchable Chinese-English dictionary.
  */
 public class Dictionary {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(Dictionary.class);
 
 	private final DictionaryDataStore dataStore;
 
@@ -46,6 +50,7 @@ public class Dictionary {
 	 * @return a list of {@link DictionaryEntry}.
 	 */
 	public List<DictionaryEntry> find(final String queryString, final SearchType searchType) {
+		LOGGER.debug("Find entries: " + searchType + ", " + queryString);
 		return searchType.doSearch(this, queryString);
 	}
 
@@ -58,6 +63,7 @@ public class Dictionary {
 	 * @return a list of {@link DictionaryEntry}.
 	 */
 	List<DictionaryEntry> findChinese(final String queryString) {
+		LOGGER.debug("Find chinese: " + queryString);
 		return this.dataStore.findChinese(queryString);
 	}
 
@@ -69,6 +75,7 @@ public class Dictionary {
 	 * @return a list of {@link DictionaryEntry}.
 	 */
 	List<DictionaryEntry> findPinyin(final String queryString) {
+		LOGGER.debug("Find pinyin: " + queryString);
 		final List<PinyinSyllable> pinyinSyllables = this.pinyinParser.parse(queryString);
 		return this.dataStore.findPinyin(pinyinSyllables);
 	}
@@ -81,6 +88,7 @@ public class Dictionary {
 	 * @return a list of {@link DictionaryEntry}.
 	 */
 	List<DictionaryEntry> findDefinitions(final String queryString) {
+		LOGGER.debug("Find definitions: " + queryString);
 		return this.dataStore.findDefinitions(queryString);
 	}
 
