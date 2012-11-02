@@ -20,29 +20,22 @@ package org.juzidian.core.datastore;
 
 import java.sql.SQLException;
 
-import org.juzidian.cedict.CedictLoader;
-
-import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
 
 /**
- * Creates {@link DbDictionaryDataStore} databases from a {@link CedictLoader}.
+ * Creates a {@link DbDictionaryDataStore} database schema.
  */
 public class DbDictionaryDataStoreSchemaCreator {
 
 	/**
 	 * Create or re-create a {@link DbDictionaryDataStore} DB schema using the
-	 * given OrmLite DAO.
+	 * given OrmLite connection source, destroying any existing data.
 	 */
-	public void createSchema(final Dao<DbDictionaryEntry, Long> ormLiteDao) {
+	public void createSchema(final ConnectionSource connectionSource) {
 		try {
-			ormLiteDao.executeRawNoArgs("drop table if exists entry");
-			ormLiteDao.executeRawNoArgs("create table entry (" +
-					"id string," +
-					"hanzi_traditional string," +
-					"hanzi_simplified string," +
-					"pinyin string," +
-					"english string" +
-					")");
+			TableUtils.dropTable(connectionSource, DbDictionaryEntry.class, true);
+			TableUtils.createTable(connectionSource, DbDictionaryEntry.class);
 		} catch (final SQLException e) {
 			throw new RuntimeException("Failed to created tables", e);
 		}

@@ -21,6 +21,8 @@ dependencies {
 	compile 'com.j256.ormlite:ormlite-core:4.42'
 	compile "org.slf4j:slf4j-api:${slf4jVersion}"
 	generate project(':org.juzidian.build.pinyin')
+	testCompile 'com.j256.ormlite:ormlite-jdbc:4.42'
+	testCompile 'org.xerial:sqlite-jdbc:3.7.2'
 }
 
 sourceSets {

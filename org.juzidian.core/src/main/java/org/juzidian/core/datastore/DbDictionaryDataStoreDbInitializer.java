@@ -36,7 +36,7 @@ public class DbDictionaryDataStoreDbInitializer {
 	}
 
 	public void initializeDb(final Dao<DbDictionaryEntry, Long> ormLiteDao) {
-		this.schemaCreator.createSchema(ormLiteDao);
+		this.schemaCreator.createSchema(ormLiteDao.getConnectionSource());
 		this.entryPopulator.populateEntries(new DbDictionaryDataStore(ormLiteDao));
 	}
 

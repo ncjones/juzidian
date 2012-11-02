@@ -38,10 +38,10 @@ public class DbDictionaryEntry {
 	@DatabaseField(id = true)
 	private Long id;
 
-	@DatabaseField(columnName = COLUMN_HANZI_TRADITIONAL, unique = true)
+	@DatabaseField(columnName = COLUMN_HANZI_TRADITIONAL, canBeNull = false)
 	private String traditional;
 
-	@DatabaseField(columnName = COLUMN_HANZI_SIMPLIFIED, unique = true)
+	@DatabaseField(columnName = COLUMN_HANZI_SIMPLIFIED, canBeNull = false)
 	private String simplified;
 
 	@DatabaseField(columnName = COLUMN_PINYIN, canBeNull = false)
