@@ -47,7 +47,7 @@ public class DictionaryDataBaseCreator {
 		final String jdbcUrl = "jdbc:sqlite:" + dbFileName;
 		final Injector injector = Guice.createInjector(new DictionaryModule(cedictDataFile) {
 			@Override
-			protected ConnectionSource createConnectionSource(final String s) throws SQLException {
+			protected ConnectionSource createConnectionSource() throws SQLException {
 				return new JdbcConnectionSource(jdbcUrl);
 			}
 		});

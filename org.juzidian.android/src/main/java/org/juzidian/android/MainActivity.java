@@ -48,7 +48,7 @@ public class MainActivity extends Activity implements TextWatcher {
 		this.initializeDbFile();
 		final Injector injector = Guice.createInjector(new DictionaryModule() {
 			@Override
-			protected ConnectionSource createConnectionSource(final String jdbcUrl) throws SQLException {
+			protected ConnectionSource createConnectionSource() throws SQLException {
 				final SQLiteDatabase sqliteDb = SQLiteDatabase.openDatabase(DICTIONARY_DB_PATH, null,
 						SQLiteDatabase.OPEN_READONLY | SQLiteDatabase.NO_LOCALIZED_COLLATORS);
 				return new AndroidConnectionSource(sqliteDb);

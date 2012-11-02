@@ -82,7 +82,7 @@ public abstract class DictionaryModule extends AbstractModule {
 		this.bind(DictionaryDataStore.class).to(DbDictionaryDataStore.class);
 		final ConnectionSource connectionSource;
 		try {
-			connectionSource = this.createConnectionSource("jdbc:sqlite:juzidian.db");
+			connectionSource = this.createConnectionSource();
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
@@ -103,6 +103,6 @@ public abstract class DictionaryModule extends AbstractModule {
 		}
 	}
 
-	protected abstract ConnectionSource createConnectionSource(String jdbcUrl) throws SQLException;
+	protected abstract ConnectionSource createConnectionSource() throws SQLException;
 
 }

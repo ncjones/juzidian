@@ -61,7 +61,7 @@ public class JuzidianCli {
 		final SearchType searchType = SearchType.valueOf(args[0]);
 		final Injector injector = Guice.createInjector(new DictionaryModule() {
 			@Override
-			protected ConnectionSource createConnectionSource(final String jdbcUrl) throws SQLException {
+			protected ConnectionSource createConnectionSource() throws SQLException {
 				return new JdbcConnectionSource("jdbc:sqlite:" + DICTIONARY_DB_FILENAME);
 			}
 		});
