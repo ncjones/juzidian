@@ -31,6 +31,8 @@ import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.SearchType;
 import org.juzidian.core.inject.DictionaryModule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -41,6 +43,8 @@ import com.j256.ormlite.support.ConnectionSource;
  * A basic command-line interface for performing dictionary searches.
  */
 public class JuzidianCli {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(JuzidianCli.class);
 
 	private static final String DICTIONARY_DB_FILENAME = "juzidian-dictionary.db";
 
@@ -65,12 +69,10 @@ public class JuzidianCli {
 		final Runtime runtime = Runtime.getRuntime();
 		final long totalMemory = runtime.totalMemory();
 		final long freeMemory = runtime.freeMemory();
-		System.out.println(MessageFormat.format("Memory used: {0}KB", (totalMemory - freeMemory) / 1024));
+		LOGGER.debug(MessageFormat.format("Memory used: {0}KB", (totalMemory - freeMemory) / 1024));
 		final String queryString = args[1];
-		final long start = System.nanoTime();
 		final List<DictionaryEntry> foundCharacters = dictionary.find(queryString, searchType);
-		final long end = System.nanoTime();
-		printSearchResults(queryString, foundCharacters, end - start);
+		printSearchResults(foundCharacters);
 	}
 
 	private static void initializeDbFile() throws IOException {
@@ -91,9 +93,7 @@ public class JuzidianCli {
 		out.close();
 	}
 
-	private static void printSearchResults(final String query, final List<DictionaryEntry> entries, final long searchDuration) {
-		System.out.println(String.format("Found %d words matching '%s' in %.3f seconds:", entries.size(), query,
-				searchDuration / 1000 / 1000 / 1000f));
+	private static void printSearchResults(final List<DictionaryEntry> entries) {
 		for (final DictionaryEntry entry : entries) {
 			System.out.println(entry);
 		}

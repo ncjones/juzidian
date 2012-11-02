@@ -51,7 +51,12 @@ public class Dictionary {
 	 */
 	public List<DictionaryEntry> find(final String queryString, final SearchType searchType) {
 		LOGGER.debug("Find entries: " + searchType + ", " + queryString);
-		return searchType.doSearch(this, queryString);
+		final long start = System.nanoTime();
+		final List<DictionaryEntry> searchResults = searchType.doSearch(this, queryString);
+		final long end = System.nanoTime();
+		LOGGER.info("Found {} words matching '{}' in {} seconds.", new Object[] { searchResults.size(), queryString,
+				((end - start) / 1000 / 1000 / 1000f) });
+		return searchResults;
 	}
 
 	/**
