@@ -18,10 +18,14 @@
  */
 package org.juzidian.build.data;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.sql.SQLException;
 
+import org.juzidian.cedict.CedictInputStreamProvider;
+import org.juzidian.cedict.CedictLoader;
 import org.juzidian.core.datastore.DbDictionaryDataStore;
-import org.juzidian.core.datastore.DbDictionaryDataStoreDbInitializer;
 import org.juzidian.core.inject.DictionaryModule;
 
 import com.google.inject.Guice;
@@ -43,14 +47,24 @@ public class DictionaryDataBaseCreator {
 		final String cedictDataFile = args[0];
 		final String dbFileName = args[1];
 		final String jdbcUrl = "jdbc:sqlite:" + dbFileName;
-		final Injector injector = Guice.createInjector(new DictionaryModule(cedictDataFile) {
+		final Injector injector = Guice.createInjector(new DictionaryModule() {
 			@Override
 			protected ConnectionSource createConnectionSource() throws SQLException {
 				return new JdbcConnectionSource(jdbcUrl);
 			}
 		});
-		final DbDictionaryDataStoreDbInitializer dbInitializer = injector.getInstance(DbDictionaryDataStoreDbInitializer.class);
-		DbDictionaryDataStore dictionaryDataStore = injector.getInstance(DbDictionaryDataStore.class);
+		final DbDictionaryDataStoreDbInitializer dbInitializer = new DbDictionaryDataStoreDbInitializer(
+				new DbDictionaryDataStoreEntryPopulator(new CedictLoader(new CedictInputStreamProvider() {
+					@Override
+					public InputStream getInputStream() {
+						try {
+							return new FileInputStream(cedictDataFile);
+						} catch (final FileNotFoundException e) {
+							throw new IllegalStateException("Cedict data file does not exist: " + cedictDataFile, e);
+						}
+					}
+				})));
+		final DbDictionaryDataStore dictionaryDataStore = injector.getInstance(DbDictionaryDataStore.class);
 		dbInitializer.initializeDb(dictionaryDataStore);
 	}
 

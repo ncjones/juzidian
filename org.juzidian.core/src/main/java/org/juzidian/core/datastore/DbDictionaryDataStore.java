@@ -74,7 +74,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	/**
 	 * Insert expected dictionary metadata into the database.
 	 */
-	void populateMetadata() {
+	public void populateMetadata() {
 		LOGGER.debug("Populating DB metadata.");
 		final DbDictionaryMetadata metadata = new DbDictionaryMetadata();
 		metadata.setId(METADATA_ROW_ID);

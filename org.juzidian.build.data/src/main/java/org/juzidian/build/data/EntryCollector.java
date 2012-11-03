@@ -16,23 +16,38 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.datastore;
+package org.juzidian.build.data;
 
-import javax.inject.Inject;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
-public class DbDictionaryDataStoreDbInitializer {
+import org.juzidian.cedict.CedictEntry;
+import org.juzidian.cedict.CedictLoadHandler;
+import org.juzidian.core.DictionaryEntry;
 
-	private final DbDictionaryDataStoreEntryPopulator entryPopulator;
+class EntryCollector implements CedictLoadHandler {
 
-	@Inject
-	public DbDictionaryDataStoreDbInitializer(final DbDictionaryDataStoreEntryPopulator entryPopulator) {
-		this.entryPopulator = entryPopulator;
+	private final List<DictionaryEntry> entries = new LinkedList<DictionaryEntry>();
+
+	public Collection<DictionaryEntry> getEntries() {
+		return this.entries;
 	}
 
-	public void initializeDb(final DbDictionaryDataStore dictionaryDataStore) {
-		dictionaryDataStore.createSchema();
-		dictionaryDataStore.populateMetadata();
-		this.entryPopulator.populateEntries(dictionaryDataStore);
+	@Override
+	public void loadingStarted() {
+
+	}
+
+	@Override
+	public void entryLoaded(final CedictEntry cedictEntry) {
+		final DictionaryEntry entry = new CedictDictionaryEntryAdaptor(cedictEntry);
+		this.entries.add(entry);
+	}
+
+	@Override
+	public void loadingFinished() {
+
 	}
 
 }
