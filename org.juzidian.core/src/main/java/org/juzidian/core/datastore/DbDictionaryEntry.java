@@ -24,7 +24,7 @@ import com.j256.ormlite.table.DatabaseTable;
 /**
  * A dictionary entry persisted to a database.
  */
-@DatabaseTable(tableName = "entry")
+@DatabaseTable(tableName = "dictionary_entry")
 public class DbDictionaryEntry {
 
 	static final String COLUMN_HANZI_TRADITIONAL = "hanzi_traditional";

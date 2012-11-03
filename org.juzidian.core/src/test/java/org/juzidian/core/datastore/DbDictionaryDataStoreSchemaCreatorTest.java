@@ -40,18 +40,18 @@ public class DbDictionaryDataStoreSchemaCreatorTest {
 
 	@Test
 	public void createSchemaShouldCreateEntryTableInEmptyDatabase() throws Exception {
-		Assert.assertFalse(this.connectionSource.getReadOnlyConnection().isTableExists("entry"));
+		Assert.assertFalse(this.connectionSource.getReadOnlyConnection().isTableExists("dictionary_entry"));
 		this.dbDictionaryDataStoreSchemaCreator.createSchema(this.connectionSource);
-		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("entry"));
+		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("dictionary_entry"));
 	}
 
 	@Test
 	public void createSchemaShouldCreateEntryTableInPopulatedDatabase() throws Exception {
-		this.connectionSource.getReadWriteConnection().executeStatement("create table entry(id string)",
+		this.connectionSource.getReadWriteConnection().executeStatement("create table dictionary_entry(id string)",
 				DatabaseConnection.DEFAULT_RESULT_FLAGS);
-		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("entry"));
+		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("dictionary_entry"));
 		this.dbDictionaryDataStoreSchemaCreator.createSchema(this.connectionSource);
-		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("entry"));
+		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("dictionary_entry"));
 	}
 
 	@Test
