@@ -19,6 +19,9 @@
 package org.juzidian.core.datastore;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
@@ -28,17 +31,34 @@ import com.j256.ormlite.table.TableUtils;
  */
 public class DbDictionaryDataStoreSchemaCreator {
 
+	final static List<Class<?>> DICTIONARY_ENTITY_CLASSES = new ArrayList<Class<?>>();
+
+	static {
+		DICTIONARY_ENTITY_CLASSES.add(DbDictionaryEntry.class);
+		DICTIONARY_ENTITY_CLASSES.add(DbDictionaryMetadata.class);
+	}
+
 	/**
 	 * Create or re-create a {@link DbDictionaryDataStore} DB schema using the
 	 * given OrmLite connection source, destroying any existing data.
 	 */
 	public void createSchema(final ConnectionSource connectionSource) {
 		try {
-			TableUtils.dropTable(connectionSource, DbDictionaryEntry.class, true);
-			TableUtils.createTable(connectionSource, DbDictionaryEntry.class);
+			this.createTables(connectionSource, DICTIONARY_ENTITY_CLASSES);
 		} catch (final SQLException e) {
 			throw new RuntimeException("Failed to created tables", e);
 		}
+	}
+
+	private void createTables(final ConnectionSource connectionSource, final Collection<Class<?>> entityClasses) throws SQLException {
+		for (final Class<?> entityClass : entityClasses) {
+			this.createTable(connectionSource, entityClass);
+		}
+	}
+
+	private void createTable(final ConnectionSource connectionSource, final Class<?> dataClass) throws SQLException {
+		TableUtils.dropTable(connectionSource, dataClass, true);
+		TableUtils.createTable(connectionSource, dataClass);
 	}
 
 }

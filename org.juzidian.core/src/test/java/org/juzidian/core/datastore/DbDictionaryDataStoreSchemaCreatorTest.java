@@ -39,19 +39,35 @@ public class DbDictionaryDataStoreSchemaCreatorTest {
 	}
 
 	@Test
-	public void createSchemaShouldCreateTablesInEmptyDatabase() throws Exception {
+	public void createSchemaShouldCreateEntryTableInEmptyDatabase() throws Exception {
 		Assert.assertFalse(this.connectionSource.getReadOnlyConnection().isTableExists("entry"));
 		this.dbDictionaryDataStoreSchemaCreator.createSchema(this.connectionSource);
 		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("entry"));
 	}
 
 	@Test
-	public void createSchemaShouldCreateTablesInPopulatedDatabase() throws Exception {
+	public void createSchemaShouldCreateEntryTableInPopulatedDatabase() throws Exception {
 		this.connectionSource.getReadWriteConnection().executeStatement("create table entry(id string)",
 				DatabaseConnection.DEFAULT_RESULT_FLAGS);
 		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("entry"));
 		this.dbDictionaryDataStoreSchemaCreator.createSchema(this.connectionSource);
 		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("entry"));
+	}
+
+	@Test
+	public void createSchemaShouldCreateMetadataTableInEmptyDatabase() throws Exception {
+		Assert.assertFalse(this.connectionSource.getReadOnlyConnection().isTableExists("dictionary_metadata"));
+		this.dbDictionaryDataStoreSchemaCreator.createSchema(this.connectionSource);
+		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("dictionary_metadata"));
+	}
+
+	@Test
+	public void createSchemaShouldCreateMetadataTableInPopulatedDatabase() throws Exception {
+		this.connectionSource.getReadWriteConnection().executeStatement("create table dictionary_metadata(id string)",
+				DatabaseConnection.DEFAULT_RESULT_FLAGS);
+		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("dictionary_metadata"));
+		this.dbDictionaryDataStoreSchemaCreator.createSchema(this.connectionSource);
+		Assert.assertTrue(this.connectionSource.getReadOnlyConnection().isTableExists("dictionary_metadata"));
 	}
 
 }
