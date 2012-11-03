@@ -12,17 +12,24 @@ configurations {
 
 dependencies {
 	compile files("${ant['sdk.dir']}/extras/android/support/v4/android-support-v4.jar")
-	compile project(':org.juzidian.core')
+	compile (project(':org.juzidian.core')) {
+		/* slf4j-api conflicts with slf4j-android. */
+		exclude group: 'org.slf4j', module: 'slf4j-api'
+	}
 	compile 'com.google.inject:guice:3.0:no_aop'
 	compile 'com.j256.ormlite:ormlite-android:4.42'
 	/*
 	 * gradle-android does not handle library projects well so we pull project
 	 * dependencies from local maven repository when building.
 	 */
-	compile "org.juzidian:org.juzidian.core:${juzidianVersion}"
+	compile ("org.juzidian:org.juzidian.core:${juzidianVersion}") {
+		/* slf4j-api conflicts with slf4j-android. */
+		exclude group: 'org.slf4j', module: 'slf4j-api'
+	}
 	generate project(':org.juzidian.build.data')
 	generate 'org.xerial:sqlite-jdbc:3.7.2'
 	generate 'com.j256.ormlite:ormlite-jdbc:4.42'
+	runtime 'org.slf4j:slf4j-android:1.6.1-RC1'
 }
 
 task generateResources {
