@@ -28,6 +28,7 @@ import org.juzidian.cedict.CedictLoader;
 import org.juzidian.core.DictionaryDataStore;
 import org.juzidian.core.datastore.DbDictionaryDataStore;
 import org.juzidian.core.datastore.DbDictionaryEntry;
+import org.juzidian.core.datastore.DbDictionaryMetadata;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
@@ -86,18 +87,15 @@ public abstract class DictionaryModule extends AbstractModule {
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}
-		final Dao<DbDictionaryEntry, Long> entryDao = this.createEntryDao(connectionSource);
 		this.bind(new TypeLiteral<Dao<DbDictionaryEntry, Long>>() {
-		}).toInstance(entryDao);
+		}).toInstance(this.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry> createDao(connectionSource, DbDictionaryEntry.class));
+		this.bind(new TypeLiteral<Dao<DbDictionaryMetadata, Long>>() {
+		}).toInstance(this.<Dao<DbDictionaryMetadata, Long>, DbDictionaryMetadata> createDao(connectionSource, DbDictionaryMetadata.class));
 	}
 
-	private Dao<DbDictionaryEntry, Long> createEntryDao(final ConnectionSource connectionSource) {
+	private <T extends Dao<U, Long>, U> T createDao(final ConnectionSource connectionSource, final Class<U> entityClass) {
 		try {
-			/*
-			 * Explicit type parameters are necessary to prevent compilation
-			 * error on open jdk 6.
-			 */
-			return DaoManager.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry> createDao(connectionSource, DbDictionaryEntry.class);
+			return DaoManager.<T, U> createDao(connectionSource, entityClass);
 		} catch (final SQLException e) {
 			throw new RuntimeException(e);
 		}

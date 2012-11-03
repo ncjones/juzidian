@@ -21,6 +21,7 @@ package org.juzidian.core.datastore;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -36,16 +37,59 @@ import org.slf4j.LoggerFactory;
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.misc.TransactionManager;
 import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.support.ConnectionSource;
 
 public class DbDictionaryDataStore implements DictionaryDataStore {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DbDictionaryDataStore.class);
 
+	private static final Long METADATA_ROW_ID = 1L;
+
+	private static final int DATA_FORMAT_VERSION_NUMBER = 0;
+
 	private final Dao<DbDictionaryEntry, Long> dictionaryEntryDao;
 
+	private final Dao<DbDictionaryMetadata, Long> dictionaryMetadataDao;
+
 	@Inject
-	public DbDictionaryDataStore(final Dao<DbDictionaryEntry, Long> ormLiteDao) {
-		this.dictionaryEntryDao = ormLiteDao;
+	public DbDictionaryDataStore(final Dao<DbDictionaryEntry, Long> dictionaryEntryDao,
+			final Dao<DbDictionaryMetadata, Long> dictionaryMetadataDao) {
+		this.dictionaryEntryDao = dictionaryEntryDao;
+		this.dictionaryMetadataDao = dictionaryMetadataDao;
+	}
+
+	/**
+	 * Create or re-create the database schema.
+	 * <p>
+	 * This operation will destroy all existing data.
+	 */
+	public void createSchema() {
+		new DbDictionaryDataStoreSchemaCreator().createSchema(this.getConnectionSource());
+	}
+
+	private ConnectionSource getConnectionSource() {
+		return this.dictionaryEntryDao.getConnectionSource();
+	}
+
+	/**
+	 * Insert expected dictionary metadata into the database.
+	 */
+	void populateMetadata() {
+		LOGGER.debug("Populating DB metadata.");
+		final DbDictionaryMetadata metadata = new DbDictionaryMetadata();
+		metadata.setId(METADATA_ROW_ID);
+		metadata.setVersion(DATA_FORMAT_VERSION_NUMBER);
+		metadata.setBuildDate(new Date());
+		this.saveMetadata(metadata);
+	}
+
+	private void saveMetadata(final DbDictionaryMetadata metadata) {
+		LOGGER.debug("Saving DB metadata: {}.", metadata);
+		try {
+			this.dictionaryMetadataDao.createOrUpdate(metadata);
+		} catch (final SQLException e) {
+			throw new DictionaryDataStoreException("Failed to create metadata", e);
+		}
 	}
 
 	@Override

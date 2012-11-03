@@ -20,14 +20,12 @@ package org.juzidian.build.data;
 
 import java.sql.SQLException;
 
+import org.juzidian.core.datastore.DbDictionaryDataStore;
 import org.juzidian.core.datastore.DbDictionaryDataStoreDbInitializer;
-import org.juzidian.core.datastore.DbDictionaryEntry;
 import org.juzidian.core.inject.DictionaryModule;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.google.inject.Key;
-import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
@@ -52,9 +50,8 @@ public class DictionaryDataBaseCreator {
 			}
 		});
 		final DbDictionaryDataStoreDbInitializer dbInitializer = injector.getInstance(DbDictionaryDataStoreDbInitializer.class);
-		final Dao<DbDictionaryEntry, Long> ormLiteDao = injector.getInstance(new Key<Dao<DbDictionaryEntry, Long>>() {
-		});
-		dbInitializer.initializeDb(ormLiteDao);
+		DbDictionaryDataStore dictionaryDataStore = injector.getInstance(DbDictionaryDataStore.class);
+		dbInitializer.initializeDb(dictionaryDataStore);
 	}
 
 }

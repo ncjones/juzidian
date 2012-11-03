@@ -20,24 +20,19 @@ package org.juzidian.core.datastore;
 
 import javax.inject.Inject;
 
-import com.j256.ormlite.dao.Dao;
-
 public class DbDictionaryDataStoreDbInitializer {
-
-	private final DbDictionaryDataStoreSchemaCreator schemaCreator;
 
 	private final DbDictionaryDataStoreEntryPopulator entryPopulator;
 
 	@Inject
-	public DbDictionaryDataStoreDbInitializer(final DbDictionaryDataStoreSchemaCreator schemaCreator,
-			final DbDictionaryDataStoreEntryPopulator entryPopulator) {
-		this.schemaCreator = schemaCreator;
+	public DbDictionaryDataStoreDbInitializer(final DbDictionaryDataStoreEntryPopulator entryPopulator) {
 		this.entryPopulator = entryPopulator;
 	}
 
-	public void initializeDb(final Dao<DbDictionaryEntry, Long> ormLiteDao) {
-		this.schemaCreator.createSchema(ormLiteDao.getConnectionSource());
-		this.entryPopulator.populateEntries(new DbDictionaryDataStore(ormLiteDao));
+	public void initializeDb(final DbDictionaryDataStore dictionaryDataStore) {
+		dictionaryDataStore.createSchema();
+		dictionaryDataStore.populateMetadata();
+		this.entryPopulator.populateEntries(dictionaryDataStore);
 	}
 
 }
