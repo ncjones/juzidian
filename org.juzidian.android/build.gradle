@@ -29,7 +29,7 @@ dependencies {
 	generate project(':org.juzidian.build.data')
 	generate 'org.xerial:sqlite-jdbc:3.7.2'
 	generate 'com.j256.ormlite:ormlite-jdbc:4.42'
-	runtime 'org.slf4j:slf4j-android:1.6.1-RC1'
+	runtime "org.slf4j:slf4j-android:${slf4jVersion}-RC1"
 }
 
 task generateResources {

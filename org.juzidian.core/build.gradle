@@ -19,7 +19,7 @@ dependencies {
 	compile project(':org.juzidian.cedict')
 	compile 'com.google.inject:guice:3.0:no_aop'
 	compile 'com.j256.ormlite:ormlite-core:4.42'
-	compile 'org.slf4j:slf4j-api:1.6.1'
+	compile "org.slf4j:slf4j-api:${slf4jVersion}"
 	generate project(':org.juzidian.build.pinyin')
 }
 
