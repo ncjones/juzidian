@@ -31,6 +31,7 @@ import javax.inject.Inject;
 import org.juzidian.core.DictionaryDataStore;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.PinyinSyllable;
+import org.juzidian.core.Tone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,19 +143,36 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	private String formatPinyin(final List<PinyinSyllable> list) {
 		final StringBuilder sb = new StringBuilder();
 		for (final PinyinSyllable pinyinSyllable : list) {
-			sb.append(pinyinSyllable.getLetters()).append(" ");
+			sb.append(pinyinSyllable.getLetters()).append(pinyinSyllable.getTone().getNumber()).append(" ");
+		}
+		return sb.toString();
+	}
+
+	private String formatPinyinQuery(final List<PinyinSyllable> pinyinSyllables) {
+		final StringBuilder sb = new StringBuilder();
+		for (final PinyinSyllable pinyinSyllable : pinyinSyllables) {
+			final Tone tone = pinyinSyllable.getTone();
+			/* Use underscore to match "any" tone in an SQL "like" query. */
+			final String toneSearchValue = Tone.ANY.equals(tone) ? "_" : tone.getNumber().toString();
+			sb.append(pinyinSyllable.getLetters()).append(toneSearchValue).append(" ");
 		}
 		return sb.toString();
 	}
 
 	private List<PinyinSyllable> unformatPinyin(final String pinyin) {
-		final String[] rawPinyin = pinyin.split("  ");
+		final String[] rawPinyin = pinyin.split(" ");
 		final List<PinyinSyllable> syllables = new LinkedList<PinyinSyllable>();
 		for (final String letters : rawPinyin) {
-			final PinyinSyllable syllable = new PinyinSyllable(letters);
+			final PinyinSyllable syllable = this.parseSyllable(letters);
 			syllables.add(syllable);
 		}
 		return syllables;
+	}
+
+	private PinyinSyllable parseSyllable(final String formattedPinyinSyllable) {
+		final String pinyinLetters = formattedPinyinSyllable.substring(0, formattedPinyinSyllable.length() - 1);
+		final int pinyinToneNumber = Integer.parseInt(formattedPinyinSyllable.substring(formattedPinyinSyllable.length() - 1));
+		return new PinyinSyllable(pinyinLetters, Tone.valueOf(pinyinToneNumber));
 	}
 
 	private String formatDefinitions(final List<String> definitions) {
@@ -175,7 +193,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		LOGGER.debug("Finding pinyin: " + pinyin);
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder().where()
-					.like(DbDictionaryEntry.COLUMN_PINYIN, "%" + this.formatPinyin(pinyin) + "%").prepare();
+					.like(DbDictionaryEntry.COLUMN_PINYIN, "%" + this.formatPinyinQuery(pinyin) + "%").prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
 		} catch (final SQLException e) {
 			throw new DictionaryDataStoreException("Failed to execute query", e);
