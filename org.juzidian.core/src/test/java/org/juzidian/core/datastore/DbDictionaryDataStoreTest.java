@@ -53,10 +53,9 @@ public class DbDictionaryDataStoreTest {
 		this.dbDictionaryDataStore = new DbDictionaryDataStore(this.dictionaryEntryDao, dictionaryMetadataDao);
 		this.dbDictionaryDataStore.createSchema();
 		this.pinyinParser = new PinyinParser();
-		this.initTestData();
 	}
 
-	public void initTestData() throws Exception {
+	public void persistDefaultTestEntries() {
 		this.persistEntry("好", "good; okay", new PinyinSyllable("hao", Tone.THIRD));
 		this.persistEntry("好看", "attractive; good looking", new PinyinSyllable("hao", Tone.THIRD), new PinyinSyllable("kan", Tone.FOURTH));
 		this.persistEntry("看", "to look", new PinyinSyllable("kan", Tone.FIRST));
@@ -73,6 +72,7 @@ public class DbDictionaryDataStoreTest {
 
 	@Test
 	public void findPinyinShouldFindMatchingEntriesWhenTonesNotProvided() {
+		this.persistDefaultTestEntries();
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("nihao"));
 		Assert.assertEquals(1, entries.size());
 		Assert.assertEquals("你好", entries.get(0).getSimplified());
@@ -80,6 +80,7 @@ public class DbDictionaryDataStoreTest {
 
 	@Test
 	public void findPinyinShouldFindMatchingEntriesWhenTonesProvided() {
+		this.persistDefaultTestEntries();
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("ni3hao3"));
 		Assert.assertEquals(1, entries.size());
 		Assert.assertEquals("你好", entries.get(0).getSimplified());
@@ -87,6 +88,7 @@ public class DbDictionaryDataStoreTest {
 
 	@Test
 	public void findPinyinShouldFindMatchingEntriesWhenSomeTonesProvided() {
+		this.persistDefaultTestEntries();
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("ni3hao"));
 		Assert.assertEquals(1, entries.size());
 		Assert.assertEquals("你好", entries.get(0).getSimplified());
@@ -94,18 +96,30 @@ public class DbDictionaryDataStoreTest {
 
 	@Test
 	public void findPinyinShouldFindNoMatchingEntriesWhenIncorrectTonesProvided() {
+		this.persistDefaultTestEntries();
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("ni1hao3"));
 		Assert.assertEquals(0, entries.size());
 	}
 
 	@Test
 	public void findPinyinShouldReturnEntriesWithCorrectPinyin() {
+		this.persistDefaultTestEntries();
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("hao3kan4"));
 		Assert.assertEquals(1, entries.size());
 		final DictionaryEntry entry = entries.get(0);
 		Assert.assertEquals(2, entry.getPinyin().size());
 		Assert.assertEquals(new PinyinSyllable("hao", Tone.THIRD), entry.getPinyin().get(0));
 		Assert.assertEquals(new PinyinSyllable("kan", Tone.FOURTH), entry.getPinyin().get(1));
+	}
+
+	@Test
+	public void findPinyinShouldOnlyReturnEntriesContainingSyllablesStartingWithGivenPinyin() {
+		this.persistEntry("好", "good; okay", new PinyinSyllable("hao", Tone.THIRD));
+		this.persistEntry("照相", "take photograph", new PinyinSyllable("zhao", Tone.FOURTH), new PinyinSyllable("xiang", Tone.FOURTH));
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("hao"));
+		Assert.assertEquals(1, entries.size());
+		final DictionaryEntry entry = entries.get(0);
+		Assert.assertEquals("好", entry.getSimplified());
 	}
 
 }

@@ -143,7 +143,12 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	private String formatPinyin(final List<PinyinSyllable> list) {
 		final StringBuilder sb = new StringBuilder();
 		for (final PinyinSyllable pinyinSyllable : list) {
-			sb.append(pinyinSyllable.getLetters()).append(pinyinSyllable.getTone().getNumber()).append(" ");
+			/*
+			 * Add a leading space so that "pinyin contains" searches do not get
+			 * false matches on similar pinyin syllables. For example, '*hao*'
+			 * should not match 'zhao'.
+			 */
+			sb.append(" ").append(pinyinSyllable.getLetters()).append(pinyinSyllable.getTone().getNumber());
 		}
 		return sb.toString();
 	}
@@ -154,13 +159,13 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 			final Tone tone = pinyinSyllable.getTone();
 			/* Use underscore to match "any" tone in an SQL "like" query. */
 			final String toneSearchValue = Tone.ANY.equals(tone) ? "_" : tone.getNumber().toString();
-			sb.append(pinyinSyllable.getLetters()).append(toneSearchValue).append(" ");
+			sb.append(" ").append(pinyinSyllable.getLetters()).append(toneSearchValue);
 		}
 		return sb.toString();
 	}
 
 	private List<PinyinSyllable> unformatPinyin(final String pinyin) {
-		final String[] rawPinyin = pinyin.split(" ");
+		final String[] rawPinyin = pinyin.trim().split(" ");
 		final List<PinyinSyllable> syllables = new LinkedList<PinyinSyllable>();
 		for (final String letters : rawPinyin) {
 			final PinyinSyllable syllable = this.parseSyllable(letters);
