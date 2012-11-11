@@ -21,7 +21,8 @@ package org.juzidian.build.data;
 import java.util.Arrays;
 import java.util.List;
 
-import org.juzidian.build.data.CedictDictionaryEntryAdaptor;
+import org.junit.Assert;
+import org.junit.Test;
 import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictPinyinSyllable;
 import org.juzidian.core.DictionaryEntry;
@@ -65,6 +66,14 @@ public class CedictDictionaryEntryAdaptorTest extends DictionaryEntryTest {
 				return null;
 			}
 		};
+	}
+
+	@Test
+	public void pinyinSyllablesShouldBeConvertedToLowerCase() {
+		final CedictEntry cedictEntry = this.createMockCedictEntry(new CedictPinyinSyllable("Zhang", 1));
+		final DictionaryEntry dictionaryEntry = new CedictDictionaryEntryAdaptor(cedictEntry);
+		final PinyinSyllable pinyinSyllable = dictionaryEntry.getPinyin().get(0);
+		Assert.assertEquals("zhang", pinyinSyllable.getLetters());
 	}
 
 }
