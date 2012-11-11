@@ -198,7 +198,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		LOGGER.debug("Finding pinyin: " + pinyin);
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder().where()
-					.like(DbDictionaryEntry.COLUMN_PINYIN, "%" + this.formatPinyinQuery(pinyin) + "%").prepare();
+					.like(DbDictionaryEntry.COLUMN_PINYIN, this.formatPinyinQuery(pinyin) + "%").prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
 		} catch (final SQLException e) {
 			throw new DictionaryDataStoreException("Failed to execute query", e);
@@ -226,7 +226,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		LOGGER.debug("Finding Chinese characters: " + chineseCharacters);
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder().where()
-					.like(DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED, "%" + chineseCharacters + "%").prepare();
+					.like(DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED, chineseCharacters + "%").prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
 		} catch (final SQLException e) {
 			throw new DictionaryDataStoreException("Failed to execute query", e);
