@@ -24,6 +24,7 @@ import java.util.List;
 import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictPinyinSyllable;
 import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.PinyinHelper;
 import org.juzidian.core.PinyinSyllable;
 import org.juzidian.core.Tone;
 
@@ -32,10 +33,22 @@ import org.juzidian.core.Tone;
  */
 class CedictDictionaryEntryAdaptor extends DictionaryEntry {
 
+	private static final PinyinHelper PINYIN_HELPER = new PinyinHelper();
+
 	private final CedictEntry cedictEntry;
 
 	public CedictDictionaryEntryAdaptor(final CedictEntry cedictEntry) {
 		this.cedictEntry = cedictEntry;
+		this.validateSyllables();
+	}
+
+	private void validateSyllables() {
+		for (final CedictPinyinSyllable syllable : this.cedictEntry.getPinyinSyllables()) {
+			final String letters = syllable.getLettersNormalized();
+			if (!syllable.isKnownInvalidSyllable() && !PINYIN_HELPER.getValidSyllables().contains(letters)) {
+				throw new IllegalArgumentException("CEDict Pinyin syllable letters are invalid for syllable: " + this.cedictEntry);
+			}
+		}
 	}
 
 	@Override
