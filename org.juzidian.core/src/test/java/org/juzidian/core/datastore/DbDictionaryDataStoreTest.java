@@ -125,4 +125,20 @@ public class DbDictionaryDataStoreTest {
 		this.verifySearchResults(entries, "好");
 	}
 
+	@Test
+	public void findPinyinShouldOrderExactSyllableMatchesBeforePartialMatches() {
+		this.persistEntry("长", "to grow", new PinyinSyllable("zhang", Tone.THIRD));
+		this.persistEntry("战", "war", new PinyinSyllable("zhan", Tone.FOURTH));
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("zhan"));
+		this.verifySearchResults(entries, "战", "长");
+	}
+
+	@Test
+	public void findPinyinShouldOrderLongerExactSyllableMatchesBeforeShorterPartialMatches() {
+		this.persistEntry("长", "to grow", new PinyinSyllable("zhang", Tone.THIRD));
+		this.persistEntry("战斗", "to battle", new PinyinSyllable("zhan", Tone.FOURTH));
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("zhan"));
+		this.verifySearchResults(entries, "战斗", "长");
+	}
+
 }

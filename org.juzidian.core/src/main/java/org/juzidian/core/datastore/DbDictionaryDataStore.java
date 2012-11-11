@@ -197,8 +197,10 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	public List<DictionaryEntry> findPinyin(final List<PinyinSyllable> pinyin) {
 		LOGGER.debug("Finding pinyin: " + pinyin);
 		try {
-			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder().where()
-					.like(DbDictionaryEntry.COLUMN_PINYIN, this.formatPinyinQuery(pinyin) + "%").prepare();
+			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
+					.orderBy(DbDictionaryEntry.COLUMN_PINYIN, true)
+					.where().like(DbDictionaryEntry.COLUMN_PINYIN, this.formatPinyinQuery(pinyin) + "%")
+					.prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
 		} catch (final SQLException e) {
 			throw new DictionaryDataStoreException("Failed to execute query", e);
