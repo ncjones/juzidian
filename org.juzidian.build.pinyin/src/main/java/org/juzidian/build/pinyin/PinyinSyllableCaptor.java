@@ -30,9 +30,7 @@ import org.juzidian.cedict.CedictPinyinSyllable;
  * A {@link CedictLoadHandler} that builds up a complete set of valid Pinyin
  * syllables according to the contents of the CEDict data file.
  * <p>
- * Known invalid CEDict Pinyin syllables, such as "xx" (no pronunciation), "r"
- * (Erhua suffix) and "m" (the interjection "呣"), are ignored. Instances of "u:"
- * are replaced with "ü".
+ * Known invalid CEDict Pinyin syllables are ignored.
  */
 final class PinyinSyllableCaptor implements CedictLoadHandler {
 
@@ -41,16 +39,11 @@ final class PinyinSyllableCaptor implements CedictLoadHandler {
 	@Override
 	public void entryLoaded(final CedictEntry cedictEntry) {
 		for (final CedictPinyinSyllable pinyinSyllable : cedictEntry.getPinyinSyllables()) {
-			final String letters = pinyinSyllable.getLetters();
-			if (isKnownInvalidCedictSyllable(letters)) {
+			if (pinyinSyllable.isKnownInvalidSyllable()) {
 				continue;
 			}
-			this.uniquePinyin.add(letters.toLowerCase().replace("u:", "ü"));
+			this.uniquePinyin.add(pinyinSyllable.getLettersNormalized());
 		}
-	}
-
-	private boolean isKnownInvalidCedictSyllable(final String letters) {
-		return "xx".equals(letters) || "r".equals(letters) || "m".equals(letters);
 	}
 
 	public Set<String> getUniquePinyinSyllables() {

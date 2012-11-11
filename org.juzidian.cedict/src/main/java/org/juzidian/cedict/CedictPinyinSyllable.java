@@ -36,8 +36,25 @@ public class CedictPinyinSyllable {
 		return this.letters;
 	}
 
+	/**
+	 * Get the letters of the syllable as lower case and with instances of "u:"
+	 * replaced with "ü".
+	 */
+	public String getLettersNormalized() {
+		return this.letters.toLowerCase().replace("u:", "ü");
+	}
+
 	public int getToneNumber() {
 		return this.toneNumber;
+	}
+
+	/**
+	 * Check if the letters of the syllable are an invalid phoneme that is known
+	 * to be used by some entries in the CEDict dictionary such as "xx" (no
+	 * pronunciation), "r" (Erhua suffix) and "m" (the interjection "呣").
+	 */
+	public boolean isKnownInvalidSyllable() {
+		return "xx".equals(this.letters) || "r".equals(this.letters) || "m".equals(this.letters);
 	}
 
 }
