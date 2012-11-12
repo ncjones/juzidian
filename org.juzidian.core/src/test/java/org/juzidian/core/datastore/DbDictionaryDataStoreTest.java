@@ -141,4 +141,12 @@ public class DbDictionaryDataStoreTest {
 		this.verifySearchResults(entries, "战斗", "长");
 	}
 
+	@Test
+	public void findPinyinShouldOrderShorterWordsBeforeLongerWords() {
+		this.persistEntry("狗肉", "dog meat", new PinyinSyllable("gou", Tone.THIRD), new PinyinSyllable("rou", Tone.FOURTH));
+		this.persistEntry("够", "enough", new PinyinSyllable("gou", Tone.FOURTH));
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("gou"));
+		this.verifySearchResults(entries, "够", "狗肉");
+	}
+
 }

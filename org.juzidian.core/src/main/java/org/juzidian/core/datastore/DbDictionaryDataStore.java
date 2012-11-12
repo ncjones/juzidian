@@ -150,6 +150,13 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 			 */
 			sb.append(" ").append(pinyinSyllable.getLetters()).append(pinyinSyllable.getTone().getNumber());
 		}
+		/*
+		 * Add trailing space so that exact pinyin syllables can be
+		 * distinguished in "like" query (and ordered accordingly). For example,
+		 * "han*" should match all "han" syllables before matching any "hang"
+		 * syllable.
+		 */
+		sb.append(" ");
 		return sb.toString();
 	}
 
@@ -197,9 +204,13 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	public List<DictionaryEntry> findPinyin(final List<PinyinSyllable> pinyin) {
 		LOGGER.debug("Finding pinyin: " + pinyin);
 		try {
+			final String pinyinQueryString = this.formatPinyinQuery(pinyin);
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
-					.orderBy(DbDictionaryEntry.COLUMN_PINYIN, true)
-					.where().like(DbDictionaryEntry.COLUMN_PINYIN, this.formatPinyinQuery(pinyin) + "%")
+					.orderByRaw("case when like ('" + pinyinQueryString + " %', " + DbDictionaryEntry.COLUMN_PINYIN + ") " +
+								"then 1 else 0 end desc, " +
+							"length(" + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + "), " +
+							DbDictionaryEntry.COLUMN_PINYIN)
+					.where().like(DbDictionaryEntry.COLUMN_PINYIN, pinyinQueryString + "%")
 					.prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
 		} catch (final SQLException e) {
