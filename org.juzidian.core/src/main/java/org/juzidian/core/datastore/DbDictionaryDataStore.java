@@ -188,9 +188,9 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	}
 
 	private String formatDefinitions(final List<String> definitions) {
-		final StringBuilder sb = new StringBuilder();
+		final StringBuilder sb = new StringBuilder("/");
 		for (final String definition : definitions) {
-			sb.append(definition).append("/");
+			sb.append(" ").append(definition.trim()).append(" /");
 		}
 		return sb.toString();
 	}
@@ -250,8 +250,16 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	public List<DictionaryEntry> findDefinitions(final String englishWords) {
 		LOGGER.debug("Finding definitions: " + englishWords);
 		try {
-			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder().where()
-					.like(DbDictionaryEntry.COLUMN_ENGLISH, "%" + englishWords + "%").prepare();
+			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
+					.orderByRaw("case " +
+								"when like ('/ " + englishWords + " /%', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 0 " +
+								"when like ('%/ " + englishWords + " /%', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 1 " +
+								"when like ('% " + englishWords + " %', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 2 " +
+								"else 3 end, " +
+							"length(" + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + "), " +
+							DbDictionaryEntry.COLUMN_PINYIN)
+					.where().like(DbDictionaryEntry.COLUMN_ENGLISH, "%" + englishWords + "%")
+					.prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
 		} catch (final SQLException e) {
 			throw new DictionaryDataStoreException("Failed to execute query", e);

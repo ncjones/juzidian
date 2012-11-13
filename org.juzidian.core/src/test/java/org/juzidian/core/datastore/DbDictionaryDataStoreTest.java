@@ -18,6 +18,7 @@
  */
 package org.juzidian.core.datastore;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -64,6 +65,10 @@ public class DbDictionaryDataStoreTest {
 
 	private void persistEntry(final String chinese, final String english, final PinyinSyllable... pinyin) {
 		this.dbDictionaryDataStore.add(this.createDictionaryEntry(chinese, english, pinyin));
+	}
+
+	private void persistEntry(final String chinese, final String pinyin, final String english) {
+		this.persistEntry(chinese, english, new ArrayList<PinyinSyllable>(this.pinyinParser.parse(pinyin)).toArray(new PinyinSyllable[] {}));
 	}
 
 	private DictionaryEntry createDictionaryEntry(final String chinese, final String english, final PinyinSyllable... pinyin) {
@@ -149,4 +154,90 @@ public class DbDictionaryDataStoreTest {
 		this.verifySearchResults(entries, "够", "狗肉");
 	}
 
+	@Test
+	public void findDefinitionsShouldReturnEmptyResultWhenNoEntriesMatchSearch() {
+		this.persistDefaultTestEntries();
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("crabapples");
+		this.verifySearchResults(entries);
+	}
+
+	@Test
+	public void findDefinitionsShouldOrderExactFirstMatchBeforeExactNonFirstMatch() {
+		this.persistEntry("愉", "yu2", "joyful; happy");
+		this.persistEntry("高兴", "gao1xing4", "happy; excited");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("happy");
+		this.verifySearchResults(entries, "高兴", "愉");
+	}
+
+	@Test
+	public void findDefinitionsShouldOrderExactMatchBeforeStartsWithMatch() {
+		this.persistEntry("好看", "hao3kan4", "good looking");
+		this.persistEntry("很好", "hen3hao3", "good");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good");
+		this.verifySearchResults(entries, "很好", "好看");
+	}
+
+	@Test
+	public void findDefinitionsShouldOrderExactMatchBeforeStartsWithMatchWhenDefinitionIsNotFirst() {
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
+		this.persistEntry("很好", "hen3hao3", "nice; good");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good");
+		this.verifySearchResults(entries, "很好", "好看");
+	}
+
+	@Test
+	public void findDefinitionsShouldOrderStartsWithMatchBeforeContainsMatch() {
+		this.persistEntry("好看", "hao3kan4", "good looking");
+		this.persistEntry("看看", "kan4kan4", "look see");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("look");
+		this.verifySearchResults(entries, "看看", "好看");
+	}
+
+	@Test
+	public void findDefinitionsShouldOrderStartsWithMatchBeforeContainsMatchWhenDefinitionIsNotFirst() {
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
+		this.persistEntry("看看", "kan4kan4", "have a look; look see");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("look");
+		this.verifySearchResults(entries, "看看", "好看");
+	}
+
+	@Test
+	public void findDefinitionsShouldOrderEntriesByHanziLengthWhenEntriesAreBothExactMatches() {
+		this.persistEntry("看看", "kan4kan4", "look");
+		this.persistEntry("看", "kan4", "look");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("look");
+		this.verifySearchResults(entries, "看", "看看");
+	}
+
+	@Test
+	public void findDefinitionsShouldOrderEntriesByHanziLengthWhenEntriesAreBothStartsWithMatches() {
+		this.persistEntry("你好", "ni3hao3", "hello (greeting)");
+		this.persistEntry("喂", "wei4", "hello (on telephone)");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("hello");
+		this.verifySearchResults(entries, "喂", "你好");
+	}
+
+	@Test
+	public void findDefinitionsShouldOrderEntriesByHanziLengthWhenEntriesAreBothContainsMatches() {
+		this.persistEntry("很好看", "hao3kan4", "very good looking");
+		this.persistEntry("好听", "hao3ting1", "sound good");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good");
+		this.verifySearchResults(entries, "好听", "很好看");
+	}
+
+	@Test
+	public void findDefinitionsShouldOrderEntriesByPinyinWhenEntriesHaveSameLength() {
+		this.persistEntry("好听", "hao3ting1", "sound good");
+		this.persistEntry("好看", "hao3kan4", "look good");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good");
+		this.verifySearchResults(entries, "好看", "好听");
+	}
+
+	@Test
+	public void findDefinitionsShouldOrderWholeWordPartialMatchBeforePartialWordPartialMatch() {
+		this.persistEntry("不能", "bu4neng2", "cannot");
+		this.persistEntry("可作", "ke3zuo4", "can be used for");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("can");
+		this.verifySearchResults(entries, "可作", "不能");
+	}
 }
