@@ -238,8 +238,14 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	public List<DictionaryEntry> findChinese(final String chineseCharacters) {
 		LOGGER.debug("Finding Chinese characters: " + chineseCharacters);
 		try {
-			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder().where()
-					.like(DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED, chineseCharacters + "%").prepare();
+			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
+					.orderByRaw("case " +
+							"when like ('" + chineseCharacters + "%', " + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + ") then 0 " +
+							"else 1 end, " +
+						"length(" + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + "), " +
+						DbDictionaryEntry.COLUMN_PINYIN)
+					.where().like(DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED, "%" + chineseCharacters + "%")
+					.prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
 		} catch (final SQLException e) {
 			throw new DictionaryDataStoreException("Failed to execute query", e);

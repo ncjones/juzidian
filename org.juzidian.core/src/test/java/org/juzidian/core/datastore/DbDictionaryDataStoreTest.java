@@ -240,4 +240,55 @@ public class DbDictionaryDataStoreTest {
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("can");
 		this.verifySearchResults(entries, "可作", "不能");
 	}
+
+	@Test
+	public void findHanziShouldOrderStartsWithMatchBeforeContainsMatch() {
+		this.persistEntry("你好", "ni3hao3", "hello (greeting)");
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好");
+		this.verifySearchResults(entries, "好看", "你好");
+	}
+
+	@Test
+	public void findHanziShouldOrderEntriesByPinyinWhenEntriesAreBothExactMatches() {
+		this.persistEntry("长", "zhang3", "to grow");
+		this.persistEntry("长", "chang2", "long");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("长");
+		Assert.assertEquals("Result count", 2, entries.size());
+		Assert.assertEquals("First result entry", "chang", entries.get(0).getPinyin().get(0).getLetters());
+		Assert.assertEquals("Second result entry", "zhang", entries.get(1).getPinyin().get(0).getLetters());
+	}
+
+	@Test
+	public void findHanziShouldOrderEntriesByHanziLengthWhenEntriesAreBothStartsWithMatches() {
+		this.persistEntry("好久不见", "hao3jiu3bu4jian4", "long time no see");
+		this.persistEntry("好看", "hao3kan4", "good looking");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好");
+		this.verifySearchResults(entries, "好看", "好久不见");
+	}
+
+	@Test
+	public void findHanziShouldOrderEntriesByHanziLengthWhenEntriesAreBothContainsMatches() {
+		this.persistEntry("好久不见", "hao3jiu3bu4jian4", "long time no see");
+		this.persistEntry("看见", "kan4jian4", "to see");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("见");
+		this.verifySearchResults(entries, "看见", "好久不见");
+	}
+
+	@Test
+	public void findHanziShouldOrderEntriesByPinyinWhenEntriesAreBothStartsWithMatchesAndSameLength() {
+		this.persistEntry("好听", "hao3ting1", "good sounding");
+		this.persistEntry("好看", "hao3kan4", "good looking");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好");
+		this.verifySearchResults(entries, "好看", "好听");
+	}
+
+	@Test
+	public void findHanziShouldOrderEntriesByPinyinWhenEntriesAreBothContainsMatchesAndSameLength() {
+		this.persistEntry("你好", "ni3hao3", "hello (greeting)");
+		this.persistEntry("不好", "bu4hao3", "not good");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好");
+		this.verifySearchResults(entries, "不好", "你好");
+	}
+
 }
