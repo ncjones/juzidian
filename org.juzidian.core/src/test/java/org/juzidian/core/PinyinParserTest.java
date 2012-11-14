@@ -154,6 +154,13 @@ public class PinyinParserTest {
 	}
 
 	@Test
+	public void parseShouldConvertLettersToLowerCase() {
+		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("HAO3");
+		final PinyinSyllable expectedSyllable = new PinyinSyllable("hao", Tone.THIRD);
+		Assert.assertEquals(Arrays.asList(expectedSyllable), parsedSyllables);
+	}
+
+	@Test
 	public void isValidShouldBeFalseForInvalidInput() {
 		Assert.assertFalse(this.pinyinParser.isValid("hello"));
 	}
@@ -161,6 +168,11 @@ public class PinyinParserTest {
 	@Test
 	public void isValidShouldBeTrueForValidInput() {
 		Assert.assertTrue(this.pinyinParser.isValid("ni3hao3"));
+	}
+
+	@Test
+	public void isValidShouldBeTrueForValidUpperCaseInput() {
+		Assert.assertTrue(this.pinyinParser.isValid("NI3HAO3"));
 	}
 
 }

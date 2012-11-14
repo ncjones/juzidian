@@ -69,7 +69,7 @@ public class PinyinParser {
 		private int index;
 
 		public ParseInstance(final String input) {
-			this.input = input.trim();
+			this.input = input.trim().toLowerCase();
 		}
 
 		public List<PinyinSyllable> getSyllables() {
