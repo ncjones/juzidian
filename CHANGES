@@ -1,0 +1,37 @@
+Version 0.3.0
+-------------
+
+Enhancements:
+
+* Add support for Pinyin tone queries.
+* Improve ordering of search results.
+* Make Pinyin query case insensitive.
+
+Bugfixes:
+
+* Prevent fatal error due to submission of invalid Pinyin queries.
+
+
+Version 0.2.1
+-------------
+
+Bugfixes:
+
+* Fix fatal NoClassDefFound error.
+
+
+Version 0.2.0
+-------------
+
+Enhancements:
+
+* Store CEDict data in database for faster querying.
+
+
+Version 0.1.0
+-------------
+
+Enhancements:
+
+* Basic searching of raw CEDict dictionary file.
+
