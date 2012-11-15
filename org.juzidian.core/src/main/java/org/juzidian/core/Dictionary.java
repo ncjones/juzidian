@@ -69,7 +69,7 @@ public class Dictionary {
 	 */
 	List<DictionaryEntry> findChinese(final String queryString) {
 		LOGGER.debug("Find chinese: " + queryString);
-		return this.dataStore.findChinese(queryString);
+		return this.dataStore.findChinese(queryString, 25, 0);
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class Dictionary {
 	List<DictionaryEntry> findPinyin(final String queryString) {
 		LOGGER.debug("Find pinyin: " + queryString);
 		final List<PinyinSyllable> pinyinSyllables = this.pinyinParser.parse(queryString);
-		return this.dataStore.findPinyin(pinyinSyllables);
+		return this.dataStore.findPinyin(pinyinSyllables, 25, 0);
 	}
 
 	/**
@@ -94,7 +94,7 @@ public class Dictionary {
 	 */
 	List<DictionaryEntry> findDefinitions(final String queryString) {
 		LOGGER.debug("Find definitions: " + queryString);
-		return this.dataStore.findDefinitions(queryString);
+		return this.dataStore.findDefinitions(queryString, 25, 0);
 	}
 
 }

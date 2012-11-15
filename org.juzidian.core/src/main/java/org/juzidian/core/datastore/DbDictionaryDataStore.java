@@ -201,7 +201,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	}
 
 	@Override
-	public List<DictionaryEntry> findPinyin(final List<PinyinSyllable> pinyin) {
+	public List<DictionaryEntry> findPinyin(final List<PinyinSyllable> pinyin, final long limit, final long offset) {
 		LOGGER.debug("Finding pinyin: " + pinyin);
 		try {
 			final String pinyinQueryString = this.formatPinyinQuery(pinyin);
@@ -235,7 +235,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	}
 
 	@Override
-	public List<DictionaryEntry> findChinese(final String chineseCharacters) {
+	public List<DictionaryEntry> findChinese(final String chineseCharacters, final long limit, final long offset) {
 		LOGGER.debug("Finding Chinese characters: " + chineseCharacters);
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
@@ -253,7 +253,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	}
 
 	@Override
-	public List<DictionaryEntry> findDefinitions(final String englishWords) {
+	public List<DictionaryEntry> findDefinitions(final String englishWords, final long limit, final long offset) {
 		LOGGER.debug("Finding definitions: " + englishWords);
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
