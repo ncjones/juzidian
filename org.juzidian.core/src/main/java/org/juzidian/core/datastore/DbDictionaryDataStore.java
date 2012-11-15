@@ -202,6 +202,12 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 
 	@Override
 	public List<DictionaryEntry> findPinyin(final List<PinyinSyllable> pinyin, final long limit, final long offset) {
+		if (limit < 0) {
+			throw new IllegalArgumentException("Invalid limit: " + limit);
+		}
+		if (offset < 0) {
+			throw new IllegalArgumentException("Invalid offset: " + offset);
+		}
 		LOGGER.debug("Finding pinyin: " + pinyin);
 		try {
 			final String pinyinQueryString = this.formatPinyinQuery(pinyin);
@@ -210,6 +216,8 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 								"then 1 else 0 end desc, " +
 							"length(" + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + "), " +
 							DbDictionaryEntry.COLUMN_PINYIN)
+					.limit(limit)
+					.offset(offset)
 					.where().like(DbDictionaryEntry.COLUMN_PINYIN, pinyinQueryString + "%")
 					.prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
@@ -236,6 +244,12 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 
 	@Override
 	public List<DictionaryEntry> findChinese(final String chineseCharacters, final long limit, final long offset) {
+		if (limit < 0) {
+			throw new IllegalArgumentException("Invalid limit: " + limit);
+		}
+		if (offset < 0) {
+			throw new IllegalArgumentException("Invalid offset: " + offset);
+		}
 		LOGGER.debug("Finding Chinese characters: " + chineseCharacters);
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
@@ -244,6 +258,8 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 							"else 1 end, " +
 						"length(" + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + "), " +
 						DbDictionaryEntry.COLUMN_PINYIN)
+					.limit(limit)
+					.offset(offset)
 					.where().like(DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED, "%" + chineseCharacters + "%")
 					.prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
@@ -254,6 +270,12 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 
 	@Override
 	public List<DictionaryEntry> findDefinitions(final String englishWords, final long limit, final long offset) {
+		if (limit < 0) {
+			throw new IllegalArgumentException("Invalid limit: " + limit);
+		}
+		if (offset < 0) {
+			throw new IllegalArgumentException("Invalid offset: " + offset);
+		}
 		LOGGER.debug("Finding definitions: " + englishWords);
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
@@ -265,6 +287,8 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 								"else 4 end, " +
 							"length(" + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + "), " +
 							DbDictionaryEntry.COLUMN_PINYIN)
+					.limit(limit)
+					.offset(offset)
 					.where().like(DbDictionaryEntry.COLUMN_ENGLISH, "%" + englishWords + "%")
 					.prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));

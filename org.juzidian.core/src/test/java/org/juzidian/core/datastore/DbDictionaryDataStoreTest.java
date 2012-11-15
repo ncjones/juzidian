@@ -154,6 +154,34 @@ public class DbDictionaryDataStoreTest {
 		this.verifySearchResults(entries, "够", "狗肉");
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void findPinyinShouldRejectNegativeLimit() {
+		this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("gou"), -1, 0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void findPinyinShouldRejectNegativeOffset() {
+		this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("gou"), 25, -1);
+	}
+
+	@Test
+	public void findPinyinShouldLimitEntriesToAmountSpecified() {
+		this.persistEntry("好听", "hao3ting1", "good sounding");
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
+		this.persistEntry("好棒", "hao3bang4", "excellent");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("hao"), 2, 0);
+		this.verifySearchResults(entries, "好棒", "好看");
+	}
+
+	@Test
+	public void findPinyinShouldSkipEntriesAfterIndexSpecified() {
+		this.persistEntry("好听", "hao3ting1", "good sounding");
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
+		this.persistEntry("好棒", "hao3bang4", "excellent");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("hao"), 2, 2);
+		this.verifySearchResults(entries, "好听");
+	}
+
 	@Test
 	public void findDefinitionsShouldReturnEmptyResultWhenNoEntriesMatchSearch() {
 		this.persistDefaultTestEntries();
@@ -249,6 +277,34 @@ public class DbDictionaryDataStoreTest {
 		this.verifySearchResults(entries, "可作", "不能");
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void findDefinitionsShouldRejectNegativeLimit() {
+		this.dbDictionaryDataStore.findDefinitions("good", -1, 0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void findDefinitionsShouldRejectNegativeOffset() {
+		this.dbDictionaryDataStore.findDefinitions("good", 25, -1);
+	}
+
+	@Test
+	public void findDefinitionsShouldLimitEntriesToAmountSpecified() {
+		this.persistEntry("不好", "bu4hao3", "not good");
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
+		this.persistEntry("好听", "hao3ting1", "good sounding");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good", 2, 0);
+		this.verifySearchResults(entries, "好看", "好听");
+	}
+
+	@Test
+	public void findDefinitionsShouldSkipEntriesAfterIndexSpecified() {
+		this.persistEntry("不好", "bu4hao3", "not good");
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
+		this.persistEntry("好听", "hao3ting1", "good sounding");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good", 2, 2);
+		this.verifySearchResults(entries, "不好");
+	}
+
 	@Test
 	public void findHanziShouldOrderStartsWithMatchBeforeContainsMatch() {
 		this.persistEntry("你好", "ni3hao3", "hello (greeting)");
@@ -297,6 +353,34 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("不好", "bu4hao3", "not good");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 25, 0);
 		this.verifySearchResults(entries, "不好", "你好");
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void findHanziShouldRejectNegativeLimit() {
+		this.dbDictionaryDataStore.findChinese("好", -1, 0);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void findHanziShouldRejectNegativeOffset() {
+		this.dbDictionaryDataStore.findChinese("好", 25, -1);
+	}
+
+	@Test
+	public void findHanziShouldLimitEntriesToAmountSpecified() {
+		this.persistEntry("你好", "ni3hao3", "hello (greeting)");
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
+		this.persistEntry("好棒", "hao3bang4", "excellent");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 2, 0);
+		this.verifySearchResults(entries, "好棒", "好看");
+	}
+
+	@Test
+	public void findHanziShouldSkipEntriesAfterIndexSpecified() {
+		this.persistEntry("你好", "ni3hao3", "hello (greeting)");
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
+		this.persistEntry("好棒", "hao3bang4", "excellent");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 2, 2);
+		this.verifySearchResults(entries, "你好");
 	}
 
 }
