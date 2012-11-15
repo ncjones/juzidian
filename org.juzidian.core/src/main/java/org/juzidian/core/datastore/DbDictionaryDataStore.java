@@ -260,8 +260,9 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 					.orderByRaw("case " +
 								"when like ('/ " + englishWords + " /%', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 0 " +
 								"when like ('%/ " + englishWords + " /%', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 1 " +
-								"when like ('% " + englishWords + " %', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 2 " +
-								"else 3 end, " +
+								"when like ('%/ " + englishWords + " %', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 2 " +
+								"when like ('% " + englishWords + " %', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 3 " +
+								"else 4 end, " +
 							"length(" + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + "), " +
 							DbDictionaryEntry.COLUMN_PINYIN)
 					.where().like(DbDictionaryEntry.COLUMN_ENGLISH, "%" + englishWords + "%")

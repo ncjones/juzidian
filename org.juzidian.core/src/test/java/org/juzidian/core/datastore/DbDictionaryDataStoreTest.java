@@ -202,6 +202,14 @@ public class DbDictionaryDataStoreTest {
 	}
 
 	@Test
+	public void findDefinitionsShouldOrderStartsWithMatchBeforeEndsWithMatch() {
+		this.persistEntry("不好", "bu4hao3", "not good");
+		this.persistEntry("好看", "hao3kan4", "good looking");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good", 25, 0);
+		this.verifySearchResults(entries, "好看", "不好");
+	}
+
+	@Test
 	public void findDefinitionsShouldOrderEntriesByHanziLengthWhenEntriesAreBothExactMatches() {
 		this.persistEntry("看看", "kan4kan4", "look");
 		this.persistEntry("看", "kan4", "look");
