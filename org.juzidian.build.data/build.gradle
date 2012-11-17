@@ -10,3 +10,9 @@ dependencies {
 	testCompile "junit:junit:${junitVersion}"
 }
 
+eclipse.classpath.file {
+	whenMerged { classpath ->
+		// remove conflicting juzidian-core test source-set
+		classpath.entries.removeAll { entry -> entry.kind == 'lib' && !entry.path.endsWith('.jar')}
+	}
+}
