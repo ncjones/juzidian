@@ -27,8 +27,10 @@ dependencies {
 	generate "org.slf4j:slf4j-simple:${slf4jVersion}"
 }
 
+project.ext.androidTargetPlatform = 'android-16'
+
 android {
-	target = 'android-16'
+	target = "${androidTargetPlatform}"
 	defaultConfig {
 		versionCode = "${juzidianReleaseSequenceNumber}"
 		versionName = "${juzidianVersion}"
@@ -52,3 +54,17 @@ task generateResources {
 }
 
 clean.dependsOn cleanGenerateResources
+
+eclipse {
+	classpath {
+		plusConfigurations += configurations.compile
+		file {
+			withXml {
+				def node = it.asNode()
+				node.appendNode('classpathentry', [kind: 'src', path: 'src/main/java'])
+				node.appendNode('classpathentry', [kind: 'src', path: 'build/source/debug'])
+				node.appendNode('classpathentry', [kind: 'lib', path: "${androidSdkDir}/platforms/${androidTargetPlatform}/android.jar"])
+			}
+		}
+	}
+}
