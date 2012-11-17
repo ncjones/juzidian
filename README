@@ -21,20 +21,12 @@ Dependencies
 ============
 
  * Java 1.6
- * Gradle 1.1
- * Android SDK 
+ * Gradle 1.2
+ * Android SDK (Platform API 16, Platform-Tools Rev 16)
 
 
 Building
 ========
-
- * clone gradle-android-plugin:
-
-	$ git clone https://github.com/ncjones/gradle-android-plugin.git
-
- * build gradle-android-plugin:
-
-	$ gradle -p gradle-android-plugin build
 
  * Set Android SDK home environment variable:
 
@@ -50,7 +42,7 @@ Installing
 
 Install the built APK on to a connected Android device:
 
-	$ adb install org.juzidian.android/build/distributions/*.apk
+	$ adb install org.juzidian.android/build/apk/*debug-unaligned.apk
 
 
 IDE Setup
