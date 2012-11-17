@@ -1,3 +1,5 @@
+apply plugin: 'java'
+
 def genDir = "$buildDir/generated"
 
 def genResDir = "$genDir/resources"
