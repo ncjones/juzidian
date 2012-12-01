@@ -46,12 +46,16 @@ public class SearchBar extends RelativeLayout {
 		searchInput.addTextChangedListener(new SearchTextChangeListener());
 	}
 
-	public String getSearchText() {
+	public SearchQuery getSearchQuery() {
+		return new SearchQuery(this.getSearchType(), this.getSearchText());
+	}
+
+	private String getSearchText() {
 		final EditText searchInput = this.getSearchInput();
 		return searchInput.getText().toString();
 	}
 
-	public SearchType getSearchType() {
+	private SearchType getSearchType() {
 		final int checkedRadioButtonId = this.getSearchTypeRadioGroup().getCheckedRadioButtonId();
 		if (checkedRadioButtonId == -1) {
 			return null;

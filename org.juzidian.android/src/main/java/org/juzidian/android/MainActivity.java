@@ -25,7 +25,7 @@ import com.google.inject.Injector;
 import com.j256.ormlite.android.AndroidConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements DictionarySearchTaskListener {
 
 	private static final String DICTIONARY_DB_PATH = "/data/data/org.juzidian.android/juzidian-dictionary.db";
 
@@ -81,20 +81,30 @@ public class MainActivity extends Activity {
 
 	public void doSearch(@SuppressWarnings("unused") final View view) {
 		final SearchBar searchBar = this.getSearchBar();
-		final LinearLayout searchResultLayout = (LinearLayout) this.findViewById(R.id.searchResultLayout);
+		final LinearLayout searchResultLayout = this.getSearchResultLayout();
 		searchResultLayout.removeAllViews();
 		final ProgressBar progressBar = new ProgressBar(searchResultLayout.getContext());
 		searchResultLayout.addView(progressBar);
-		final List<DictionaryEntry> words = this.dictionary.find(searchBar.getSearchText(), searchBar.getSearchType());
-		searchResultLayout.removeAllViews();
-		for (final DictionaryEntry chineseWord : words) {
-			final SearchResultView searchResultView = new SearchResultView(searchResultLayout.getContext(), chineseWord);
-			searchResultLayout.addView(searchResultView);
-		}
+		final DictionarySearchTask dictionarySearchTask = new DictionarySearchTask(this.dictionary, this);
+		dictionarySearchTask.execute(searchBar.getSearchQuery());
 	}
 
 	private SearchBar getSearchBar() {
 		return (SearchBar) this.findViewById(R.id.searchBar);
+	}
+
+	private LinearLayout getSearchResultLayout() {
+		return (LinearLayout) this.findViewById(R.id.searchResultLayout);
+	}
+
+	@Override
+	public void searchComplete(final List<DictionaryEntry> searchResults) {
+		final LinearLayout searchResultLayout = this.getSearchResultLayout();
+		searchResultLayout.removeAllViews();
+		for (final DictionaryEntry chineseWord : searchResults) {
+			final SearchResultView searchResultView = new SearchResultView(searchResultLayout.getContext(), chineseWord);
+			searchResultLayout.addView(searchResultView);
+		}
 	}
 
 }
