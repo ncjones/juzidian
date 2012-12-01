@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.PinyinSyllable;
 import org.juzidian.core.inject.DictionaryModule;
 
 import android.app.Activity;
@@ -20,7 +19,6 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -90,33 +88,13 @@ public class MainActivity extends Activity {
 		final List<DictionaryEntry> words = this.dictionary.find(searchBar.getSearchText(), searchBar.getSearchType());
 		searchResultLayout.removeAllViews();
 		for (final DictionaryEntry chineseWord : words) {
-			final TextView textView = new TextView(searchResultLayout.getContext());
-			final String pinyinDisplay = this.createPinyinDisplay(chineseWord);
-			final String englishDefinitionDisplay = this.createEnglishDefinitionDisplay(chineseWord);
-			textView.setText(chineseWord.getTraditional() + " (" + pinyinDisplay + "): " + englishDefinitionDisplay);
-			searchResultLayout.addView(textView);
+			final SearchResultView searchResultView = new SearchResultView(searchResultLayout.getContext(), chineseWord);
+			searchResultLayout.addView(searchResultView);
 		}
 	}
 
 	private SearchBar getSearchBar() {
 		return (SearchBar) this.findViewById(R.id.searchBar);
-	}
-
-	private String createEnglishDefinitionDisplay(final DictionaryEntry chineseWord) {
-		final List<String> definitions = chineseWord.getDefinitions();
-		final StringBuilder stringBuilder = new StringBuilder();
-		for (final String definition : definitions) {
-			stringBuilder.append(definition).append("; ");
-		}
-		return stringBuilder.substring(0, stringBuilder.length() - 2);
-	}
-
-	private String createPinyinDisplay(final DictionaryEntry chineseWord) {
-		final StringBuilder stringBuilder = new StringBuilder();
-		for (final PinyinSyllable syllable : chineseWord.getPinyin()) {
-			stringBuilder.append(syllable.getDisplayValue()).append(" ");
-		}
-		return stringBuilder.toString().trim();
 	}
 
 }
