@@ -5,4 +5,4 @@
 .*
 *.db
 cedict-data.*
-gradle-android-plugin
+local.properties

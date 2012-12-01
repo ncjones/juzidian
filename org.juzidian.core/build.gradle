@@ -1,5 +1,4 @@
-apply plugin: 'android'
-apply plugin: 'maven'
+apply plugin: 'java'
 
 def genDir = "$buildDir/generated"
 
@@ -16,11 +15,11 @@ configurations {
 }
 
 dependencies {
-	compile project(':org.juzidian.cedict')
 	compile 'com.google.inject:guice:3.0:no_aop'
 	compile 'com.j256.ormlite:ormlite-core:4.42'
 	compile "org.slf4j:slf4j-api:${slf4jVersion}"
 	generate project(':org.juzidian.build.pinyin')
+	testCompile "junit:junit:${junitVersion}"
 	testCompile 'com.j256.ormlite:ormlite-jdbc:4.42'
 	testCompile 'org.xerial:sqlite-jdbc:3.7.2'
 }
@@ -71,15 +70,3 @@ task generateSources (type: JavaExec, dependsOn: uncompressCedictData) {
 }
 
 compileJava.dependsOn generateSources
-
-androidProcessResources.dependsOn createAndroidResourcesDir
-
-def androidProperties = new Properties();
-file("${projectDir}/project.properties").withInputStream { androidProperties.load(it) }
-androidProperties.each({ project.ext[it.key] = it.value })
-
-[proguard, androidPackage, androidSignAndAlign]*.onlyIf {
-	!project.hasProperty('android.library') ||
-	!project['android.library']
-}
-

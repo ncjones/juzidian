@@ -21,24 +21,17 @@ Dependencies
 ============
 
  * Java 1.6
- * Gradle 1.1
- * Android SDK 
+ * Gradle 1.2
+ * Android SDK (Platform API 16, Platform-Tools Rev 16)
 
 
 Building
 ========
 
- * clone gradle-android-plugin:
+ * Create a file called 'local.properties' and set the 'sdk.dir' property to the
+   location of your Android SDK installation directory, eg:
 
-	$ git clone https://github.com/ncjones/gradle-android-plugin.git
-
- * build gradle-android-plugin:
-
-	$ gradle -p gradle-android-plugin build
-
- * Set Android SDK home environment variable:
-
-	$ export ANDROID_HOME=~/android-sdk-linux
+	$ echo "sdk.dir=$HOME/android-sdk-linux" > local.properties
 
  * build Juzidian:
 
@@ -50,7 +43,7 @@ Installing
 
 Install the built APK on to a connected Android device:
 
-	$ adb install org.juzidian.android/build/distributions/*.apk
+	$ adb install org.juzidian.android/build/apk/*debug-unaligned.apk
 
 
 IDE Setup
@@ -60,6 +53,5 @@ To setup Eclipse projects with correct natures and class paths, run
 
 	$ gradle eclipse
 
-and then import all projects into Eclipse from the project root directory. The
-Android Eclipse plugin is required.
+and then import all projects into Eclipse from the project root directory.
 

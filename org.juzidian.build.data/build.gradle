@@ -1,4 +1,4 @@
-apply plugin: 'maven'
+apply plugin: 'java'
 
 dependencies {
 	compile project(':org.juzidian.cedict')
@@ -7,5 +7,12 @@ dependencies {
 	compile 'com.j256.ormlite:ormlite-jdbc:4.42'
 	compile 'org.xerial:sqlite-jdbc:3.7.2'
 	testCompile project(':org.juzidian.core').sourceSets.test.output
+	testCompile "junit:junit:${junitVersion}"
 }
 
+eclipse.classpath.file {
+	whenMerged { classpath ->
+		// remove conflicting juzidian-core test source-set
+		classpath.entries.removeAll { entry -> entry.kind == 'lib' && !entry.path.endsWith('.jar')}
+	}
+}

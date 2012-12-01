@@ -1,40 +1,26 @@
 buildscript {
 	repositories {
-		flatDir {
-			dirs "$rootProject.rootDir/gradle-android-plugin/build/libs"
-		}
+		mavenCentral()
 	}
 	dependencies {
-		classpath 'org.gradle.api.plugins:gradle-android-plugin:1.2.0-SNAPSHOT'
+		classpath 'com.android.tools.build:gradle:0.2'
 	}
 }
 
+def localProperties = new Properties();
+file("local.properties").withInputStream { localProperties.load(it) }
+
+ext.androidSdkDir = localProperties.get('sdk.dir')
+
 subprojects {
-	apply plugin: 'java'
 	apply plugin: 'eclipse'
 
 	repositories {
-		mavenLocal()
 		mavenCentral()
-	}
-
-	dependencies {
-		testCompile 'junit:junit:4.11+'
 	}
 
 	group = 'org.juzidian'
 
 	version = "${juzidianVersion}"
-
-	eclipse.classpath.file {
-		whenMerged { classpath ->
-			classpath.entries.findAll { entry -> entry.kind != 'output' }*.exported = false
-		}
-	}
-
-	task createAndroidResourcesDir << {
-		ext.resourcesDir = new File("$projectDir/res")
-		resourcesDir.mkdirs()
-	}
 }
 

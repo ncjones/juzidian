@@ -1,6 +1,6 @@
 apply plugin: 'android'
 
-def rawResDir = "res/raw"
+def rawResDir = "src/main/res/raw"
 
 def dictionaryDbPath = "$rawResDir/juzidian_dictionary.db"
 
@@ -11,26 +11,32 @@ configurations {
 }
 
 dependencies {
-	compile files("${ant['sdk.dir']}/extras/android/support/v4/android-support-v4.jar")
 	compile (project(':org.juzidian.core')) {
 		/* slf4j-api conflicts with slf4j-android. */
 		exclude group: 'org.slf4j', module: 'slf4j-api'
 	}
 	compile 'com.google.inject:guice:3.0:no_aop'
 	compile 'com.j256.ormlite:ormlite-android:4.42'
-	/*
-	 * gradle-android does not handle library projects well so we pull project
-	 * dependencies from local maven repository when building.
-	 */
-	compile ("org.juzidian:org.juzidian.core:${juzidianVersion}") {
-		/* slf4j-api conflicts with slf4j-android. */
-		exclude group: 'org.slf4j', module: 'slf4j-api'
+	compile "org.slf4j:slf4j-android:${slf4jAndroidVersion}"
+	compile files("$dictionaryDbPath") {
+		builtBy 'generateResources'
 	}
 	generate project(':org.juzidian.build.data')
 	generate 'org.xerial:sqlite-jdbc:3.7.2'
 	generate 'com.j256.ormlite:ormlite-jdbc:4.42'
 	generate "org.slf4j:slf4j-simple:${slf4jVersion}"
-	runtime "org.slf4j:slf4j-android:${slf4jVersion}-RC1"
+}
+
+project.ext.androidTargetPlatform = 'android-16'
+
+android {
+	target = "${androidTargetPlatform}"
+	defaultConfig {
+		versionCode = "${juzidianReleaseSequenceNumber}"
+		versionName = "${juzidianVersion}"
+		minSdkVersion = 8
+		targetSdkVersion = 15
+	}
 }
 
 task generateResources {
@@ -47,12 +53,18 @@ task generateResources {
 	}
 }
 
-eclipse.classpath.file {
-	whenMerged { classpath ->
-		classpath.entries.removeAll { it.path.contains('org.juzidian.core-') }
+clean.dependsOn cleanGenerateResources
+
+eclipse {
+	classpath {
+		plusConfigurations += configurations.compile
+		file {
+			withXml {
+				def node = it.asNode()
+				node.appendNode('classpathentry', [kind: 'src', path: 'src/main/java'])
+				node.appendNode('classpathentry', [kind: 'src', path: 'build/source/debug'])
+				node.appendNode('classpathentry', [kind: 'lib', path: "${androidSdkDir}/platforms/${androidTargetPlatform}/android.jar"])
+			}
+		}
 	}
 }
-
-clean.dependsOn cleanGenerateResources
-androidProcessResources.dependsOn generateResources
-compileJava.dependsOn ':org.juzidian.core:install'
