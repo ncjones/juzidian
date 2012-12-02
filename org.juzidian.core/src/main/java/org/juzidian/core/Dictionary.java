@@ -42,14 +42,23 @@ public class Dictionary {
 	}
 
 	/**
-	 * Find all Chinese words that match the search criteria.
+	 * Find all Chinese words that match the search criteria, restricted to the
+	 * given pagination bounds.
+	 * <p>
+	 * If the number of results returned is less than the given page size then
+	 * queries for subsequent pages will return empty results.
 	 * 
 	 * @param queryString Chinese characters, Pinyin syllables or English words.
 	 * @param searchType the {@link SearchType} indicating how to interpret the
 	 *        query string.
+	 * @param pageSize the number of entries included in each page of results
+	 *        (if possible).
+	 * @param pageIndex the index of the page of results to get.
 	 * @return a list of {@link DictionaryEntry}.
+	 * @throws IllegalArgumentException if page size or page number are
+	 *         negative.
 	 */
-	public List<DictionaryEntry> find(final String queryString, final SearchType searchType) {
+	public List<DictionaryEntry> find(final String queryString, final SearchType searchType, final int pageSize, final int pageIndex) {
 		LOGGER.debug("Find entries: " + searchType + ", " + queryString);
 		final long start = System.nanoTime();
 		final List<DictionaryEntry> searchResults = searchType.doSearch(this, queryString);

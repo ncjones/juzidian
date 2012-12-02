@@ -71,7 +71,7 @@ public class JuzidianCli {
 		final long freeMemory = runtime.freeMemory();
 		LOGGER.debug(MessageFormat.format("Memory used: {0}KB", (totalMemory - freeMemory) / 1024));
 		final String queryString = args[1];
-		final List<DictionaryEntry> foundCharacters = dictionary.find(queryString, searchType);
+		final List<DictionaryEntry> foundCharacters = dictionary.find(queryString, searchType, 1000, 0);
 		printSearchResults(foundCharacters);
 	}
 

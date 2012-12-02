@@ -42,7 +42,7 @@ public class DictionarySearchTask extends AsyncTask<SearchQuery, Void, List<Dict
 	@Override
 	protected List<DictionaryEntry> doInBackground(final SearchQuery... searchQueries) {
 		final SearchQuery searchQuery = searchQueries[0];
-		return this.dictionary.find(searchQuery.getSearchText(), searchQuery.getSearchType());
+		return this.dictionary.find(searchQuery.getSearchText(), searchQuery.getSearchType(), 25, 0);
 	}
 
 	@Override
