@@ -18,10 +18,18 @@
  */
 package org.juzidian.core.datastore;
 
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import org.hamcrest.CoreMatchers;
+import org.hamcrest.FeatureMatcher;
+import org.hamcrest.Matcher;
+import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -74,33 +82,42 @@ public class DbDictionaryDataStoreTest {
 		return new BasicDictionaryEntry(chinese, chinese, Arrays.asList(pinyin), Arrays.asList(english.split(";")));
 	}
 
-	private void verifySearchResults(final List<DictionaryEntry> entries, final String... expectedChineseWords) {
-		Assert.assertEquals("Result count", expectedChineseWords.length, entries.size());
-		for (int i = 0; i < expectedChineseWords.length; i++) {
-			final DictionaryEntry entry = entries.get(i);
-			Assert.assertEquals("Result entry at index " + i, expectedChineseWords[i], entry.getSimplified());
+	private static Matcher<DictionaryEntry> entryWithSimplified(final String chineseWord) {
+		return new FeatureMatcher<DictionaryEntry, String>(CoreMatchers.equalTo(chineseWord), "DictionaryEntry with simplified", "simplified") {
+			@Override
+			protected String featureValueOf(final DictionaryEntry actual) {
+				return actual.getSimplified();
+			}
+		};
+	}
+
+	private static Matcher<Iterable<? extends DictionaryEntry>> containsSimplified(final String... simplifiedChineseWords) {
+		final List<Matcher<? super DictionaryEntry>> matchers = new ArrayList<Matcher<? super DictionaryEntry>>();
+		for (final String chineseWord : simplifiedChineseWords) {
+			matchers.add(entryWithSimplified(chineseWord));
 		}
+		return new IsIterableContainingInOrder<DictionaryEntry>(matchers);
 	}
 
 	@Test
 	public void findPinyinShouldFindMatchingEntriesWhenTonesNotProvided() {
 		this.persistDefaultTestEntries();
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("nihao"), 25, 0);
-		this.verifySearchResults(entries, "你好");
+		assertThat(entries, containsSimplified("你好"));
 	}
 
 	@Test
 	public void findPinyinShouldFindMatchingEntriesWhenTonesProvided() {
 		this.persistDefaultTestEntries();
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("ni3hao3"), 25, 0);
-		this.verifySearchResults(entries, "你好");
+		assertThat(entries, containsSimplified("你好"));
 	}
 
 	@Test
 	public void findPinyinShouldFindMatchingEntriesWhenSomeTonesProvided() {
 		this.persistDefaultTestEntries();
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("ni3hao"), 25, 0);
-		this.verifySearchResults(entries, "你好");
+		assertThat(entries, containsSimplified("你好"));
 	}
 
 	@Test
@@ -126,7 +143,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好", "good; okay", new PinyinSyllable("hao", Tone.THIRD));
 		this.persistEntry("照相", "take photograph", new PinyinSyllable("zhao", Tone.FOURTH), new PinyinSyllable("xiang", Tone.FOURTH));
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("hao"), 25, 0);
-		this.verifySearchResults(entries, "好");
+		assertThat(entries, containsSimplified("好"));
 	}
 
 	@Test
@@ -134,7 +151,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("长", "to grow", new PinyinSyllable("zhang", Tone.THIRD));
 		this.persistEntry("战", "war", new PinyinSyllable("zhan", Tone.FOURTH));
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("zhan"), 25, 0);
-		this.verifySearchResults(entries, "战", "长");
+		assertThat(entries, containsSimplified("战", "长"));
 	}
 
 	@Test
@@ -142,7 +159,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("长", "to grow", new PinyinSyllable("zhang", Tone.THIRD));
 		this.persistEntry("战斗", "to battle", new PinyinSyllable("zhan", Tone.FOURTH));
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("zhan"), 25, 0);
-		this.verifySearchResults(entries, "战斗", "长");
+		assertThat(entries, containsSimplified("战斗", "长"));
 	}
 
 	@Test
@@ -150,7 +167,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("狗肉", "dog meat", new PinyinSyllable("gou", Tone.THIRD), new PinyinSyllable("rou", Tone.FOURTH));
 		this.persistEntry("够", "enough", new PinyinSyllable("gou", Tone.FOURTH));
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("gou"), 25, 0);
-		this.verifySearchResults(entries, "够", "狗肉");
+		assertThat(entries, containsSimplified("够", "狗肉"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -169,7 +186,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
 		this.persistEntry("好棒", "hao3bang4", "excellent");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("hao"), 2, 0);
-		this.verifySearchResults(entries, "好棒", "好看");
+		assertThat(entries, containsSimplified("好棒", "好看"));
 	}
 
 	@Test
@@ -178,14 +195,14 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
 		this.persistEntry("好棒", "hao3bang4", "excellent");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("hao"), 2, 2);
-		this.verifySearchResults(entries, "好听");
+		assertThat(entries, containsSimplified("好听"));
 	}
 
 	@Test
 	public void findDefinitionsShouldReturnEmptyResultWhenNoEntriesMatchSearch() {
 		this.persistDefaultTestEntries();
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("crabapples", 25, 0);
-		this.verifySearchResults(entries);
+		assertThat(entries, is(empty()));
 	}
 
 	@Test
@@ -193,7 +210,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("愉", "yu2", "joyful; happy");
 		this.persistEntry("高兴", "gao1xing4", "happy; excited");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("happy", 25, 0);
-		this.verifySearchResults(entries, "高兴", "愉");
+		assertThat(entries, containsSimplified("高兴", "愉"));
 	}
 
 	@Test
@@ -201,7 +218,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好看", "hao3kan4", "good looking");
 		this.persistEntry("很好", "hen3hao3", "good");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good", 25, 0);
-		this.verifySearchResults(entries, "很好", "好看");
+		assertThat(entries, containsSimplified("很好", "好看"));
 	}
 
 	@Test
@@ -209,7 +226,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
 		this.persistEntry("很好", "hen3hao3", "nice; good");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good", 25, 0);
-		this.verifySearchResults(entries, "很好", "好看");
+		assertThat(entries, containsSimplified("很好", "好看"));
 	}
 
 	@Test
@@ -217,7 +234,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好看", "hao3kan4", "good looking");
 		this.persistEntry("看看", "kan4kan4", "look see");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("look", 25, 0);
-		this.verifySearchResults(entries, "看看", "好看");
+		assertThat(entries, containsSimplified("看看", "好看"));
 	}
 
 	@Test
@@ -225,7 +242,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
 		this.persistEntry("看看", "kan4kan4", "have a look; look see");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("look", 25, 0);
-		this.verifySearchResults(entries, "看看", "好看");
+		assertThat(entries, containsSimplified("看看", "好看"));
 	}
 
 	@Test
@@ -233,7 +250,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("不好", "bu4hao3", "not good");
 		this.persistEntry("好看", "hao3kan4", "good looking");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good", 25, 0);
-		this.verifySearchResults(entries, "好看", "不好");
+		assertThat(entries, containsSimplified("好看", "不好"));
 	}
 
 	@Test
@@ -241,7 +258,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("看看", "kan4kan4", "look");
 		this.persistEntry("看", "kan4", "look");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("look", 25, 0);
-		this.verifySearchResults(entries, "看", "看看");
+		assertThat(entries, containsSimplified("看", "看看"));
 	}
 
 	@Test
@@ -249,7 +266,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("你好", "ni3hao3", "hello (greeting)");
 		this.persistEntry("喂", "wei4", "hello (on telephone)");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("hello", 25, 0);
-		this.verifySearchResults(entries, "喂", "你好");
+		assertThat(entries, containsSimplified("喂", "你好"));
 	}
 
 	@Test
@@ -257,7 +274,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("很好看", "hao3kan4", "very good looking");
 		this.persistEntry("好听", "hao3ting1", "sound good");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good", 25, 0);
-		this.verifySearchResults(entries, "好听", "很好看");
+		assertThat(entries, containsSimplified("好听", "很好看"));
 	}
 
 	@Test
@@ -265,7 +282,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好听", "hao3ting1", "sound good");
 		this.persistEntry("好看", "hao3kan4", "look good");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good", 25, 0);
-		this.verifySearchResults(entries, "好看", "好听");
+		assertThat(entries, containsSimplified("好看", "好听"));
 	}
 
 	@Test
@@ -273,7 +290,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("不能", "bu4neng2", "cannot");
 		this.persistEntry("可作", "ke3zuo4", "can be used for");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("can", 25, 0);
-		this.verifySearchResults(entries, "可作", "不能");
+		assertThat(entries, containsSimplified("可作", "不能"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -292,7 +309,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
 		this.persistEntry("好听", "hao3ting1", "good sounding");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good", 2, 0);
-		this.verifySearchResults(entries, "好看", "好听");
+		assertThat(entries, containsSimplified("好看", "好听"));
 	}
 
 	@Test
@@ -301,7 +318,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
 		this.persistEntry("好听", "hao3ting1", "good sounding");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("good", 2, 2);
-		this.verifySearchResults(entries, "不好");
+		assertThat(entries, containsSimplified("不好"));
 	}
 
 	@Test
@@ -309,7 +326,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("你好", "ni3hao3", "hello (greeting)");
 		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 25, 0);
-		this.verifySearchResults(entries, "好看", "你好");
+		assertThat(entries, containsSimplified("好看", "你好"));
 	}
 
 	@Test
@@ -327,7 +344,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好久不见", "hao3jiu3bu4jian4", "long time no see");
 		this.persistEntry("好看", "hao3kan4", "good looking");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 25, 0);
-		this.verifySearchResults(entries, "好看", "好久不见");
+		assertThat(entries, containsSimplified("好看", "好久不见"));
 	}
 
 	@Test
@@ -335,7 +352,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好久不见", "hao3jiu3bu4jian4", "long time no see");
 		this.persistEntry("看见", "kan4jian4", "to see");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("见", 25, 0);
-		this.verifySearchResults(entries, "看见", "好久不见");
+		assertThat(entries, containsSimplified("看见", "好久不见"));
 	}
 
 	@Test
@@ -343,7 +360,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好听", "hao3ting1", "good sounding");
 		this.persistEntry("好看", "hao3kan4", "good looking");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 25, 0);
-		this.verifySearchResults(entries, "好看", "好听");
+		assertThat(entries, containsSimplified("好看", "好听"));
 	}
 
 	@Test
@@ -351,7 +368,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("你好", "ni3hao3", "hello (greeting)");
 		this.persistEntry("不好", "bu4hao3", "not good");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 25, 0);
-		this.verifySearchResults(entries, "不好", "你好");
+		assertThat(entries, containsSimplified("不好", "你好"));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
@@ -370,7 +387,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
 		this.persistEntry("好棒", "hao3bang4", "excellent");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 2, 0);
-		this.verifySearchResults(entries, "好棒", "好看");
+		assertThat(entries, containsSimplified("好棒", "好看"));
 	}
 
 	@Test
@@ -379,7 +396,7 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
 		this.persistEntry("好棒", "hao3bang4", "excellent");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 2, 2);
-		this.verifySearchResults(entries, "你好");
+		assertThat(entries, containsSimplified("你好"));
 	}
 
 }

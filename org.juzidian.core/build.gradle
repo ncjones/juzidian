@@ -20,6 +20,7 @@ dependencies {
 	compile "org.slf4j:slf4j-api:${slf4jVersion}"
 	generate project(':org.juzidian.build.pinyin')
 	testCompile "junit:junit:${junitVersion}"
+	testCompile "org.hamcrest:hamcrest-library:1.3"
 	testCompile 'com.j256.ormlite:ormlite-jdbc:4.42'
 	testCompile 'org.xerial:sqlite-jdbc:3.7.2'
 }
