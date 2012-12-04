@@ -37,8 +37,8 @@ public enum SearchType {
 	 */
 	HANZI {
 		@Override
-		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query) {
-			return dictionary.findChinese(query);
+		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query, final long limit, final long offset) {
+			return dictionary.findChinese(query, limit, offset);
 		}
 	},
 
@@ -47,8 +47,8 @@ public enum SearchType {
 	 */
 	PINYIN {
 		@Override
-		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query) {
-			return dictionary.findPinyin(query);
+		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query, final long limit, final long offset) {
+			return dictionary.findPinyin(query, limit, offset);
 		}
 	},
 
@@ -57,8 +57,8 @@ public enum SearchType {
 	 */
 	REVERSE {
 		@Override
-		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query) {
-			return dictionary.findDefinitions(query);
+		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query, final long limit, final long offset) {
+			return dictionary.findDefinitions(query, limit, offset);
 		}
 	};
 
@@ -85,9 +85,11 @@ public enum SearchType {
 	 * 
 	 * @param dictionary a dictionary to search.
 	 * @param query the query string to search for.
+	 * @param limit the maximum number of results to find.
+	 * @param offset the result index to start searching from.
 	 * @return the dictionary's search result.
 	 */
-	abstract List<DictionaryEntry> doSearch(Dictionary dictionary, String query);
+	abstract List<DictionaryEntry> doSearch(Dictionary dictionary, String query, long limit, long offset);
 
 	/**
 	 * Get the search types that are applicable for the given text.

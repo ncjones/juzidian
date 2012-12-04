@@ -58,10 +58,16 @@ public class Dictionary {
 	 * @throws IllegalArgumentException if page size or page number are
 	 *         negative.
 	 */
-	public List<DictionaryEntry> find(final String queryString, final SearchType searchType, final int pageSize, final int pageIndex) {
-		LOGGER.debug("Find entries: " + searchType + ", " + queryString);
+	public List<DictionaryEntry> find(final String queryString, final SearchType searchType, final long pageSize, final long pageIndex) {
+		if (pageSize < 0) {
+			throw new IllegalArgumentException("pageSize is negative");
+		}
+		if (pageIndex < 0) {
+			throw new IllegalArgumentException("pageIndex is negative");
+		}
+		LOGGER.debug("Find entries: {}, {} ({}/{})", new Object[] { searchType, queryString, pageSize, pageIndex });
 		final long start = System.nanoTime();
-		final List<DictionaryEntry> searchResults = searchType.doSearch(this, queryString);
+		final List<DictionaryEntry> searchResults = searchType.doSearch(this, queryString, pageSize, pageSize * pageIndex);
 		final long end = System.nanoTime();
 		LOGGER.info("Found {} words matching '{}' in {} seconds.", new Object[] { searchResults.size(), queryString,
 				((end - start) / 1000 / 1000 / 1000f) });
@@ -74,11 +80,13 @@ public class Dictionary {
 	 * 
 	 * @param queryString Chinese characters (simplified or traditional) to
 	 *        search for.
+	 * @param limit the maximum number of results to find.
+	 * @param offset the result index to start searching from.
 	 * @return a list of {@link DictionaryEntry}.
 	 */
-	List<DictionaryEntry> findChinese(final String queryString) {
+	List<DictionaryEntry> findChinese(final String queryString, final long limit, final long offset) {
 		LOGGER.debug("Find chinese: " + queryString);
-		return this.dataStore.findChinese(queryString, 25, 0);
+		return this.dataStore.findChinese(queryString, limit, offset);
 	}
 
 	/**
@@ -86,12 +94,14 @@ public class Dictionary {
 	 * romanisation query string.
 	 * 
 	 * @param queryString Pinyin syllables to search for.
+	 * @param limit the maximum number of results to find.
+	 * @param offset the result index to start searching from.
 	 * @return a list of {@link DictionaryEntry}.
 	 */
-	List<DictionaryEntry> findPinyin(final String queryString) {
+	List<DictionaryEntry> findPinyin(final String queryString, final long limit, final long offset) {
 		LOGGER.debug("Find pinyin: " + queryString);
 		final List<PinyinSyllable> pinyinSyllables = this.pinyinParser.parse(queryString);
-		return this.dataStore.findPinyin(pinyinSyllables, 25, 0);
+		return this.dataStore.findPinyin(pinyinSyllables, limit, offset);
 	}
 
 	/**
@@ -99,11 +109,13 @@ public class Dictionary {
 	 * word query string.
 	 * 
 	 * @param queryString English words or partial words.
+	 * @param limit the maximum number of results to find.
+	 * @param offset the result index to start searching from.
 	 * @return a list of {@link DictionaryEntry}.
 	 */
-	List<DictionaryEntry> findDefinitions(final String queryString) {
+	List<DictionaryEntry> findDefinitions(final String queryString, final long limit, final long offset) {
 		LOGGER.debug("Find definitions: " + queryString);
-		return this.dataStore.findDefinitions(queryString, 25, 0);
+		return this.dataStore.findDefinitions(queryString, limit, offset);
 	}
 
 }
