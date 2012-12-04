@@ -25,6 +25,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
 import java.text.MessageFormat;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.juzidian.core.Dictionary;
@@ -43,6 +44,8 @@ import com.j256.ormlite.support.ConnectionSource;
  * A basic command-line interface for performing dictionary searches.
  */
 public class JuzidianCli {
+
+	private static final int PAGE_SIZE = 1000;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JuzidianCli.class);
 
@@ -71,7 +74,7 @@ public class JuzidianCli {
 		final long freeMemory = runtime.freeMemory();
 		LOGGER.debug(MessageFormat.format("Memory used: {0}KB", (totalMemory - freeMemory) / 1024));
 		final String queryString = args[1];
-		final List<DictionaryEntry> foundCharacters = dictionary.find(queryString, searchType, 1000, 0);
+		final List<DictionaryEntry> foundCharacters = findAllWords(dictionary, queryString, searchType);
 		printSearchResults(foundCharacters);
 	}
 
@@ -91,6 +94,18 @@ public class JuzidianCli {
 		}
 		in.close();
 		out.close();
+	}
+
+	private static List<DictionaryEntry> findAllWords(final Dictionary dictionary, final String queryString, final SearchType searchType) {
+		final List<DictionaryEntry> allEntries = new ArrayList<DictionaryEntry>();
+		int pageNumber = 0;
+		List<DictionaryEntry> entries;
+		do {
+			entries = dictionary.find(queryString, searchType, PAGE_SIZE, pageNumber);
+			allEntries.addAll(entries);
+			pageNumber += 1;
+		} while (entries.size() == PAGE_SIZE);
+		return allEntries;
 	}
 
 	private static void printSearchResults(final List<DictionaryEntry> entries) {
