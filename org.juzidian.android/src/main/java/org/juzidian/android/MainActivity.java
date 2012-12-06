@@ -17,9 +17,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.ListAdapter;
-import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -82,39 +79,24 @@ public class MainActivity extends Activity implements DictionarySearchTaskListen
 
 	public void doSearch(@SuppressWarnings("unused") final View view) {
 		final SearchBar searchBar = this.getSearchBar();
-		this.showLoadingIndicator(true);
+		this.getSearchResultsView().showLoadingIndicator(true);
 		final DictionarySearchTask dictionarySearchTask = new DictionarySearchTask(this.dictionary, this);
 		dictionarySearchTask.execute(searchBar.getSearchQuery());
-	}
-
-	private void showLoadingIndicator(final boolean show) {
-		if (show) {
-			this.getSearchResultListView().setVisibility(View.GONE);
-			this.getSearchLoadingIndicator().setVisibility(View.VISIBLE);
-		} else {
-			this.getSearchLoadingIndicator().setVisibility(View.GONE);
-			this.getSearchResultListView().setVisibility(View.VISIBLE);
-		}
 	}
 
 	private SearchBar getSearchBar() {
 		return (SearchBar) this.findViewById(R.id.searchBar);
 	}
 
-	private ProgressBar getSearchLoadingIndicator() {
-		return (ProgressBar) this.findViewById(R.id.searchLoadingIndicator);
-	}
-
-	private ListView getSearchResultListView() {
-		return (ListView) this.findViewById(R.id.searchResultsListView);
+	private SearchResultsView getSearchResultsView() {
+		return (SearchResultsView) this.findViewById(R.id.searchResultsView);
 	}
 
 	@Override
 	public void searchComplete(final List<DictionaryEntry> searchResults) {
-		final ListView listView = this.getSearchResultListView();
-		final ListAdapter adapter = new SearchResultsListAdapter(listView.getContext(), searchResults);
-		listView.setAdapter(adapter);
-		this.showLoadingIndicator(false);
+		final SearchResultsView searchResultsView = this.getSearchResultsView();
+		searchResultsView.setSearchResults(searchResults);
+		searchResultsView.showLoadingIndicator(false);
 	}
 
 }

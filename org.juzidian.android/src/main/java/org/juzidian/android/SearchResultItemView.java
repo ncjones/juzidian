@@ -29,9 +29,9 @@ import android.widget.TextView;
 /**
  * Display a dictionary entry as a search result.
  */
-public class SearchResultView extends TextView {
+public class SearchResultItemView extends TextView {
 
-	public SearchResultView(final Context context, final DictionaryEntry entry) {
+	public SearchResultItemView(final Context context, final DictionaryEntry entry) {
 		super(context);
 		final String pinyinDisplay = this.createPinyinDisplay(entry);
 		final String englishDefinitionDisplay = this.createEnglishDefinitionDisplay(entry);

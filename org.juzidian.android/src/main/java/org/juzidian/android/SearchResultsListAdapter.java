@@ -38,7 +38,7 @@ public class SearchResultsListAdapter extends ArrayAdapter<DictionaryEntry> {
 
 	@Override
 	public View getView(final int position, final View convertView, final ViewGroup parent) {
-		return new SearchResultView(parent.getContext(), this.getItem(position));
+		return new SearchResultItemView(parent.getContext(), this.getItem(position));
 	}
 
 }
