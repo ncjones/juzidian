@@ -17,7 +17,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.ProgressBar;
 
 import com.google.inject.Guice;
@@ -81,30 +82,39 @@ public class MainActivity extends Activity implements DictionarySearchTaskListen
 
 	public void doSearch(@SuppressWarnings("unused") final View view) {
 		final SearchBar searchBar = this.getSearchBar();
-		final LinearLayout searchResultLayout = this.getSearchResultLayout();
-		searchResultLayout.removeAllViews();
-		final ProgressBar progressBar = new ProgressBar(searchResultLayout.getContext());
-		searchResultLayout.addView(progressBar);
+		this.showLoadingIndicator(true);
 		final DictionarySearchTask dictionarySearchTask = new DictionarySearchTask(this.dictionary, this);
 		dictionarySearchTask.execute(searchBar.getSearchQuery());
+	}
+
+	private void showLoadingIndicator(final boolean show) {
+		if (show) {
+			this.getSearchResultListView().setVisibility(View.GONE);
+			this.getSearchLoadingIndicator().setVisibility(View.VISIBLE);
+		} else {
+			this.getSearchLoadingIndicator().setVisibility(View.GONE);
+			this.getSearchResultListView().setVisibility(View.VISIBLE);
+		}
 	}
 
 	private SearchBar getSearchBar() {
 		return (SearchBar) this.findViewById(R.id.searchBar);
 	}
 
-	private LinearLayout getSearchResultLayout() {
-		return (LinearLayout) this.findViewById(R.id.searchResultLayout);
+	private ProgressBar getSearchLoadingIndicator() {
+		return (ProgressBar) this.findViewById(R.id.searchLoadingIndicator);
+	}
+
+	private ListView getSearchResultListView() {
+		return (ListView) this.findViewById(R.id.searchResultsListView);
 	}
 
 	@Override
 	public void searchComplete(final List<DictionaryEntry> searchResults) {
-		final LinearLayout searchResultLayout = this.getSearchResultLayout();
-		searchResultLayout.removeAllViews();
-		for (final DictionaryEntry chineseWord : searchResults) {
-			final SearchResultView searchResultView = new SearchResultView(searchResultLayout.getContext(), chineseWord);
-			searchResultLayout.addView(searchResultView);
-		}
+		final ListView listView = this.getSearchResultListView();
+		final ListAdapter adapter = new SearchResultsListAdapter(listView.getContext(), searchResults);
+		listView.setAdapter(adapter);
+		this.showLoadingIndicator(false);
 	}
 
 }

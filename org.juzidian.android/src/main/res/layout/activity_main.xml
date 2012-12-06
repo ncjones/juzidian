@@ -6,24 +6,25 @@
 
     <org.juzidian.android.SearchBar
 		android:id="@+id/searchBar"
-		android:layout_width="fill_parent"
+		android:layout_width="match_parent"
 		android:layout_height="wrap_content"/>
-
-	<ScrollView
-		android:id="@+id/searchResultScrollView"
+    
+	<ListView
+		android:id="@+id/searchResultsListView"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentBottom="true"
 		android:layout_alignParentLeft="true"
 		android:layout_alignParentRight="true"
 		android:layout_below="@+id/searchBar" >
-
-		<LinearLayout
-			android:id="@+id/searchResultLayout"
-			android:layout_width="match_parent"
-			android:layout_height="wrap_content"
-			android:orientation="vertical" >
-		</LinearLayout>
-	</ScrollView>
-
+	</ListView>
+	
+	<ProgressBar
+	    android:id="@+id/searchLoadingIndicator"
+		android:layout_below="@+id/searchBar"
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+	    android:visibility="gone">
+	</ProgressBar>
+    
 </RelativeLayout>
