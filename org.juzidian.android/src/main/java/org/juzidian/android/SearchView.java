@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.SearchType;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -60,7 +61,8 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 	}
 
 	@Override
-	public void searchTriggered(final SearchQuery searchQuery) {
+	public void searchTriggered(final SearchType searchType, final String searchText) {
+		final SearchQuery searchQuery = new SearchQuery(searchType, searchText);
 		this.doSearch(searchQuery);
 	}
 

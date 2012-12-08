@@ -18,11 +18,13 @@
  */
 package org.juzidian.android;
 
+import org.juzidian.core.SearchType;
+
 /**
  * Listener which is notified when a search is triggered.
  */
 public interface SearchTriggerListener {
 
-	void searchTriggered(SearchQuery searchQuery);
+	void searchTriggered(SearchType searchType, String searchText);
 
 }
