@@ -26,7 +26,6 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
@@ -36,9 +35,14 @@ import android.widget.RelativeLayout;
  */
 public class SearchResultsView extends RelativeLayout {
 
+	private final SearchResultsListAdapter searchResultsListAdapter;
+
 	public SearchResultsView(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		LayoutInflater.from(context).inflate(R.layout.search_results, this, true);
+		final ListView listView = this.getSearchResultListView();
+		this.searchResultsListAdapter = new SearchResultsListAdapter(listView.getContext());
+		listView.setAdapter(this.searchResultsListAdapter);
 	}
 
 	private ProgressBar getSearchLoadingIndicator() {
@@ -59,10 +63,13 @@ public class SearchResultsView extends RelativeLayout {
 		}
 	}
 
-	public void setSearchResults(final List<DictionaryEntry> searchResults) {
-		final ListView listView = this.getSearchResultListView();
-		final ListAdapter adapter = new SearchResultsListAdapter(listView.getContext(), searchResults);
-		listView.setAdapter(adapter);
+	public void clearSearchResults() {
+		this.searchResultsListAdapter.clear();
+	}
+
+	public void addSearchResults(final List<DictionaryEntry> searchResults) {
+		final SearchResultsListAdapter adapter = this.searchResultsListAdapter;
+		adapter.addAll(searchResults);
 	}
 
 }

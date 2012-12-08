@@ -18,8 +18,6 @@
  */
 package org.juzidian.android;
 
-import java.util.List;
-
 import org.juzidian.core.DictionaryEntry;
 
 import android.content.Context;
@@ -32,8 +30,8 @@ import android.widget.ArrayAdapter;
  */
 public class SearchResultsListAdapter extends ArrayAdapter<DictionaryEntry> {
 
-	public SearchResultsListAdapter(final Context context, final List<DictionaryEntry> entries) {
-		super(context, android.R.id.text1, entries);
+	public SearchResultsListAdapter(final Context context) {
+		super(context, android.R.id.text1);
 	}
 
 	@Override
