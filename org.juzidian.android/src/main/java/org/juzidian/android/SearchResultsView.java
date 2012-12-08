@@ -25,9 +25,7 @@ import org.juzidian.core.DictionaryEntry;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 
 /**
@@ -45,22 +43,12 @@ public class SearchResultsView extends RelativeLayout {
 		listView.setAdapter(this.searchResultsListAdapter);
 	}
 
-	private ProgressBar getSearchLoadingIndicator() {
-		return (ProgressBar) this.findViewById(R.id.searchLoadingIndicator);
-	}
-
 	private ListView getSearchResultListView() {
 		return (ListView) this.findViewById(R.id.searchResultsListView);
 	}
 
 	public void showLoadingIndicator(final boolean show) {
-		if (show) {
-			this.getSearchResultListView().setVisibility(View.GONE);
-			this.getSearchLoadingIndicator().setVisibility(View.VISIBLE);
-		} else {
-			this.getSearchLoadingIndicator().setVisibility(View.GONE);
-			this.getSearchResultListView().setVisibility(View.VISIBLE);
-		}
+		this.searchResultsListAdapter.setLoading(show);
 	}
 
 	public void clearSearchResults() {

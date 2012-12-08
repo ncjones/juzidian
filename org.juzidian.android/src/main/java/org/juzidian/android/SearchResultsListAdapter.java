@@ -24,19 +24,35 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 
 /**
  * A list adaptor for rendering search results.
  */
 public class SearchResultsListAdapter extends ArrayAdapter<DictionaryEntry> {
 
+	private boolean loading;
+
 	public SearchResultsListAdapter(final Context context) {
 		super(context, android.R.id.text1);
 	}
 
+	public void setLoading(final boolean loading) {
+		this.loading = loading;
+		super.notifyDataSetChanged();
+	}
+
 	@Override
 	public View getView(final int position, final View convertView, final ViewGroup parent) {
+		if (this.loading && position == this.getCount() - 1) {
+			return new ProgressBar(parent.getContext());
+		}
 		return new SearchResultItemView(parent.getContext(), this.getItem(position));
+	}
+
+	@Override
+	public int getCount() {
+		return super.getCount() + (this.loading ? 1 : 0);
 	}
 
 }
