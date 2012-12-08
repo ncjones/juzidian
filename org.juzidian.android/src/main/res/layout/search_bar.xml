@@ -54,7 +54,6 @@
 		android:layout_alignParentRight="true"
 		android:layout_alignTop="@+id/searchTypeRadioGroup"
 		android:enabled="false"
-		android:onClick="doSearch"
 		android:text="@string/submit_search" />
 
 </merge>

@@ -27,23 +27,29 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 /**
  * Search bar UI component.
  */
 public class SearchBar extends RelativeLayout {
 
+	private SearchTriggerListener searchTriggerListener;
+
 	public SearchBar(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		LayoutInflater.from(context).inflate(R.layout.search_bar, this, true);
-		final TextView searchInput = this.getSearchInput();
-		searchInput.addTextChangedListener(new SearchTextChangeListener());
+		this.getSearchInput().addTextChangedListener(new SearchTextChangeListener());
+		this.getSearchButton().setOnClickListener(new SearchButtonClickListener());
+	}
+
+	public void setSearchTriggerListener(final SearchTriggerListener searchTriggerListener) {
+		this.searchTriggerListener = searchTriggerListener;
 	}
 
 	public SearchQuery getSearchQuery() {
@@ -87,6 +93,10 @@ public class SearchBar extends RelativeLayout {
 		throw new IllegalArgumentException("Invalid search type radio button id: " + searchTypeRadioButtonId);
 	}
 
+	private void searchTriggered() {
+		this.searchTriggerListener.searchTriggered(this.getSearchQuery());
+	}
+
 	private class SearchTextChangeListener implements TextWatcher {
 
 		@Override
@@ -110,6 +120,15 @@ public class SearchBar extends RelativeLayout {
 
 		@Override
 		public void onTextChanged(final CharSequence arg0, final int arg1, final int arg2, final int arg3) {
+		}
+
+	}
+
+	private class SearchButtonClickListener implements OnClickListener {
+
+		@Override
+		public void onClick(final View arg0) {
+			SearchBar.this.searchTriggered();
 		}
 
 	}

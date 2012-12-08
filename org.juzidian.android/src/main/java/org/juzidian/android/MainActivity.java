@@ -16,7 +16,6 @@ import android.app.Activity;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.view.Menu;
-import android.view.View;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -43,6 +42,12 @@ public class MainActivity extends Activity implements DictionarySearchTaskListen
 			}
 		});
 		this.dictionary = injector.getInstance(Dictionary.class);
+		this.getSearchBar().setSearchTriggerListener(new SearchTriggerListener() {
+			@Override
+			public void searchTriggered(final SearchQuery searchQuery) {
+				MainActivity.this.doSearch(searchQuery);
+			}
+		});
 	}
 
 	private void initializeDbFile() {
@@ -77,11 +82,10 @@ public class MainActivity extends Activity implements DictionarySearchTaskListen
 		return true;
 	}
 
-	public void doSearch(@SuppressWarnings("unused") final View view) {
-		final SearchBar searchBar = this.getSearchBar();
+	private void doSearch(final SearchQuery searchQuery) {
 		this.getSearchResultsView().showLoadingIndicator(true);
 		final DictionarySearchTask dictionarySearchTask = new DictionarySearchTask(this.dictionary, this);
-		dictionarySearchTask.execute(searchBar.getSearchQuery());
+		dictionarySearchTask.execute(searchQuery);
 	}
 
 	private SearchBar getSearchBar() {
