@@ -6,10 +6,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.sql.SQLException;
-import java.util.List;
 
 import org.juzidian.core.Dictionary;
-import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.inject.DictionaryModule;
 
 import android.app.Activity;
@@ -22,11 +20,9 @@ import com.google.inject.Injector;
 import com.j256.ormlite.android.AndroidConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
-public class MainActivity extends Activity implements DictionarySearchTaskListener {
+public class MainActivity extends Activity {
 
 	private static final String DICTIONARY_DB_PATH = "/data/data/org.juzidian.android/juzidian-dictionary.db";
-
-	private Dictionary dictionary;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -41,13 +37,7 @@ public class MainActivity extends Activity implements DictionarySearchTaskListen
 				return new AndroidConnectionSource(sqliteDb);
 			}
 		});
-		this.dictionary = injector.getInstance(Dictionary.class);
-		this.getSearchBar().setSearchTriggerListener(new SearchTriggerListener() {
-			@Override
-			public void searchTriggered(final SearchQuery searchQuery) {
-				MainActivity.this.doSearch(searchQuery);
-			}
-		});
+		this.getSearchView().setDictionary(injector.getInstance(Dictionary.class));
 	}
 
 	private void initializeDbFile() {
@@ -82,25 +72,8 @@ public class MainActivity extends Activity implements DictionarySearchTaskListen
 		return true;
 	}
 
-	private void doSearch(final SearchQuery searchQuery) {
-		this.getSearchResultsView().showLoadingIndicator(true);
-		final DictionarySearchTask dictionarySearchTask = new DictionarySearchTask(this.dictionary, this);
-		dictionarySearchTask.execute(searchQuery);
-	}
-
-	private SearchBar getSearchBar() {
-		return (SearchBar) this.findViewById(R.id.searchBar);
-	}
-
-	private SearchResultsView getSearchResultsView() {
-		return (SearchResultsView) this.findViewById(R.id.searchResultsView);
-	}
-
-	@Override
-	public void searchComplete(final List<DictionaryEntry> searchResults) {
-		final SearchResultsView searchResultsView = this.getSearchResultsView();
-		searchResultsView.setSearchResults(searchResults);
-		searchResultsView.showLoadingIndicator(false);
+	private SearchView getSearchView() {
+		return (SearchView) this.findViewById(R.id.searchView);
 	}
 
 }

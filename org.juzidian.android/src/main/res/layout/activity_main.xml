@@ -1,21 +1,7 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<org.juzidian.android.SearchView xmlns:android="http://schemas.android.com/apk/res/android"
 	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/searchView"
 	android:layout_width="wrap_content"
 	android:layout_height="wrap_content"
 	android:orientation="vertical" >
-
-    <org.juzidian.android.SearchBar
-		android:id="@+id/searchBar"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"/>
-    
-	<org.juzidian.android.SearchResultsView
-	    android:id="@+id/searchResultsView"
-	    android:layout_width="match_parent"
-	    android:layout_height="match_parent"
-	    android:layout_alignParentBottom="true"
-	    android:layout_alignParentLeft="true"
-	    android:layout_alignParentRight="true"
-	    android:layout_below="@+id/searchBar"/>
-    
-</RelativeLayout>
+</org.juzidian.android.SearchView>
