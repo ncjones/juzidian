@@ -21,7 +21,8 @@ package org.juzidian.android;
 import org.juzidian.core.SearchType;
 
 /**
- * A dictionary search query including search type and search text.
+ * A dictionary search query including search type and text and pagination
+ * bounds.
  */
 public class SearchQuery {
 
@@ -29,9 +30,15 @@ public class SearchQuery {
 
 	private final String searchText;
 
-	public SearchQuery(final SearchType searchType, final String searchText) {
+	private final int pageSize;
+
+	private final int pageIndex;
+
+	public SearchQuery(final SearchType searchType, final String searchText, final int pageSize, final int pageIndex) {
 		this.searchType = searchType;
 		this.searchText = searchText;
+		this.pageSize = pageSize;
+		this.pageIndex = pageIndex;
 	}
 
 	public SearchType getSearchType() {
@@ -40,6 +47,14 @@ public class SearchQuery {
 
 	public String getSearchText() {
 		return this.searchText;
+	}
+
+	public int getPageSize() {
+		return this.pageSize;
+	}
+
+	public int getPageIndex() {
+		return this.pageIndex;
 	}
 
 }

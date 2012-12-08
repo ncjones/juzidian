@@ -62,7 +62,7 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 
 	@Override
 	public void searchTriggered(final SearchType searchType, final String searchText) {
-		final SearchQuery searchQuery = new SearchQuery(searchType, searchText);
+		final SearchQuery searchQuery = new SearchQuery(searchType, searchText, 25, 0);
 		this.doSearch(searchQuery);
 	}
 
