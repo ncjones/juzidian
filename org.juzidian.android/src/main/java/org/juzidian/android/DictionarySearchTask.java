@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.SearchQuery;
 
 import android.os.AsyncTask;
 
@@ -42,8 +43,7 @@ public class DictionarySearchTask extends AsyncTask<SearchQuery, Void, List<Dict
 	@Override
 	protected List<DictionaryEntry> doInBackground(final SearchQuery... searchQueries) {
 		final SearchQuery searchQuery = searchQueries[0];
-		return this.dictionary.find(searchQuery.getSearchText(), searchQuery.getSearchType(), searchQuery.getPageSize(),
-				searchQuery.getPageIndex());
+		return this.dictionary.find(searchQuery);
 	}
 
 	@Override

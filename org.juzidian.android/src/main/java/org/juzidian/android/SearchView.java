@@ -22,6 +22,7 @@ import java.util.List;
 
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.SearchQuery;
 import org.juzidian.core.SearchType;
 
 import android.content.Context;

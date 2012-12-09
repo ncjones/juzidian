@@ -46,47 +46,47 @@ public class DictionaryTest {
 
 	@Test(expected = IllegalArgumentException.class)
 	public void findShouldRejectNegativePageSize() {
-		this.dictionary.find("han", PINYIN, -5, 0);
+		this.dictionary.find(new SearchQuery(PINYIN, "han", -5, 0));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void findShouldRejectNegativePageIndex() {
-		this.dictionary.find("han", PINYIN, 5, -1);
+		this.dictionary.find(new SearchQuery(PINYIN, "han", 5, -1));
 	}
 
 	@Test
 	public void findPinyinShouldInvokeDataStoreFindPinyin() {
-		this.dictionary.find("han", PINYIN, 5, 0);
+		this.dictionary.find(new SearchQuery(PINYIN, "han", 5, 0));
 		Mockito.verify(this.dataStore).findPinyin(Arrays.asList(new PinyinSyllable("han")), 5, 0);
 	}
 
 	@Test
 	public void findHanziShouldInvokeDataStoreFindChinese() {
-		this.dictionary.find("汉", HANZI, 5, 0);
+		this.dictionary.find(new SearchQuery(HANZI, "汉", 5, 0));
 		Mockito.verify(this.dataStore).findChinese("汉", 5, 0);
 	}
 
 	@Test
 	public void findReverseShouldInvokeDataStoreFindDefinitions() {
-		this.dictionary.find("foo", REVERSE, 5, 0);
+		this.dictionary.find(new SearchQuery(REVERSE, "foo", 5, 0));
 		Mockito.verify(this.dataStore).findDefinitions("foo", 5, 0);
 	}
 
 	@Test
 	public void findPinyinShouldInvokeDataStoreFindPinyinWithPageOffset() {
-		this.dictionary.find("han", PINYIN, 5, 2);
+		this.dictionary.find(new SearchQuery(PINYIN, "han", 5, 2));
 		Mockito.verify(this.dataStore).findPinyin(Matchers.<List<PinyinSyllable>> any(), eq(5L), eq(10L));
 	}
 
 	@Test
 	public void findHanziShouldInvokeDataStoreFindChineseWithPageOffset() {
-		this.dictionary.find("汉", HANZI, 5, 2);
+		this.dictionary.find(new SearchQuery(HANZI, "汉", 5, 2));
 		Mockito.verify(this.dataStore).findChinese(anyString(), eq(5L), eq(10L));
 	}
 
 	@Test
 	public void findReverseShouldInvokeDataStoreFindDefinitionsWithPageOffset() {
-		this.dictionary.find("foo", REVERSE, 5, 2);
+		this.dictionary.find(new SearchQuery(REVERSE, "foo", 5, 2));
 		Mockito.verify(this.dataStore).findDefinitions(anyString(), eq(5L), eq(10L));
 	}
 

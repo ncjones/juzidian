@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.android;
-
-import org.juzidian.core.SearchType;
+package org.juzidian.core;
 
 /**
- * A dictionary search query including search type and text and pagination
+ * A dictionary search query including search type, search text and pagination
  * bounds.
  */
 public class SearchQuery {
@@ -34,7 +32,30 @@ public class SearchQuery {
 
 	private final int pageIndex;
 
+	/**
+	 * Create a dictionary search query.
+	 * 
+	 * @param queryString Chinese characters, Pinyin syllables or English words.
+	 * @param searchType the {@link SearchType} indicating how to interpret the
+	 *        query string.
+	 * @param pageSize the number of entries included in each page of results.
+	 * @param pageIndex the index of the page of results to get.
+	 * @throws IllegalArgumentException if search type or search text are null
+	 *         or page size or page number are negative.
+	 */
 	public SearchQuery(final SearchType searchType, final String searchText, final int pageSize, final int pageIndex) {
+		if (searchType == null) {
+			throw new IllegalArgumentException("searchType is null");
+		}
+		if (searchText == null) {
+			throw new IllegalArgumentException("searchText is null");
+		}
+		if (pageSize < 0) {
+			throw new IllegalArgumentException("pageSize is negative");
+		}
+		if (pageIndex < 0) {
+			throw new IllegalArgumentException("pageIndex is negative");
+		}
 		this.searchType = searchType;
 		this.searchText = searchText;
 		this.pageSize = pageSize;
@@ -55,6 +76,12 @@ public class SearchQuery {
 
 	public int getPageIndex() {
 		return this.pageIndex;
+	}
+
+	@Override
+	public String toString() {
+		return "SearchQuery [searchType=" + this.searchType + ", searchText=" + this.searchText + ", pageSize=" + this.pageSize
+				+ ", pageIndex=" + this.pageIndex + "]";
 	}
 
 }

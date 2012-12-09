@@ -30,6 +30,7 @@ import java.util.List;
 
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.SearchQuery;
 import org.juzidian.core.SearchType;
 import org.juzidian.core.inject.DictionaryModule;
 import org.slf4j.Logger;
@@ -101,7 +102,7 @@ public class JuzidianCli {
 		int pageNumber = 0;
 		List<DictionaryEntry> entries;
 		do {
-			entries = dictionary.find(queryString, searchType, PAGE_SIZE, pageNumber);
+			entries = dictionary.find(new SearchQuery(searchType, queryString, PAGE_SIZE, pageNumber));
 			allEntries.addAll(entries);
 			pageNumber += 1;
 		} while (entries.size() == PAGE_SIZE);

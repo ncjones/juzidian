@@ -42,34 +42,22 @@ public class Dictionary {
 	}
 
 	/**
-	 * Find all Chinese words that match the search criteria, restricted to the
-	 * given pagination bounds.
+	 * Find all Chinese words that match the search criteria and pagination
+	 * bounds.
 	 * <p>
-	 * If the number of results returned is less than the given page size then
-	 * queries for subsequent pages will return empty results.
+	 * If the number of results returned is less than the given query page size
+	 * then queries for subsequent pages will return empty results.
 	 * 
-	 * @param queryString Chinese characters, Pinyin syllables or English words.
-	 * @param searchType the {@link SearchType} indicating how to interpret the
-	 *        query string.
-	 * @param pageSize the number of entries included in each page of results
-	 *        (if possible).
-	 * @param pageIndex the index of the page of results to get.
+	 * @param query the {@link SearchQuery} to find entries for.
 	 * @return a list of {@link DictionaryEntry}.
-	 * @throws IllegalArgumentException if page size or page number are
-	 *         negative.
 	 */
-	public List<DictionaryEntry> find(final String queryString, final SearchType searchType, final long pageSize, final long pageIndex) {
-		if (pageSize < 0) {
-			throw new IllegalArgumentException("pageSize is negative");
-		}
-		if (pageIndex < 0) {
-			throw new IllegalArgumentException("pageIndex is negative");
-		}
-		LOGGER.debug("Find entries: {}, {} ({}/{})", new Object[] { searchType, queryString, pageSize, pageIndex });
+	public List<DictionaryEntry> find(final SearchQuery query) {
+		LOGGER.debug("Find entries: {}", query);
 		final long start = System.nanoTime();
-		final List<DictionaryEntry> searchResults = searchType.doSearch(this, queryString, pageSize, pageSize * pageIndex);
+		final List<DictionaryEntry> searchResults = query.getSearchType().doSearch(this, query.getSearchText(), query.getPageSize(),
+				query.getPageSize() * query.getPageIndex());
 		final long end = System.nanoTime();
-		LOGGER.info("Found {} words matching '{}' in {} seconds.", new Object[] { searchResults.size(), queryString,
+		LOGGER.info("Found {} words matching '{}' in {} seconds.", new Object[] { searchResults.size(), query.getSearchText(),
 				((end - start) / 1000 / 1000 / 1000f) });
 		return searchResults;
 	}
