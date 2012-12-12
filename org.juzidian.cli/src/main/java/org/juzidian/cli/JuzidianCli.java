@@ -102,7 +102,7 @@ public class JuzidianCli {
 		int pageNumber = 0;
 		List<DictionaryEntry> entries;
 		do {
-			entries = dictionary.find(new SearchQuery(searchType, queryString, PAGE_SIZE, pageNumber));
+			entries = dictionary.find(new SearchQuery(searchType, queryString, PAGE_SIZE, pageNumber)).getEntries();
 			allEntries.addAll(entries);
 			pageNumber += 1;
 		} while (entries.size() == PAGE_SIZE);

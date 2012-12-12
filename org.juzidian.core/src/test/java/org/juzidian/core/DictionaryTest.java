@@ -18,15 +18,19 @@
  */
 package org.juzidian.core;
 
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.is;
 import static org.juzidian.core.SearchType.HANZI;
 import static org.juzidian.core.SearchType.PINYIN;
 import static org.juzidian.core.SearchType.REVERSE;
+import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Matchers.eq;
 
 import java.util.Arrays;
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Matchers;
@@ -88,6 +92,22 @@ public class DictionaryTest {
 	public void findReverseShouldInvokeDataStoreFindDefinitionsWithPageOffset() {
 		this.dictionary.find(new SearchQuery(REVERSE, "foo", 5, 2));
 		Mockito.verify(this.dataStore).findDefinitions(anyString(), eq(5L), eq(10L));
+	}
+
+	@Test
+	public void findEntriesShouldReturnSearchResultsWithDataStoreEntries() {
+		final List<DictionaryEntry> entries = Arrays.asList(Mockito.mock(DictionaryEntry.class), Mockito.mock(DictionaryEntry.class));
+		Mockito.when(this.dataStore.findDefinitions(anyString(), anyLong(), anyLong())).thenReturn(entries);
+		final SearchQuery query = new SearchQuery(REVERSE, "foo", 20, 0);
+		final SearchResults searchResults = this.dictionary.find(query);
+		Assert.assertThat(searchResults.getEntries(), is(equalTo(entries)));
+	}
+
+	@Test
+	public void findEntriesShouldReturnSearchResultsWithGivenPageSize() {
+		final SearchQuery query = new SearchQuery(REVERSE, "foo", 20, 0);
+		final SearchResults searchResults = this.dictionary.find(query);
+		Assert.assertThat(searchResults.getPageSize(), is(equalTo(20)));
 	}
 
 }

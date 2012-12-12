@@ -49,9 +49,9 @@ public class Dictionary {
 	 * then queries for subsequent pages will return empty results.
 	 * 
 	 * @param query the {@link SearchQuery} to find entries for.
-	 * @return a list of {@link DictionaryEntry}.
+	 * @return a {@link SearchResults}.
 	 */
-	public List<DictionaryEntry> find(final SearchQuery query) {
+	public SearchResults find(final SearchQuery query) {
 		LOGGER.debug("Find entries: {}", query);
 		final long start = System.nanoTime();
 		final List<DictionaryEntry> searchResults = query.getSearchType().doSearch(this, query.getSearchText(), query.getPageSize(),
@@ -59,7 +59,7 @@ public class Dictionary {
 		final long end = System.nanoTime();
 		LOGGER.info("Found {} words matching '{}' in {} seconds.", new Object[] { searchResults.size(), query.getSearchText(),
 				((end - start) / 1000 / 1000 / 1000f) });
-		return searchResults;
+		return new SearchResults(query.getPageSize(), searchResults);
 	}
 
 	/**
