@@ -31,14 +31,19 @@ import android.widget.RelativeLayout;
 /**
  * Dictionary search view which contains a {@link SearchBar} and a ListView.
  */
-public class SearchView extends RelativeLayout implements DictionarySearchTaskListener, SearchTriggerListener {
+public class SearchView extends RelativeLayout implements DictionarySearchTaskListener, SearchTriggerListener, PageRequestListener {
+
+	private static final int PAGE_SIZE = 25;
 
 	private Dictionary dictionary;
+
+	private SearchResults currentSearchResults;
 
 	public SearchView(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		LayoutInflater.from(context).inflate(R.layout.search_view, this, true);
 		this.getSearchBar().setSearchTriggerListener(this);
+		this.getSearchResultsView().setPageRequestListener(this);
 	}
 
 	public void setDictionary(final Dictionary dictionary) {
@@ -61,15 +66,30 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 
 	@Override
 	public void searchTriggered(final SearchType searchType, final String searchText) {
-		final SearchQuery searchQuery = new SearchQuery(searchType, searchText, 25, 0);
+		final SearchQuery searchQuery = new SearchQuery(searchType, searchText, PAGE_SIZE, 0);
+		this.currentSearchResults = null;
 		this.getSearchResultsView().clearSearchResults();
 		this.doSearch(searchQuery);
 	}
 
 	@Override
+	public void pageRequested() {
+		final SearchBar searchBar = this.getSearchBar();
+		if (this.currentSearchResults != null) {
+			final SearchQuery searchQuery = new SearchQuery(searchBar.getSearchType(), searchBar.getSearchText(), PAGE_SIZE,
+					this.currentSearchResults.getPageIndex() + 1);
+			this.doSearch(searchQuery);
+		}
+	}
+
+	@Override
 	public void searchComplete(final SearchResults searchResults) {
+		this.currentSearchResults = searchResults;
 		final SearchResultsView searchResultsView = this.getSearchResultsView();
-		searchResultsView.addSearchResults(searchResults);
+		if (searchResults.isLastPage()) {
+			searchResultsView.setAllowMoreResults(false);
+		}
+		searchResultsView.addSearchResults(searchResults.getEntries());
 		searchResultsView.showLoadingIndicator(false);
 	}
 
