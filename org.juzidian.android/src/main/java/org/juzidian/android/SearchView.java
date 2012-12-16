@@ -18,11 +18,9 @@
  */
 package org.juzidian.android;
 
-import java.util.List;
-
 import org.juzidian.core.Dictionary;
-import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.SearchQuery;
+import org.juzidian.core.SearchResults;
 import org.juzidian.core.SearchType;
 
 import android.content.Context;
@@ -69,7 +67,7 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 	}
 
 	@Override
-	public void searchComplete(final List<DictionaryEntry> searchResults) {
+	public void searchComplete(final SearchResults searchResults) {
 		final SearchResultsView searchResultsView = this.getSearchResultsView();
 		searchResultsView.addSearchResults(searchResults);
 		searchResultsView.showLoadingIndicator(false);

@@ -18,9 +18,7 @@
  */
 package org.juzidian.android;
 
-import java.util.List;
-
-import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.SearchResults;
 
 /**
  * Handles results of a dictionary search.
@@ -30,5 +28,5 @@ public interface DictionarySearchTaskListener {
 	/**
 	 * Invoked when a search task has finished executing.
 	 */
-	void searchComplete(List<DictionaryEntry> searchResults);
+	void searchComplete(SearchResults searchResults);
 }

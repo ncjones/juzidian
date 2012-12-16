@@ -18,18 +18,16 @@
  */
 package org.juzidian.android;
 
-import java.util.List;
-
 import org.juzidian.core.Dictionary;
-import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.SearchQuery;
+import org.juzidian.core.SearchResults;
 
 import android.os.AsyncTask;
 
 /**
  * Task to perform asynchronous searches on a dictionary.
  */
-public class DictionarySearchTask extends AsyncTask<SearchQuery, Void, List<DictionaryEntry>> {
+public class DictionarySearchTask extends AsyncTask<SearchQuery, Void, SearchResults> {
 
 	private final Dictionary dictionary;
 
@@ -41,13 +39,13 @@ public class DictionarySearchTask extends AsyncTask<SearchQuery, Void, List<Dict
 	}
 
 	@Override
-	protected List<DictionaryEntry> doInBackground(final SearchQuery... searchQueries) {
+	protected SearchResults doInBackground(final SearchQuery... searchQueries) {
 		final SearchQuery searchQuery = searchQueries[0];
-		return this.dictionary.find(searchQuery).getEntries();
+		return this.dictionary.find(searchQuery);
 	}
 
 	@Override
-	protected void onPostExecute(final List<DictionaryEntry> result) {
+	protected void onPostExecute(final SearchResults result) {
 		this.listener.searchComplete(result);
 	}
 

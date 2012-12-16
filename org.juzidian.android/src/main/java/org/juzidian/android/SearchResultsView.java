@@ -18,9 +18,7 @@
  */
 package org.juzidian.android;
 
-import java.util.List;
-
-import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.SearchResults;
 
 import android.content.Context;
 import android.util.AttributeSet;
@@ -55,9 +53,9 @@ public class SearchResultsView extends RelativeLayout {
 		this.searchResultsListAdapter.clear();
 	}
 
-	public void addSearchResults(final List<DictionaryEntry> searchResults) {
+	public void addSearchResults(final SearchResults searchResults) {
 		final SearchResultsListAdapter adapter = this.searchResultsListAdapter;
-		adapter.addAll(searchResults);
+		adapter.addAll(searchResults.getEntries());
 	}
 
 }
