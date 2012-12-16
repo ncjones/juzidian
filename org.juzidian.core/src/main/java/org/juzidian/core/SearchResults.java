@@ -60,4 +60,12 @@ public class SearchResults {
 		return this.pageIndex;
 	}
 
+	/**
+	 * @return <code>true</code> if there are no more results expected for
+	 *         subsequent pages for the same search criteria.
+	 */
+	public boolean isLastPage() {
+		return this.entries.size() < this.pageSize;
+	}
+
 }
