@@ -110,4 +110,11 @@ public class DictionaryTest {
 		Assert.assertThat(searchResults.getPageSize(), is(equalTo(20)));
 	}
 
+	@Test
+	public void findEntriesShouldReturnSearchResultsWithGivenPageIndex() {
+		final SearchQuery query = new SearchQuery(REVERSE, "foo", 20, 3);
+		final SearchResults searchResults = this.dictionary.find(query);
+		Assert.assertThat(searchResults.getPageIndex(), is(equalTo(3)));
+	}
+
 }

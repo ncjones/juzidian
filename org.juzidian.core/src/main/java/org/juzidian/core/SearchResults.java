@@ -28,10 +28,13 @@ public class SearchResults {
 
 	private final int pageSize;
 
+	private final int pageIndex;
+
 	private final List<DictionaryEntry> entries;
 
-	SearchResults(final int pageSize, final List<DictionaryEntry> entries) {
+	SearchResults(final int pageSize, final int pageIndex, final List<DictionaryEntry> entries) {
 		this.pageSize = pageSize;
+		this.pageIndex = pageIndex;
 		this.entries = entries;
 	}
 
@@ -48,6 +51,13 @@ public class SearchResults {
 	 */
 	public int getPageSize() {
 		return this.pageSize;
+	}
+
+	/**
+	 * @return the page index requested in the search query.
+	 */
+	public int getPageIndex() {
+		return this.pageIndex;
 	}
 
 }

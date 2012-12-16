@@ -59,7 +59,7 @@ public class Dictionary {
 		final long end = System.nanoTime();
 		LOGGER.info("Found {} words matching '{}' in {} seconds.", new Object[] { searchResults.size(), query.getSearchText(),
 				((end - start) / 1000 / 1000 / 1000f) });
-		return new SearchResults(query.getPageSize(), searchResults);
+		return new SearchResults(query.getPageSize(), query.getPageIndex(), searchResults);
 	}
 
 	/**
