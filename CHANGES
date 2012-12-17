@@ -1,3 +1,15 @@
+Version 0.4.0
+-------------
+
+Enhancements:
+
+* Automatic results pagination while scrolling.
+
+Bugfixes:
+
+* Prevent unresponsive UI while executing queries.
+
+
 Version 0.3.0
 -------------
 
