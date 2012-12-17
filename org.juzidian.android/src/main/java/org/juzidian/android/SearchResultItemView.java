@@ -24,18 +24,35 @@ import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.PinyinSyllable;
 
 import android.content.Context;
+import android.view.LayoutInflater;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /**
  * Display a dictionary entry as a search result.
  */
-public class SearchResultItemView extends TextView {
+public class SearchResultItemView extends RelativeLayout {
 
 	public SearchResultItemView(final Context context, final DictionaryEntry entry) {
 		super(context);
+		LayoutInflater.from(context).inflate(R.layout.search_result_item, this, true);
 		final String pinyinDisplay = this.createPinyinDisplay(entry);
 		final String englishDefinitionDisplay = this.createEnglishDefinitionDisplay(entry);
-		super.setText(entry.getTraditional() + " (" + pinyinDisplay + "): " + englishDefinitionDisplay);
+		this.getHanziTextView().setText(entry.getSimplified());
+		this.getPinyiniTextView().setText(pinyinDisplay);
+		this.getDefinitionTextView().setText(englishDefinitionDisplay);
+	}
+
+	private TextView getHanziTextView() {
+		return (TextView) this.findViewById(R.id.textHanzi);
+	}
+
+	private TextView getPinyiniTextView() {
+		return (TextView) this.findViewById(R.id.textPinyin);
+	}
+
+	private TextView getDefinitionTextView() {
+		return (TextView) this.findViewById(R.id.textDefinition);
 	}
 
 	private String createEnglishDefinitionDisplay(final DictionaryEntry chineseWord) {
