@@ -33,30 +33,27 @@ import android.widget.TextView;
  */
 public class SearchResultItemView extends RelativeLayout {
 
+	private final TextView hanziTextView;
+
+	private final TextView pinyinTextView;
+
+	private final TextView definitionTextView;
+
 	public SearchResultItemView(final Context context, final DictionaryEntry entry) {
 		super(context);
 		LayoutInflater.from(context).inflate(R.layout.search_result_item, this, true);
+		this.hanziTextView = (TextView) this.findViewById(R.id.textHanzi);
+		this.pinyinTextView = (TextView) this.findViewById(R.id.textPinyin);
+		this.definitionTextView = (TextView) this.findViewById(R.id.textDefinition);
 		this.setDictionaryEntry(entry);
 	}
 
 	public void setDictionaryEntry(final DictionaryEntry entry) {
 		final String pinyinDisplay = this.createPinyinDisplay(entry);
 		final String englishDefinitionDisplay = this.createEnglishDefinitionDisplay(entry);
-		this.getHanziTextView().setText(entry.getSimplified());
-		this.getPinyiniTextView().setText(pinyinDisplay);
-		this.getDefinitionTextView().setText(englishDefinitionDisplay);
-	}
-
-	private TextView getHanziTextView() {
-		return (TextView) this.findViewById(R.id.textHanzi);
-	}
-
-	private TextView getPinyiniTextView() {
-		return (TextView) this.findViewById(R.id.textPinyin);
-	}
-
-	private TextView getDefinitionTextView() {
-		return (TextView) this.findViewById(R.id.textDefinition);
+		this.hanziTextView.setText(entry.getSimplified());
+		this.pinyinTextView.setText(pinyinDisplay);
+		this.definitionTextView.setText(englishDefinitionDisplay);
 	}
 
 	private String createEnglishDefinitionDisplay(final DictionaryEntry chineseWord) {
