@@ -24,26 +24,29 @@ import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.PinyinSyllable;
 
 import android.content.Context;
+import android.text.Spannable;
+import android.text.Spanned;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.TextView.BufferType;
 
 /**
  * Display a dictionary entry as a search result.
  */
 public class SearchResultItemView extends RelativeLayout {
 
-	private final TextView hanziTextView;
+	private static final RelativeSizeSpan SPAN_SIZE_HANZI = new RelativeSizeSpan(1.2f);
 
-	private final TextView pinyinTextView;
+	private final TextView chineseTextView;
 
 	private final TextView definitionTextView;
 
 	public SearchResultItemView(final Context context, final DictionaryEntry entry) {
 		super(context);
 		LayoutInflater.from(context).inflate(R.layout.search_result_item, this, true);
-		this.hanziTextView = (TextView) this.findViewById(R.id.textHanzi);
-		this.pinyinTextView = (TextView) this.findViewById(R.id.textPinyin);
+		this.chineseTextView = (TextView) this.findViewById(R.id.textChinese);
 		this.definitionTextView = (TextView) this.findViewById(R.id.textDefinition);
 		this.setDictionaryEntry(entry);
 	}
@@ -51,8 +54,10 @@ public class SearchResultItemView extends RelativeLayout {
 	public void setDictionaryEntry(final DictionaryEntry entry) {
 		final String pinyinDisplay = this.createPinyinDisplay(entry);
 		final String englishDefinitionDisplay = this.createEnglishDefinitionDisplay(entry);
-		this.hanziTextView.setText(entry.getSimplified());
-		this.pinyinTextView.setText(pinyinDisplay);
+		this.chineseTextView.setText(entry.getSimplified() + " " + pinyinDisplay, BufferType.SPANNABLE);
+		final Spannable chineseSpannable = (Spannable) this.chineseTextView.getText();
+		final int pinyinStartIndex = entry.getSimplified().length();
+		chineseSpannable.setSpan(SPAN_SIZE_HANZI, 0, pinyinStartIndex, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		this.definitionTextView.setText(englishDefinitionDisplay);
 	}
 
