@@ -87,4 +87,9 @@ public class SearchResultsListAdapter extends ArrayAdapter<DictionaryEntry> {
 		return 2;
 	}
 
+	@Override
+	public boolean isEnabled(final int position) {
+		return this.getItemViewType(position) != VIEW_TYPE_LOADING_INDICATOR;
+	}
+
 }
