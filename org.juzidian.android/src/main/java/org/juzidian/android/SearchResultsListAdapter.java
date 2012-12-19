@@ -31,6 +31,10 @@ import android.widget.ProgressBar;
  */
 public class SearchResultsListAdapter extends ArrayAdapter<DictionaryEntry> {
 
+	private static final int VIEW_TYPE_SEARCH_RESULT = 0;
+
+	private static final int VIEW_TYPE_LOADING_INDICATOR = 1;
+
 	private boolean loading;
 
 	public SearchResultsListAdapter(final Context context) {
@@ -44,15 +48,43 @@ public class SearchResultsListAdapter extends ArrayAdapter<DictionaryEntry> {
 
 	@Override
 	public View getView(final int position, final View convertView, final ViewGroup parent) {
-		if (this.loading && position == this.getCount() - 1) {
+		final int itemViewType = this.getItemViewType(position);
+		switch (itemViewType) {
+		case VIEW_TYPE_LOADING_INDICATOR:
 			return new ProgressBar(parent.getContext());
+		case VIEW_TYPE_SEARCH_RESULT:
+			return this.getSearchResultItemView(position, (SearchResultItemView) convertView, parent);
+		default:
+			throw new IllegalStateException(String.format("Item at position %s has invalid view type: %s", position, itemViewType));
 		}
-		return new SearchResultItemView(parent.getContext(), this.getItem(position));
+	}
+
+	private SearchResultItemView getSearchResultItemView(final int position, final SearchResultItemView convertView, final ViewGroup parent) {
+		final DictionaryEntry entry = this.getItem(position);
+		if (convertView != null) {
+			convertView.setDictionaryEntry(entry);
+			return convertView;
+		}
+		return new SearchResultItemView(parent.getContext(), entry);
 	}
 
 	@Override
 	public int getCount() {
 		return super.getCount() + (this.loading ? 1 : 0);
+	}
+
+	@Override
+	public int getItemViewType(final int position) {
+		if (this.loading && position == this.getCount() - 1) {
+			return VIEW_TYPE_LOADING_INDICATOR;
+		} else {
+			return VIEW_TYPE_SEARCH_RESULT;
+		}
+	}
+
+	@Override
+	public int getViewTypeCount() {
+		return 2;
 	}
 
 }

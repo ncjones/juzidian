@@ -36,6 +36,10 @@ public class SearchResultItemView extends RelativeLayout {
 	public SearchResultItemView(final Context context, final DictionaryEntry entry) {
 		super(context);
 		LayoutInflater.from(context).inflate(R.layout.search_result_item, this, true);
+		this.setDictionaryEntry(entry);
+	}
+
+	public void setDictionaryEntry(final DictionaryEntry entry) {
 		final String pinyinDisplay = this.createPinyinDisplay(entry);
 		final String englishDefinitionDisplay = this.createEnglishDefinitionDisplay(entry);
 		this.getHanziTextView().setText(entry.getSimplified());
