@@ -65,9 +65,9 @@ public class SearchResultItemView extends RelativeLayout {
 		final List<String> definitions = chineseWord.getDefinitions();
 		final StringBuilder stringBuilder = new StringBuilder();
 		for (final String definition : definitions) {
-			stringBuilder.append(definition).append("; ");
+			stringBuilder.append(definition).append(" • ");
 		}
-		return stringBuilder.substring(0, stringBuilder.length() - 2);
+		return stringBuilder.substring(0, stringBuilder.length() - 3);
 	}
 
 	private String createPinyinDisplay(final DictionaryEntry chineseWord) {
