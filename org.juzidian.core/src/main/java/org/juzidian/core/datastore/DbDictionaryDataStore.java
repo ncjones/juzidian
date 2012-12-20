@@ -196,7 +196,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	}
 
 	private List<String> unformatDefinitions(final String english) {
-		final String[] definitions = english.split("/");
+		final String[] definitions = english.substring(2, english.length() - 2).split(" / ");
 		return Arrays.asList(definitions);
 	}
 

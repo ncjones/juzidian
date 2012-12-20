@@ -18,6 +18,7 @@
  */
 package org.juzidian.core.datastore;
 
+import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -199,6 +200,14 @@ public class DbDictionaryDataStoreTest {
 	}
 
 	@Test
+	public void findPinyinShouldReturnEntriesWithSameDefinitionsAsPersistedEntries() {
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(this.pinyinParser.parse("hao"), 25, 0);
+		final DictionaryEntry entry = entries.get(0);
+		assertThat(entry.getDefinitions(), contains("attractive", "good looking"));
+	}
+
+	@Test
 	public void findDefinitionsShouldReturnEmptyResultWhenNoEntriesMatchSearch() {
 		this.persistDefaultTestEntries();
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("crabapples", 25, 0);
@@ -322,6 +331,14 @@ public class DbDictionaryDataStoreTest {
 	}
 
 	@Test
+	public void findDefinitionsShouldReturnEntriesWithSameDefinitionsAsPersistedEntries() {
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking; handsome");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("attract", 25, 0);
+		final DictionaryEntry entry = entries.get(0);
+		assertThat(entry.getDefinitions(), contains("attractive", "good looking"));
+	}
+
+	@Test
 	public void findHanziShouldOrderStartsWithMatchBeforeContainsMatch() {
 		this.persistEntry("你好", "ni3hao3", "hello (greeting)");
 		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
@@ -397,6 +414,14 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("好棒", "hao3bang4", "excellent");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 2, 2);
 		assertThat(entries, containsSimplified("你好"));
+	}
+
+	@Test
+	public void findHanziShouldReturnEntriesWithSameDefinitionsAsPersistedEntries() {
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 25, 0);
+		final DictionaryEntry entry = entries.get(0);
+		assertThat(entry.getDefinitions(), contains("attractive", "good looking"));
 	}
 
 }
