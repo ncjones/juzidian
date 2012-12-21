@@ -332,7 +332,7 @@ public class DbDictionaryDataStoreTest {
 
 	@Test
 	public void findDefinitionsShouldReturnEntriesWithSameDefinitionsAsPersistedEntries() {
-		this.persistEntry("好看", "hao3kan4", "attractive; good looking; handsome");
+		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("attract", 25, 0);
 		final DictionaryEntry entry = entries.get(0);
 		assertThat(entry.getDefinitions(), contains("attractive", "good looking"));
