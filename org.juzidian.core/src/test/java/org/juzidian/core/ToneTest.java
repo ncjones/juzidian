@@ -69,4 +69,19 @@ public class ToneTest {
 		assertEquals(Tone.ANY, Tone.valueOf((Integer) null));
 	}
 
+	@Test(expected = IllegalArgumentException.class)
+	public void getDiacriticCharacterShouldRejectDiacriticalCharacter() {
+		Tone.FIRST.getDiacriticCharacter('ā');
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void getDiacriticCharacterShouldRejectUpperCaseCharacter() {
+		Tone.FIRST.getDiacriticCharacter('A');
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void getDiacriticCharacterShouldRejectConsonant() {
+		Tone.FIRST.getDiacriticCharacter('n');
+	}
+
 }

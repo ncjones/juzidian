@@ -23,22 +23,36 @@ package org.juzidian.core;
  */
 public enum Tone {
 
-	FIRST(1),
+	FIRST(1, new char[] { 'ā', 'ē', 'ī', 'ō', 'ū', 'ǖ' }),
 
-	SECOND(2),
+	SECOND(2, new char[] { 'á', 'é', 'í', 'ó', 'ú', 'ǘ' }),
 
-	THIRD(3),
+	THIRD(3, new char[] { 'ǎ', 'ĕ', 'ǐ', 'ǒ', 'ǔ', 'ǚ' }),
 
-	FOURTH(4),
+	FOURTH(4, new char[] { 'à', 'è', 'ì', 'ò', 'ù', 'ǜ' }),
 
-	NEUTRAL(5),
+	NEUTRAL(5, new char[] { 'a', 'e', 'i', 'o', 'u', 'ü' }),
 
-	ANY(null);
+	ANY(null, new char[] { 'a', 'e', 'i', 'o', 'u', 'ü' });
+
+	private static final String AEIOUÜ = "aeiouü";
 
 	private final Integer number;
 
-	private Tone(final Integer number) {
+	/*
+	 * Store the mapping between non-diacritical Pinyin vowels and the
+	 * diacritical vowels for this tone using an array for slightly faster
+	 * lookups than a hash map.
+	 */
+	private final char[] diacritics = new char[253];
+
+	private Tone(final Integer number, final char[] diacritics) {
 		this.number = number;
+		for (int i = 0; i < diacritics.length; i++) {
+			final char nonDiacriticVowel = AEIOUÜ.charAt(i);
+			final char diacritic = diacritics[i];
+			this.diacritics[nonDiacriticVowel] = diacritic;
+		}
 	}
 
 	/**
@@ -50,6 +64,23 @@ public enum Tone {
 
 	public String getDisplayValue() {
 		return ANY.equals(this) ? "" : this.getNumber().toString();
+	}
+
+	/**
+	 * Get the character that uses a diacritical mark to represent this tone on
+	 * the given Pinyin vowel.
+	 * 
+	 * @param vowel a lower-case Pinyin vowel (a, e, i, o, u, ü) without a
+	 *        diacritic tone mark.
+	 * @return a character with the diacritic tone mark for this tone.
+	 * @throws IllegalArgumentException if the character is not a non-diacritic,
+	 *         lower case Pinyin vowel.
+	 */
+	public char getDiacriticCharacter(final char vowel) {
+		if (AEIOUÜ.indexOf(vowel) == -1) {
+			throw new IllegalArgumentException("character is not a valid pinyin vowel: " + vowel);
+		}
+		return this.diacritics[vowel];
 	}
 
 	/**
