@@ -24,14 +24,12 @@ import static org.junit.Assert.assertThat;
 import java.util.Arrays;
 import java.util.Collection;
 
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 @RunWith(Parameterized.class)
-@Ignore
 public class PinyinSyllableDisplayValueTest {
 
 	private static final PinyinParser PINYIN_PARSER = new PinyinParser();

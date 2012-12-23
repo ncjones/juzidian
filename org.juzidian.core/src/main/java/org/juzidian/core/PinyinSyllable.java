@@ -63,11 +63,42 @@ public class PinyinSyllable {
 	}
 
 	/**
-	 * @return the display value of the syllable using trailing tone number for
-	 *         the tone representation.
+	 * @return the display value of the syllable using diacritical tone marks.
 	 */
 	public String getDisplayValue() {
-		return this.letters + this.tone.getDisplayValue();
+		switch (this.tone) {
+		case NEUTRAL:
+			return "·" + this.letters;
+		default:
+			final char diacriticTargetChar = this.letters.charAt(this.getToneDiacriticIndex());
+			return this.letters.replace(diacriticTargetChar, this.tone.getDiacriticCharacter(diacriticTargetChar));
+		}
+	}
+
+	private int getToneDiacriticIndex() {
+		/*
+		 * From http://www.pinyin.info/rules/where.html: 1) A and e trump all
+		 * other vowels and always take the tone mark. There are no Mandarin
+		 * syllables in Hanyu Pinyin that contain both a and e. 2) In the
+		 * combination ou, o takes the mark. 3) In all other cases, the final
+		 * vowel takes the mark.
+		 */
+		if (this.letters.contains("a")) {
+			return this.letters.indexOf('a');
+		}
+		if (this.letters.contains("e")) {
+			return this.letters.indexOf('e');
+		}
+		if (this.letters.contains("ou")) {
+			return this.letters.indexOf('o');
+		}
+		int index = 0;
+		for (int i = 0; i < this.letters.length(); i++) {
+			if ("aeiouü".contains("" + this.letters.charAt(i))) {
+				index = i;
+			}
+		}
+		return index;
 	}
 
 	@Override
