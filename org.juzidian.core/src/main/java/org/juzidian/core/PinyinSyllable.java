@@ -18,11 +18,21 @@
  */
 package org.juzidian.core;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * A phonetic representation of a Chinese syllable using the Pinyin romanisation
  * system.
  */
 public class PinyinSyllable {
+
+	private static Map<String, Integer> DIACRITIC_INDICES = new HashMap<String, Integer>();
+	static {
+		for (final String pinyin : new PinyinHelper().getValidSyllables()) {
+			DIACRITIC_INDICES.put(pinyin, getToneDiacriticIndex(pinyin));
+		}
+	}
 
 	private final String letters;
 
@@ -70,12 +80,18 @@ public class PinyinSyllable {
 		case NEUTRAL:
 			return "·" + this.letters;
 		default:
-			final char diacriticTargetChar = this.letters.charAt(this.getToneDiacriticIndex());
-			return this.letters.replace(diacriticTargetChar, this.tone.getDiacriticCharacter(diacriticTargetChar));
+			return this.getLettersWithDiacritic();
 		}
 	}
 
-	private int getToneDiacriticIndex() {
+	private String getLettersWithDiacritic() {
+		final int diacriticIndex = DIACRITIC_INDICES.get(this.letters);
+		final char charToReplace = this.letters.charAt(diacriticIndex);
+		final char diacriticChar = this.tone.getDiacriticCharacter(charToReplace);
+		return this.letters.replace(charToReplace, diacriticChar);
+	}
+
+	private static int getToneDiacriticIndex(final String letters) {
 		/*
 		 * From http://www.pinyin.info/rules/where.html: 1) A and e trump all
 		 * other vowels and always take the tone mark. There are no Mandarin
@@ -83,22 +99,22 @@ public class PinyinSyllable {
 		 * combination ou, o takes the mark. 3) In all other cases, the final
 		 * vowel takes the mark.
 		 */
-		if (this.letters.contains("a")) {
-			return this.letters.indexOf('a');
+		if (letters.contains("a")) {
+			return letters.indexOf('a');
 		}
-		if (this.letters.contains("e")) {
-			return this.letters.indexOf('e');
+		if (letters.contains("e")) {
+			return letters.indexOf('e');
 		}
-		if (this.letters.contains("ou")) {
-			return this.letters.indexOf('o');
+		if (letters.contains("ou")) {
+			return letters.indexOf('o');
 		}
-		int index = 0;
-		for (int i = 0; i < this.letters.length(); i++) {
-			if ("aeiouü".contains("" + this.letters.charAt(i))) {
-				index = i;
+		int lastVowelIndex = -1;
+		for (int i = 0; i < letters.length(); i++) {
+			if ("iouü".indexOf(letters.charAt(i)) != -1) {
+				lastVowelIndex = i;
 			}
 		}
-		return index;
+		return lastVowelIndex;
 	}
 
 	@Override
