@@ -15,16 +15,16 @@ dependencies {
 		/* slf4j-api conflicts with slf4j-android. */
 		exclude group: 'org.slf4j', module: 'slf4j-api'
 	}
-	compile 'com.google.inject:guice:3.0:no_aop'
-	compile 'com.j256.ormlite:ormlite-android:4.42'
-	compile "org.slf4j:slf4j-android:${slf4jAndroidVersion}"
+	compile libraries.guice_no_aop
+	compile libraries.ormlite_android
+	compile libraries.slf4j_android
 	compile files("$dictionaryDbPath") {
 		builtBy 'generateResources'
 	}
 	generate project(':org.juzidian.build.data')
-	generate 'org.xerial:sqlite-jdbc:3.7.2'
-	generate 'com.j256.ormlite:ormlite-jdbc:4.42'
-	generate "org.slf4j:slf4j-simple:${slf4jVersion}"
+	generate libraries.sqlite_jdbc
+	generate libraries.ormlite_jdbc
+	generate libraries.slf4j_simple
 }
 
 project.ext.androidTargetPlatform = 'android-16'

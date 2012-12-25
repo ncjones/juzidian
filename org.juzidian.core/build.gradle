@@ -15,15 +15,15 @@ configurations {
 }
 
 dependencies {
-	compile 'com.google.inject:guice:3.0:no_aop'
-	compile 'com.j256.ormlite:ormlite-core:4.42'
-	compile "org.slf4j:slf4j-api:${slf4jVersion}"
+	compile libraries.guice_no_aop
+	compile libraries.ormlite_core
+	compile libraries.slf4j_api
 	generate project(':org.juzidian.build.pinyin')
-	testCompile "junit:junit:${junitVersion}"
-	testCompile "org.hamcrest:hamcrest-library:1.3"
-	testCompile 'org.mockito:mockito-core:1.8.5'
-	testCompile 'com.j256.ormlite:ormlite-jdbc:4.42'
-	testCompile 'org.xerial:sqlite-jdbc:3.7.2'
+	testCompile libraries.junit
+	testCompile libraries.hamcrest_library
+	testCompile libraries.mockito_core
+	testCompile libraries.ormlite_jdbc
+	testCompile libraries.sqlite_jdbc
 }
 
 sourceSets {

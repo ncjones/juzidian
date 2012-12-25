@@ -11,10 +11,10 @@ def cedictDataPath = "${project(':org.juzidian.core').projectDir}/cedict-data.tx
 dependencies {
 	compile project(':org.juzidian.core')
 	compile project(':org.juzidian.build.data')
-	compile 'com.google.inject:guice:3.0:no_aop'
-	compile 'org.xerial:sqlite-jdbc:3.7.2'
-	compile 'com.j256.ormlite:ormlite-jdbc:4.42'
-	runtime "org.slf4j:slf4j-jdk14:${slf4jVersion}"
+	compile libraries.guice_no_aop
+	compile libraries.ormlite_jdbc
+	compile libraries.sqlite_jdbc
+	runtime libraries.slf4j_jdk14
 }
 
 sourceSets {

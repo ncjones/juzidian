@@ -1,5 +1,5 @@
 apply plugin: 'java'
 
 dependencies {
-	testCompile "junit:junit:${junitVersion}"
+	testCompile libraries.junit
 }
