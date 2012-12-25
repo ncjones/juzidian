@@ -128,8 +128,7 @@ public class PinyinParser {
 		}
 
 		private boolean isValidPinyinSyllablePart(final String pinyinSyllablePart) {
-			final List<String> validPinyinSyllables = PINYIN_HELPER.getValidSyllables();
-			for (final String validPinyinSyllable : validPinyinSyllables) {
+			for (final String validPinyinSyllable : PINYIN_HELPER.getValidSyllables()) {
 				if (validPinyinSyllable.startsWith(pinyinSyllablePart)) {
 					return true;
 				}
