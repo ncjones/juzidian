@@ -76,18 +76,4 @@ public class CedictDictionaryEntryAdaptorTest extends DictionaryEntryTest {
 		Assert.assertEquals("zhang", pinyinSyllable.getLetters());
 	}
 
-	@SuppressWarnings("unused")
-	@Test(expected = IllegalArgumentException.class)
-	public void constructorShouldRejectInvalidPinyinSyllables() {
-		final CedictEntry cedictEntry = this.createMockCedictEntry(new CedictPinyinSyllable("mm", 1));
-		new CedictDictionaryEntryAdaptor(cedictEntry);
-	}
-
-	@SuppressWarnings("unused")
-	@Test
-	public void constructorShouldAcceptKnownInvalidPinyinSyllables() {
-		final CedictEntry cedictEntry = this.createMockCedictEntry(new CedictPinyinSyllable("xx", 1));
-		new CedictDictionaryEntryAdaptor(cedictEntry);
-	}
-
 }
