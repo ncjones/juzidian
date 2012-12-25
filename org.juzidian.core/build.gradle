@@ -72,3 +72,10 @@ task generateSources (type: JavaExec, dependsOn: uncompressCedictData) {
 }
 
 compileJava.dependsOn generateSources
+
+eclipse.classpath.file {
+	whenMerged { classpath ->
+		// don't expose dependencies to other projects
+		classpath.entries.findAll { entry -> entry.kind != 'output' }*.exported = false
+	}
+}
