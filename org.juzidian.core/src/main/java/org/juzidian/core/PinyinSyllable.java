@@ -108,13 +108,12 @@ public class PinyinSyllable {
 		if (letters.contains("ou")) {
 			return letters.indexOf('o');
 		}
-		int lastVowelIndex = -1;
-		for (int i = 0; i < letters.length(); i++) {
+		for (int i = letters.length() - 1; i >= 0; i--) {
 			if ("iouü".indexOf(letters.charAt(i)) != -1) {
-				lastVowelIndex = i;
+				return i;
 			}
 		}
-		return lastVowelIndex;
+		return -1;
 	}
 
 	@Override
