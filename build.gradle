@@ -14,6 +14,7 @@ ext.androidSdkDir = localProperties.get('sdk.dir')
 
 subprojects {
 	apply plugin: 'eclipse'
+	apply plugin: 'project-report'
 
 	repositories {
 		mavenCentral()
