@@ -38,6 +38,8 @@ class EntryCollector implements CedictLoadHandler {
 
 	private final List<DictionaryEntry> entries = new LinkedList<DictionaryEntry>();
 
+	private final List<DictionaryEntry> excludedEntries = new LinkedList<DictionaryEntry>();
+
 	public Collection<DictionaryEntry> getEntries() {
 		return this.entries;
 	}
@@ -49,11 +51,12 @@ class EntryCollector implements CedictLoadHandler {
 
 	@Override
 	public void entryLoaded(final CedictEntry cedictEntry) {
+		final DictionaryEntry entry = new CedictDictionaryEntryAdaptor(cedictEntry);
 		if (this.allPinyinValid(cedictEntry)) {
-			final DictionaryEntry entry = new CedictDictionaryEntryAdaptor(cedictEntry);
 			this.entries.add(entry);
 		} else {
-			LOGGER.info("Excluding entry with invalid Pinyin: " + cedictEntry);
+			this.excludedEntries.add(entry);
+			LOGGER.debug("Excluding entry with invalid Pinyin: " + cedictEntry);
 		}
 	}
 
@@ -69,7 +72,7 @@ class EntryCollector implements CedictLoadHandler {
 
 	@Override
 	public void loadingFinished() {
-
+		LOGGER.warn("Excluded {} entries with invalid Pinyin.", this.excludedEntries.size());
 	}
 
 }
