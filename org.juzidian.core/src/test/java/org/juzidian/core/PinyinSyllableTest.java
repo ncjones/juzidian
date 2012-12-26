@@ -50,4 +50,19 @@ public class PinyinSyllableTest {
 		assertThat(new PinyinSyllable("hao", Tone.FIRST).matches(new PinyinSyllable("hao", Tone.SECOND)), equalTo(false));
 	}
 
+	@Test
+	public void getDisplayValueShouldHandleInvalidPinyin() {
+		assertThat(new PinyinSyllable("r").getDisplayValue(), equalTo("r"));
+	}
+
+	@Test
+	public void getDisplayValueShouldExcludeToneForInvalidPinyin() {
+		assertThat(new PinyinSyllable("r", Tone.FIRST).getDisplayValue(), equalTo("r"));
+	}
+
+	@Test
+	public void getDisplayValueShouldExcludeToneForInvalidPinyinWithNeutralTone() {
+		assertThat(new PinyinSyllable("r", Tone.NEUTRAL).getDisplayValue(), equalTo("r"));
+	}
+
 }
