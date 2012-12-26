@@ -18,8 +18,8 @@
  */
 package org.juzidian.core;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
 
@@ -27,27 +27,27 @@ public class PinyinSyllableTest {
 
 	@Test
 	public void tonelessSyllableShouldMatchIdenticalSyllable() {
-		assertTrue(new PinyinSyllable("hao").matches(new PinyinSyllable("hao")));
+		assertThat(new PinyinSyllable("hao").matches(new PinyinSyllable("hao")), equalTo(true));
 	}
 
 	@Test
 	public void tonelessSyllableShouldMatchTonedSyllable() {
-		assertTrue(new PinyinSyllable("hao").matches(new PinyinSyllable("hao", Tone.FIRST)));
+		assertThat(new PinyinSyllable("hao").matches(new PinyinSyllable("hao", Tone.FIRST)), equalTo(true));
 	}
 
 	@Test
 	public void tonedSyllableShouldNotMatchTonelessSyllable() {
-		assertFalse(new PinyinSyllable("hao", Tone.FIRST).matches(new PinyinSyllable("hao")));
+		assertThat(new PinyinSyllable("hao", Tone.FIRST).matches(new PinyinSyllable("hao")), equalTo(false));
 	}
 
 	@Test
 	public void syllableShouldNotMatchSyllableWithDifferentLetters() {
-		assertFalse(new PinyinSyllable("hao", Tone.FIRST).matches(new PinyinSyllable("han")));
+		assertThat(new PinyinSyllable("hao", Tone.FIRST).matches(new PinyinSyllable("han")), equalTo(false));
 	}
 
 	@Test
 	public void syllableShouldNotMatchSyllableWithDifferentTone() {
-		assertFalse(new PinyinSyllable("hao", Tone.FIRST).matches(new PinyinSyllable("hao", Tone.SECOND)));
+		assertThat(new PinyinSyllable("hao", Tone.FIRST).matches(new PinyinSyllable("hao", Tone.SECOND)), equalTo(false));
 	}
 
 }
