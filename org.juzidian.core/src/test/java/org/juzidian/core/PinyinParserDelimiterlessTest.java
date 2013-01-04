@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -39,7 +38,6 @@ import org.junit.runners.Parameterized.Parameters;
  * Pinyin parser test suite for inputs with no delimiters between syllables (ie,
  * no tone numbers, spaces or apostrophes).
  */
-@Ignore
 @RunWith(Parameterized.class)
 public class PinyinParserDelimiterlessTest {
 
@@ -63,7 +61,7 @@ public class PinyinParserDelimiterlessTest {
 				 * no greedy consumption of 'n' from: neng ni nian niang niao nie nin
 				 * ning niu nong nu nuan nun nuo nü nüe
 				 */
-				{ "faneng", "fa  neng" },
+				{ "faneng", "fa neng" },
 				{ "fani", "fa ni" },
 				{ "fanian", "fa nian" },
 				{ "faniang", "fa niang" },
@@ -78,19 +76,19 @@ public class PinyinParserDelimiterlessTest {
 				{ "fanun", "fa nun" },
 				{ "fanuo", "fa nuo" },
 				{ "fanü", "fa nü" },
-				{ "fanun", "fa nüe" },
+				{ "fanüe", "fa nüe" },
 
 				/*
 				 * no greedy consumption of 'g' from: geng gong gu gua guai guan
 				 * guang gui gun guo
 				 */
 				{ "hangeng", "han geng" },
-				{ "hangong", "haan gong" },
+				{ "hangong", "han gong" },
 				{ "hangu", "han gu" },
 				{ "hangua", "han gua" },
 				{ "hanguai", "han guai" },
 				{ "hanguan", "han guan" },
-				{ "hanguang", "hen guang" },
+				{ "hanguang", "han guang" },
 				{ "hangui", "han gui" },
 				{ "hangun", "han gun" },
 				{ "hanguo", "han guo" },
@@ -107,11 +105,11 @@ public class PinyinParserDelimiterlessTest {
 				{ "ereng", "e reng" },
 				{ "eri", "e ri" },
 				{ "erong", "e rong" },
-				{ "eru", "er" },
-				{ "eruan", "er" },
-				{ "erui", "er" },
-				{ "erun", "er" },
-				{ "eruo", "er" },
+				{ "eru", "e ru" },
+				{ "eruan", "e ruan" },
+				{ "erui", "e rui" },
+				{ "erun", "e run" },
+				{ "eruo", "e ruo" },
 
 				/* no greedy consumption of 'a' from: ai */
 				{ "xiai", "xi ai" },

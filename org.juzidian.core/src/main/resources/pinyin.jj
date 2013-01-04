@@ -28,11 +28,67 @@ PARSER_BEGIN(PinyinParseInstance)
 
 package org.juzidian.core;
 
-import java.io.StringReader;
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 class PinyinParseInstance {
+
+	private static final PinyinHelper PINYIN_HELPER = new PinyinHelper();
+
+	private String currentInitial;
+	
+	private boolean isValidSyllable(String syllable) {
+		return PINYIN_HELPER.getValidSyllables().contains(syllable);
+	}
+	
+	private boolean isValidFinal(String syllableFinal) {
+		String syllable  = currentInitial + syllableFinal;
+		if (!isValidSyllable(syllable)) {
+			return false;
+		}
+		/* An initial with a single-vowel final cannot give up a character to the next syllable. */
+		if (syllableFinal.length() == 1) {
+			return true;
+		}
+		return canConsumeChars(syllableFinal);
+	}
+	
+	private boolean canConsumeChars(String chars) {
+		char lastChar = chars.charAt(chars.length() - 1);
+		int nextTokenIndex = chars.length() + 1;
+		Token nextToken = getToken(nextTokenIndex);
+		Token secondNextToken = getToken(nextTokenIndex + 1);
+		Token thirdNextToken = getToken(nextTokenIndex + 2);
+		switch (lastChar) {
+		case 'g':
+			return nextToken.kind != U &&
+				!(nextToken.kind == O && secondNextToken.kind == N) &&
+				!(nextToken.kind == E && secondNextToken.kind == N && thirdNextToken.kind == G) &&
+				nextToken.kind != Ü;
+		case 'n':
+			return nextToken.kind != I &&
+				nextToken.kind != U &&
+				nextToken.kind != E &&
+				nextToken.kind != Ü &&
+				!(nextToken.kind == O && secondNextToken.kind == N) &&
+				!(nextToken.kind == E && secondNextToken.kind == N && thirdNextToken.kind == G);
+		case 'o':
+			return nextToken.kind != U;
+		case 'e':
+			return nextToken.kind != I &&
+				nextToken.kind != R &&
+				nextToken.kind != N;
+		case 'a':
+			return nextToken.kind != I;
+		case 'r':
+			return nextToken.kind != U &&
+				nextToken.kind != I &&
+				!(nextToken.kind == O && secondNextToken.kind == N) &&
+				!(nextToken.kind == E && secondNextToken.kind == N && thirdNextToken.kind == G);
+		default:
+			return true;
+		}
+	}
 
 }
 
@@ -46,43 +102,49 @@ SKIP :
 TOKEN :
 {
 	<APOSTROPHE: "'"> |
-	<TONE_NUMBER: ["1"-"5"]> |
-	<PHONEME_CHARS: ( "a" | "ai" | "an" | "ang" | "ao" | "ba" | "bai" | "ban" | "bang" | "bao" | "bei" | "ben" | "beng" | "bi" |
-			"bian" | "biao" | "bie" | "bin" | "bing" | "bo" | "bu" | "ca" | "cai" | "can" | "cang" | "cao" | "ce" |
-			"cen" | "ceng" | "cha" | "chai" | "chan" | "chang" | "chao" | "che" | "chen" | "cheng" | "chi" | "chong" |
-			"chou" | "chu" | "chua" | "chuai" | "chuan" | "chuang" | "chui" | "chun" | "chuo" | "ci" | "cong" |
-			"cou" | "cu" | "cuan" | "cui" | "cun" | "cuo" | "da" | "dai" | "dan" | "dang" | "dao" | "de" | "dei" |
-			"deng" | "di" | "dia" | "dian" | "diao" | "die" | "ding" | "diu" | "dong" | "dou" | "du" | "duan" | "dui" |
-			"dun" | "duo" | "e" | "ei" | "en" | "er" | "fa" | "fan" | "fang" | "fei" | "fen" | "feng" | "fiao" | "fo" |
-			"fou" | "fu" | "ga" | "gai" | "gan" | "gang" | "gao" | "ge" | "gei" | "gen" | "geng" | "gong" | "gou" |
-			"gu" | "gua" | "guai" | "guan" | "guang" | "gui" | "gun" | "guo" | "ha" | "hai" | "han" | "hang" | "hao" |
-			"he" | "hei" | "hen" | "heng" | "hong" | "hou" | "hu" | "hua" | "huai" | "huan" | "huang" | "hui" | "hun" |
-			"huo" | "ji" | "jia" | "jian" | "jiang" | "jiao" | "jie" | "jin" | "jing" | "jiong" | "jiu" | "ju" |
-			"juan" | "jue" | "jun" | "ka" | "kai" | "kan" | "kang" | "kao" | "ke" | "kei" | "ken" | "keng" | "kong" |
-			"kou" | "ku" | "kua" | "kuai" | "kuan" | "kuang" | "kui" | "kun" | "kuo" | "la" | "lai" | "lan" | "lang" |
-			"lao" | "le" | "lei" | "leng" | "li" | "lia" | "lian" | "liang" | "liao" | "lie" | "lin" | "ling" | "liu" |
-			"lo" | "long" | "lou" | "lu" | "luan" | "lun" | "luo" | "lü" | "lüe" | "ma" | "mai" | "man" | "mang" |
-			"mao" | "me" | "mei" | "men" | "meng" | "mi" | "mian" | "miao" | "mie" | "min" | "ming" | "miu" | "mo" |
-			"mou" | "mu" | "na" | "nai" | "nan" | "nang" | "nao" | "ne" | "nei" | "nen" | "neng" | "ni" | "nian" |
-			"niang" | "niao" | "nie" | "nin" | "ning" | "niu" | "nong" | "nou" | "nu" | "nuan" | "nun" | "nuo" |
-			"nü" | "nüe" | "o" | "ou" | "pa" | "pai" | "pan" | "pang" | "pao" | "pei" | "pen" | "peng" | "pi" | "pian" |
-			"piao" | "pie" | "pin" | "ping" | "po" | "pou" | "pu" | "qi" | "qia" | "qian" | "qiang" | "qiao" | "qie" |
-			"qin" | "qing" | "qiong" | "qiu" | "qu" | "quan" | "que" | "qun" | "ran" | "rang" | "rao" | "re" | "ren" |
-			"reng" | "ri" | "rong" | "rou" | "ru" | "ruan" | "rui" | "run" | "ruo" | "sa" | "sai" | "san" | "sang" |
-			"sao" | "se" | "sen" | "seng" | "sha" | "shai" | "shan" | "shang" | "shao" | "she" | "shei" | "shen" |
-			"sheng" | "shi" | "shou" | "shu" | "shua" | "shuai" | "shuan" | "shuang" | "shui" | "shun" | "shuo" |
-			"si" | "song" | "sou" | "su" | "suan" | "sui" | "sun" | "suo" | "ta" | "tai" | "tan" | "tang" | "tao" |
-			"te" | "tei" | "teng" | "ti" | "tian" | "tiao" | "tie" | "ting" | "tong" | "tou" | "tu" | "tuan" | "tui" |
-			"tun" | "tuo" | "wa" | "wai" | "wan" | "wang" | "wei" | "wen" | "weng" | "wo" | "wu" | "xi" | "xia" | "xian" |
-			"xiang" | "xiao" | "xie" | "xin" | "xing" | "xiong" | "xiu" | "xu" | "xuan" | "xue" | "xun" | "ya" |
-			"yan" | "yang" | "yao" | "ye" | "yi" | "yin" | "ying" | "yo" | "yong" | "you" | "yu" | "yuan" | "yue" |
-			"yun" | "za" | "zai" | "zan" | "zang" | "zao" | "ze" | "zei" | "zen" | "zeng" | "zha" | "zhai" | "zhan" |
-			"zhang" | "zhao" | "zhe" | "zhen" | "zheng" | "zhi" | "zhong" | "zhou" | "zhu" | "zhua" | "zhuai" |
-			"zhuan" | "zhuang" | "zhui" | "zhun" | "zhuo" | "zi" | "zong" | "zou" | "zu" | "zuan" | "zui" | "zun" |
-			"zuo" )>
+	<TONE_NUMBER: ["1"-"5"]>
 }
 
-List<PinyinSyllable> Input() :
+/** Initials */
+TOKEN :
+{
+	<B: "b"> |
+	<P: "p"> |
+	<M: "m"> |
+	<F: "f"> |
+	<D: "d"> |
+	<T: "t"> |
+	<N: "n"> |
+	<L: "l"> |
+	<G: "g"> |
+	<K: "k"> |
+	<H: "h"> |
+	<J: "j"> |
+	<Q: "q"> |
+	<X: "x"> |
+	<ZH: "zh"> |
+	<CH: "ch"> |
+	<SH: "sh"> |
+	<R: "r"> |
+	<Z: "z"> |
+	<C: "c"> |
+	<S: "s"> |
+	<W: "w"> |
+	<Y: "y">
+}
+
+/** Vowels */
+TOKEN :
+{
+	<A: "a"> |
+	<E: "e"> |
+	<I: "i"> |
+	<O: "o"> |
+	<U: "u"> |
+	<Ü: "ü">
+}
+
+List<PinyinSyllable> parseInput() :
 {
 	List<PinyinSyllable> syllables;
 }
@@ -123,14 +185,353 @@ PinyinSyllable syllable() :
 }
 
 String phoneme() :
-{}
+{
+	String final_ = null;
+	currentInitial = "";
+}
 {
 	(
-		<PHONEME_CHARS>
+		currentInitial = initial()
+		final_ = final_() |
+		final_ = standalone()
 	)
 	{
-		return token.image;
+		return currentInitial + final_;
 	}
+}
+
+String initial() :
+{
+	Token t = null;
+}
+{
+	(
+		t = <B> | t = <P> | t = <M> | t = <F> |
+		t = <D> | t = <T> | t = <N> | t = <L> |
+		t = <G> | t = <K> | t = <H> |
+		t = <J> | t = <Q> | t = <X> |
+		t = <ZH> | t = <CH> | t = <SH> | t = <R> |
+		t = <Z> | t = <C> | t = <S> |
+		t = <W> | t = <Y>
+	)
+	{
+		return t.image;
+	}
+}
+
+String final_() :
+{
+	String s = null;
+}
+{
+	(
+		LOOKAHEAD(ang(), { isValidFinal("ang") })
+		s = ang() |
+		LOOKAHEAD(ai(), { isValidFinal("ai") })
+		s = ai() |
+		LOOKAHEAD(an(), { isValidFinal("an") })
+		s = an() |
+		LOOKAHEAD(ao(), { isValidFinal("ao") })
+		s = ao() |
+		LOOKAHEAD(a(), { isValidFinal("a") })
+		s = a() |
+		LOOKAHEAD(eng(), { isValidFinal("eng") })
+		s = eng() |
+		LOOKAHEAD(ei(), { isValidFinal("ei") })
+		s = ei() |
+		LOOKAHEAD(en(), { isValidFinal("en") })
+		s = en() |
+		LOOKAHEAD(e(), { isValidFinal("e") })
+		s = e() |
+		LOOKAHEAD(iang(), { isValidFinal("iang") })
+		s = iang() |
+		LOOKAHEAD(iong(), { isValidFinal("iong") })
+		s = iong() |
+		LOOKAHEAD(ing(), { isValidFinal("ing") })
+		s = ing() |
+		LOOKAHEAD(ian(), { isValidFinal("ian") })
+		s = ian() |
+		LOOKAHEAD(iao(), { isValidFinal("iao") })
+		s = iao() |
+		LOOKAHEAD(ia(), { isValidFinal("ia") })
+		s = ia() |
+		LOOKAHEAD(ie(), { isValidFinal("ie") })
+		s = ie() |
+		LOOKAHEAD(in(), { isValidFinal("in") })
+		s = in() |
+		LOOKAHEAD(iu(), { isValidFinal("iu") })
+		s = iu() |
+		LOOKAHEAD(i(), { isValidFinal("i") })
+		s = i() |
+		LOOKAHEAD(ong(), { isValidFinal("ong") })
+		s = ong() |
+		LOOKAHEAD(ou(), { isValidFinal("ou") })
+		s = ou() |
+		LOOKAHEAD(o(), { isValidFinal("o") })
+		s = o() |
+		LOOKAHEAD(uang(), { isValidFinal("uang") })
+		s = uang() |
+		LOOKAHEAD(uan(), { isValidFinal("uan") })
+		s = uan() |
+		LOOKAHEAD(uai(), { isValidFinal("uai") })
+		s = uai() |
+		LOOKAHEAD(ua(), { isValidFinal("ua") })
+		s = ua() |
+		LOOKAHEAD(ue(), { isValidFinal("ue") })
+		s = ue() |
+		LOOKAHEAD(ui(), { isValidFinal("ui") })
+		s = ui() |
+		LOOKAHEAD(un(), { isValidFinal("un") })
+		s = un() |
+		LOOKAHEAD(uo(), { isValidFinal("uo") })
+		s = uo() |
+		LOOKAHEAD(u(), { isValidFinal("u") })
+		s = u() |
+		LOOKAHEAD(üe(), { isValidFinal("üe") })
+		s = üe() |
+		LOOKAHEAD(ü(), { isValidFinal("ü") })
+		s = ü()
+	)
+	{
+		return s;
+	}
+}
+
+String standalone() :
+{
+	String s = null;
+}
+{
+	(
+		LOOKAHEAD(ang(), { canConsumeChars("ang") })
+		s = ang() |
+		LOOKAHEAD(an(), { canConsumeChars("an") })
+		s = an() |
+		LOOKAHEAD(ao(), { canConsumeChars("ao") })
+		s = ao() |
+		LOOKAHEAD(ai())
+		s = ai() |
+		s = a() |
+		LOOKAHEAD(er(), { canConsumeChars("er") })
+		s = er() |
+		LOOKAHEAD(en(), { canConsumeChars("en") })
+		s = en() |
+		LOOKAHEAD(ei())
+		s = ei() |
+		s = e() |
+		LOOKAHEAD(ou())
+		s = ou() |
+		s = o()
+	)
+	{
+		return s;
+	}
+}
+
+String a() :
+{} {
+	( <A> )
+	{ return "a"; }
+}
+
+String ai() :
+{} {
+	( <A> <I> )
+	{ return "ai"; }
+}
+
+String an() :
+{} {
+	( <A> <N> )
+	{ return "an"; }
+}
+
+String ang() :
+{} {
+	( <A> <N> <G> )
+	{ return "ang"; }
+}
+
+String ao() :
+{} {
+	( <A> <O> )
+	{ return "ao"; }
+}
+
+String e() :
+{} {
+	( <E> )
+	{ return "e"; }
+}
+
+String ei() :
+{} {
+	( <E> <I> )
+	{ return "ei"; }
+}
+
+String en() :
+{} {
+	( <E> <N> )
+	{
+		return "en";
+	}
+}
+
+String eng() :
+{} {
+	( <E> <N> <G> )
+	{ return "eng"; }
+}
+
+String er() :
+{} {
+	( <E> <R> )
+	{ return "er"; }
+}
+
+String i() :
+{} {
+	( <I> )
+	{ return "i"; }
+}
+
+String ia() :
+{} {
+	( <I> <A> )
+	{ return "ia"; }
+}
+
+String ian() :
+{} {
+	( <I> <A> <N> )
+	{ return "ian"; }
+}
+
+String iang() :
+{} {
+	( <I> <A> <N> <G> )
+	{ return "iang"; }
+}
+
+String iao() :
+{} {
+	( <I> <A> <O> )
+	{ return "iao"; }
+}
+
+String ie() :
+{} {
+	( <I> <E> )
+	{ return "ie"; }
+}
+
+String in() :
+{} {
+	( <I> <N> )
+	{ return "in"; }
+}
+
+String ing() :
+{} {
+	( <I> <N> <G> )
+	{ return "ing"; }
+}
+
+String iong() :
+{} {
+	( <I> <O> <N> <G> )
+	{ return "iong"; }
+}
+
+String iu() :
+{} {
+	( <I> <U> )
+	{ return "iu"; }
+}
+
+String o() :
+{} {
+	( <O> )
+	{ return "o"; }
+}
+
+String ong() :
+{} {
+	( <O> <N> <G> )
+	{ return "ong"; }
+}
+
+String ou() :
+{} {
+	( <O> <U> )
+	{return "ou"; }
+}
+
+String u() :
+{} {
+	( <U> )
+	{ return "u"; }
+}
+
+String ua() :
+{} {
+	( <U> <A> )
+	{ return "ua"; }
+}
+
+String uai() :
+{} {
+	( <U> <A> <I> )
+	{ return "uai"; }
+}
+
+String uan() :
+{} {
+	( <U> <A> <N> )
+	{ return "uan"; }
+}
+
+String uang() :
+{} {
+	( <U> <A> <N> <G> )
+	{ return "uang"; }
+}
+
+String ue() :
+{} {
+	( <U> <E> )
+	{ return "ue"; }
+}
+
+String ui() :
+{} {
+	( <U> <I> )
+	{ return "ui"; }
+}
+
+String un() :
+{} {
+	( <U> <N> )
+	{ return "un"; }
+}
+
+String uo() :
+{} {
+	( <U> <O> )
+	{ return "uo"; }
+}
+
+String ü() :
+{} {
+	( <Ü> )
+	{ return "ü"; }
+}
+
+String üe() :
+{} {
+	( <Ü> <E> )
+	{ return "üe"; }
 }
 
 Tone tone() :
@@ -138,6 +539,6 @@ Tone tone() :
 {
 	<TONE_NUMBER>
 	{
-		return Tone.valueOf(Integer.valueOf(token.image)); 
+		return Tone.valueOf(Integer.valueOf(token.image));
 	}
 }

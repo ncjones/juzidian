@@ -59,7 +59,7 @@ public class PinyinParser {
 	 */
 	public List<PinyinSyllable> parse(final String text) {
 		try {
-			return new PinyinParseInstance(new StringReader(text.toLowerCase())).Input();
+			return new PinyinParseInstance(new StringReader(text.toLowerCase())).parseInput();
 		} catch (final Throwable e) {
 			throw new PinyinParseException("Invalid pinyin input: " + text, e);
 		}
