@@ -94,13 +94,9 @@ class PinyinParseInstance {
 
 PARSER_END(PinyinParseInstance)
 
-SKIP :
-{
-	" " | "\t" | "\n" | "\r"
-}
-
 TOKEN :
 {
+	<WHITESPACE: [" ", "\t", "\n", "\r"]> |
 	<APOSTROPHE: "'"> |
 	<TONE_NUMBER: ["1"-"5"]>
 }
@@ -149,7 +145,7 @@ List<PinyinSyllable> parseInput() :
 	List<PinyinSyllable> syllables;
 }
 {
-	syllables = syllables() <EOF>
+	(<WHITESPACE>)* syllables = syllables() <EOF>
 	{
 		return syllables;
 	}
@@ -162,7 +158,7 @@ List<PinyinSyllable> syllables() :
 }
 {
 	(
-		s = syllable() [ <APOSTROPHE> ]
+		s = syllable() [ <APOSTROPHE> | (<WHITESPACE>)+ ]
 		{
 			syllables.add(s);
 		}
