@@ -552,12 +552,6 @@ public class PinyinParserMultiSyllablesTest {
 				{ "yona", "yo na" },
 				{ "yuahan", "yu a han" },
 				{ "zuahan", "zu a han" },
-
-				/*
-				 * prefer greedy consumption of 'ang' into single syllable
-				 */
-				{ "chuang", "chuang" },
-
 		});
 		return entries;
 	}
