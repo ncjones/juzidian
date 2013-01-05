@@ -41,7 +41,7 @@ import org.junit.runners.Parameterized.Parameters;
  */
 @RunWith(Parameterized.class)
 @Ignore
-public class PinyinParserDelimiterlessTest {
+public class PinyinParserMultiSyllablesTest {
 
 	@Parameter(0)
 	public String pinyinInput;
