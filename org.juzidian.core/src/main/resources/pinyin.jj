@@ -56,36 +56,36 @@ class PinyinParseInstance {
 	private boolean canConsumeChars(String chars) {
 		char lastChar = chars.charAt(chars.length() - 1);
 		int nextTokenIndex = chars.length() + 1;
-		Token nextToken = getToken(nextTokenIndex);
-		Token secondNextToken = getToken(nextTokenIndex + 1);
-		Token thirdNextToken = getToken(nextTokenIndex + 2);
+		Token token1 = getToken(nextTokenIndex);
+		Token token2 = getToken(nextTokenIndex + 1);
+		Token token3 = getToken(nextTokenIndex + 2);
 		switch (lastChar) {
 		case 'g':
-			return nextToken.kind != U &&
-				!(nextToken.kind == O && secondNextToken.kind == N && thirdNextToken.kind == G) &&
-				!(nextToken.kind == E && secondNextToken.kind == N && thirdNextToken.kind == G) &&
-				nextToken.kind != Ü;
+			return token1.kind != U &&
+				!(token1.kind == O && token2.kind == N && token3.kind == G) &&
+				!(token1.kind == E && token2.kind == N && token3.kind == G) &&
+				token1.kind != Ü;
 		case 'n':
-			return nextToken.kind != I &&
-				nextToken.kind != U &&
-				nextToken.kind != Ü &&
-				!(nextToken.kind == O && secondNextToken.kind == N && thirdNextToken.kind == G) &&
-				!(nextToken.kind == E && secondNextToken.kind == N && thirdNextToken.kind == G) &&
-				!(nextToken.kind == G && (secondNextToken.kind == EOF || secondNextToken.kind == WHITESPACE));
+			return token1.kind != I &&
+				token1.kind != U &&
+				token1.kind != Ü &&
+				!(token1.kind == O && token2.kind == N && token3.kind == G) &&
+				!(token1.kind == E && token2.kind == N && token3.kind == G) &&
+				!(token1.kind == G && (token2.kind == EOF || token2.kind == WHITESPACE));
 		case 'o':
-			return nextToken.kind != U;
+			return token1.kind != U;
 		case 'e':
-			return nextToken.kind != I &&
-				nextToken.kind != R &&
-				nextToken.kind != N;
+			return token1.kind != I &&
+				token1.kind != R &&
+				token1.kind != N;
 		case 'a':
-			return nextToken.kind != I &&
-				!(nextToken.kind == N && secondNextToken.kind == G);
+			return token1.kind != I &&
+				!(token1.kind == N && token2.kind == G);
 		case 'r':
-			return nextToken.kind != U &&
-				nextToken.kind != I &&
-				!(nextToken.kind == O && secondNextToken.kind == N) &&
-				!(nextToken.kind == E && secondNextToken.kind == N && thirdNextToken.kind == G);
+			return token1.kind != U &&
+				token1.kind != I &&
+				!(token1.kind == O && token2.kind == N) &&
+				!(token1.kind == E && token2.kind == N && token3.kind == G);
 		default:
 			return true;
 		}
