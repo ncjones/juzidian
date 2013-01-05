@@ -68,7 +68,6 @@ class PinyinParseInstance {
 		case 'n':
 			return nextToken.kind != I &&
 				nextToken.kind != U &&
-				nextToken.kind != E &&
 				nextToken.kind != Ü &&
 				!(nextToken.kind == O && secondNextToken.kind == N) &&
 				!(nextToken.kind == E && secondNextToken.kind == N && thirdNextToken.kind == G);

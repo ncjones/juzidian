@@ -28,7 +28,6 @@ import java.util.List;
 
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -40,7 +39,6 @@ import org.junit.runners.Parameterized.Parameters;
  * no tone numbers, spaces or apostrophes).
  */
 @RunWith(Parameterized.class)
-@Ignore
 public class PinyinParserMultiSyllablesTest {
 
 	@Parameter(0)
