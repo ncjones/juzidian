@@ -70,7 +70,8 @@ class PinyinParseInstance {
 				nextToken.kind != U &&
 				nextToken.kind != Ü &&
 				!(nextToken.kind == O && secondNextToken.kind == N) &&
-				!(nextToken.kind == E && secondNextToken.kind == N && thirdNextToken.kind == G);
+				!(nextToken.kind == E && secondNextToken.kind == N && thirdNextToken.kind == G) &&
+				!(nextToken.kind == G && (secondNextToken.kind == EOF || secondNextToken.kind == WHITESPACE));
 		case 'o':
 			return nextToken.kind != U;
 		case 'e':
@@ -78,7 +79,8 @@ class PinyinParseInstance {
 				nextToken.kind != R &&
 				nextToken.kind != N;
 		case 'a':
-			return nextToken.kind != I;
+			return nextToken.kind != I &&
+				!(nextToken.kind == N && secondNextToken.kind == G);
 		case 'r':
 			return nextToken.kind != U &&
 				nextToken.kind != I &&

@@ -550,6 +550,23 @@ public class PinyinParserMultiSyllablesTest {
 				{ "yona", "yo na" },
 				{ "yuahan", "yu a han" },
 				{ "zuahan", "zu a han" },
+
+				/*
+				 * no invalid greedy consumption of 'an' into bian pian mian dian tian
+				 * duan tuan nuan luan juan quan xuan
+				 */
+				{ "biang ", "bi ang" },
+				{ "piang ", "pi ang" },
+				{ "miang ", "mi ang" },
+				{ "diang ", "di ang" },
+				{ "tiang ", "ti ang" },
+				{ "duang ", "du ang" },
+				{ "tuang ", "tu ang" },
+				{ "nuang ", "nu ang" },
+				{ "luang ", "lu ang" },
+				{ "juang ", "ju ang" },
+				{ "quang ", "qu ang" },
+				{ "xuang ", "xu ang" },
 		});
 		return entries;
 	}
