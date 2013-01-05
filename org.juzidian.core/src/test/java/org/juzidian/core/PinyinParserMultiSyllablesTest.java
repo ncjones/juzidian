@@ -567,6 +567,12 @@ public class PinyinParserMultiSyllablesTest {
 				{ "juang ", "ju ang" },
 				{ "quang ", "qu ang" },
 				{ "xuang ", "xu ang" },
+
+				/* tricky thre-syllable combinations */
+				{ "hanoniao", "han o niao" },
+				{ "hangoniao", "hang o niao" },
+				{ "haneniao", "han e niao" },
+				{ "hangeniao", "hang e niao" },
 		});
 		return entries;
 	}

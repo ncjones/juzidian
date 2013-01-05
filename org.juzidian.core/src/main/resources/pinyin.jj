@@ -62,14 +62,14 @@ class PinyinParseInstance {
 		switch (lastChar) {
 		case 'g':
 			return nextToken.kind != U &&
-				!(nextToken.kind == O && secondNextToken.kind == N) &&
+				!(nextToken.kind == O && secondNextToken.kind == N && thirdNextToken.kind == G) &&
 				!(nextToken.kind == E && secondNextToken.kind == N && thirdNextToken.kind == G) &&
 				nextToken.kind != Ü;
 		case 'n':
 			return nextToken.kind != I &&
 				nextToken.kind != U &&
 				nextToken.kind != Ü &&
-				!(nextToken.kind == O && secondNextToken.kind == N) &&
+				!(nextToken.kind == O && secondNextToken.kind == N && thirdNextToken.kind == G) &&
 				!(nextToken.kind == E && secondNextToken.kind == N && thirdNextToken.kind == G) &&
 				!(nextToken.kind == G && (secondNextToken.kind == EOF || secondNextToken.kind == WHITESPACE));
 		case 'o':
