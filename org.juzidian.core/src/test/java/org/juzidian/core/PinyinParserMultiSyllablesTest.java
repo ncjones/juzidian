@@ -155,9 +155,6 @@ public class PinyinParserMultiSyllablesTest {
 				/* no greedy consumption of 'o' from: ou */
 				{ "haou", "ha ou" },
 
-				/* no invalid greedy consumption for multiple syllables. */
-				{ "gengengeng", "gen gen geng" },
-
 				/*
 				 * no invalid greedy consumption of 'n' into syllables ending
 				 * with 'n'
@@ -568,11 +565,14 @@ public class PinyinParserMultiSyllablesTest {
 				{ "quang ", "qu ang" },
 				{ "xuang ", "xu ang" },
 
-				/* tricky thre-syllable combinations */
+				/* tricky three-syllable combinations */
 				{ "hanoniao", "han o niao" },
 				{ "hangoniao", "hang o niao" },
 				{ "haneniao", "han e niao" },
 				{ "hangeniao", "hang e niao" },
+				{ "gengengeng", "geng en geng" },
+				{ "bengenger", "ben geng er" },
+				{ "biangba", "bi ang ba" }
 		});
 		return entries;
 	}

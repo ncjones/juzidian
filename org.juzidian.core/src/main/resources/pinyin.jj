@@ -46,32 +46,51 @@ class PinyinParseInstance {
 		if (!isValidSyllable(syllable)) {
 			return false;
 		}
-		/* An initial with a single-vowel final cannot give up a character to the next syllable. */
+		/* A single-vowel final can always be consumed. */
 		if (syllableFinal.length() == 1) {
+			return true;
+		}
+		/* A final with no shorter alternatives can always be consumed. */
+		if (!hasValidPrefix(syllable)) {
 			return true;
 		}
 		return canConsumeChars(syllableFinal);
 	}
 	
+	private boolean hasValidPrefix(String syllable) {
+		for (int i = syllable.length() - 1; i > 1; i--) {
+			final String syllablePrefix = syllable.substring(0, i);
+			if (isValidSyllable(syllablePrefix)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	private boolean canConsumeChars(String chars) {
 		char lastChar = chars.charAt(chars.length() - 1);
-		int nextTokenIndex = chars.length() + 1;
-		Token token1 = getToken(nextTokenIndex);
-		Token token2 = getToken(nextTokenIndex + 1);
-		Token token3 = getToken(nextTokenIndex + 2);
-		switch (lastChar) {
+		int lastCharTokenIndex = chars.length();
+		return isValidEndOfSyllable(lastChar, lastCharTokenIndex);
+	}
+	
+	private boolean isValidEndOfSyllable(char c, int charTokenIndex) {
+		Token token1 = getToken(charTokenIndex + 1);
+		Token token2 = getToken(charTokenIndex + 2);
+		Token token3 = getToken(charTokenIndex + 3);
+		switch (c) {
 		case 'g':
 			return token1.kind != U &&
 				!(token1.kind == O && token2.kind == N && token3.kind == G) &&
-				!(token1.kind == E && token2.kind == N && token3.kind == G) &&
+				!(token1.kind == E && token2.kind == N && token3.kind == G && isValidEndOfSyllable('g', charTokenIndex + 3)) &&
 				token1.kind != Ü;
 		case 'n':
 			return token1.kind != I &&
 				token1.kind != U &&
 				token1.kind != Ü &&
 				!(token1.kind == O && token2.kind == N && token3.kind == G) &&
-				!(token1.kind == E && token2.kind == N && token3.kind == G) &&
-				!(token1.kind == G && (token2.kind == EOF || token2.kind == WHITESPACE));
+				!(token1.kind == E && token2.kind == N && token3.kind == G && isValidEndOfSyllable('g', charTokenIndex + 3)) &&
+				/* avoid producing dangling 'g' from 'ang' (eg: xu ang -> xuan g) */
+				!(token1.kind == G && isValidEndOfSyllable('g', charTokenIndex + 1));
 		case 'o':
 			return token1.kind != U;
 		case 'e':
