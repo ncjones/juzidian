@@ -308,6 +308,47 @@ public class PinyinParserMultiSyllablesTest {
 				{ "zunang", "zun ang" },
 
 				/*
+				 * valid greedy consumption of 'n' into syllables which end with
+				 * 'n' and cannot consume 'g'
+				 */
+				{ "bianga", "bian ga" },
+				{ "chunga", "chun ga" },
+				{ "cuanga", "cuan ga" },
+				{ "cunga", "cun ga" },
+				{ "dianga", "dian ga" },
+				{ "duanga", "duan ga" },
+				{ "dunga", "dun ga" },
+				{ "enga", "en ga" },
+				{ "gunga", "gun ga" },
+				{ "hunga", "hun ga" },
+				{ "juanga", "juan ga" },
+				{ "junga", "jun ga" },
+				{ "kunga", "kun ga" },
+				{ "luanga", "luan ga" },
+				{ "lunga", "lun ga" },
+				{ "mianga", "mian ga" },
+				{ "nuanga", "nuan ga" },
+				{ "nunga", "nun ga" },
+				{ "pianga", "pian ga" },
+				{ "quanga", "quan ga" },
+				{ "qunga", "qun ga" },
+				{ "ruanga", "ruan ga" },
+				{ "runga", "run ga" },
+				{ "shunga", "shun ga" },
+				{ "suanga", "suan ga" },
+				{ "sunga", "sun ga" },
+				{ "tianga", "tian ga" },
+				{ "tuanga", "tuan ga" },
+				{ "tunga", "tun ga" },
+				{ "xuanga", "xuan ga" },
+				{ "xunga", "xun ga" },
+				{ "yuanga", "yuan ga" },
+				{ "yunga", "yun ga" },
+				{ "zhunga", "zhun ga" },
+				{ "zuanga", "zuan ga" },
+				{ "zunga", "zun ga" },
+
+				/*
 				 * no invalid greedy consumption of 'g' into syllables ending
 				 * with 'g'
 				 */
@@ -572,7 +613,9 @@ public class PinyinParserMultiSyllablesTest {
 				{ "hangeniao", "hang e niao" },
 				{ "gengengeng", "geng en geng" },
 				{ "bengenger", "ben geng er" },
-				{ "biangba", "bi ang ba" }
+				{ "biangba", "bi ang ba" },
+				{ "benenga", "ben en ga" },
+				{ "bengunga", "ben gun ga" },
 		});
 		return entries;
 	}

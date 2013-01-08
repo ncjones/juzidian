@@ -68,29 +68,30 @@ class PinyinParseInstance {
 	}
 	
 	private boolean canConsumeChars(String chars) {
-		char lastChar = chars.charAt(chars.length() - 1);
-		int lastCharTokenIndex = chars.length();
-		return isValidEndOfSyllable(lastChar, lastCharTokenIndex);
+		return canConsumeChars(chars, 0);
 	}
 	
-	private boolean isValidEndOfSyllable(char c, int charTokenIndex) {
-		Token token1 = getToken(charTokenIndex + 1);
-		Token token2 = getToken(charTokenIndex + 2);
-		Token token3 = getToken(charTokenIndex + 3);
-		switch (c) {
+	private boolean canConsumeChars(String chars, int nextTokenOffset) {
+		char lastChar = chars.charAt(chars.length() - 1);
+		int lastCharTokenIndex = nextTokenOffset + chars.length();
+		Token token1 = getToken(lastCharTokenIndex + 1);
+		Token token2 = getToken(lastCharTokenIndex + 2);
+		Token token3 = getToken(lastCharTokenIndex + 3);
+		switch (lastChar) {
 		case 'g':
 			return token1.kind != U &&
 				!(token1.kind == O && token2.kind == N && token3.kind == G) &&
-				!(token1.kind == E && token2.kind == N && token3.kind == G && isValidEndOfSyllable('g', charTokenIndex + 3)) &&
+				!(token1.kind == E && token2.kind == N && token3.kind == G && canConsumeChars("eng", lastCharTokenIndex)) &&
 				token1.kind != Ü;
 		case 'n':
+			char secondChar = chars.charAt(1);
 			return token1.kind != I &&
 				token1.kind != U &&
 				token1.kind != Ü &&
 				!(token1.kind == O && token2.kind == N && token3.kind == G) &&
-				!(token1.kind == E && token2.kind == N && token3.kind == G && isValidEndOfSyllable('g', charTokenIndex + 3)) &&
-				/* avoid producing dangling 'g' from 'ang' (eg: xu ang -> xuan g) */
-				!(token1.kind == G && isValidEndOfSyllable('g', charTokenIndex + 1));
+				!(token1.kind == E && token2.kind == N && token3.kind == G && canConsumeChars("eng", lastCharTokenIndex)) &&
+				/* avoid producing dangling 'g' from 'uang' or 'iang' (eg: xu ang -> xuan g) */
+				!(secondChar == 'a' && token1.kind == G && !"uaeo".contains(token2.image));
 		case 'o':
 			return token1.kind != U;
 		case 'e':
