@@ -23,6 +23,16 @@ subprojects {
 	group = 'org.juzidian'
 
 	version = "${juzidianVersion}"
+
+	plugins.withType(org.gradle.api.plugins.JavaBasePlugin) {
+		eclipse.classpath.file {
+			whenMerged { classpath ->
+				// don't expose dependencies to other projects
+				classpath.entries.findAll { entry -> entry.kind != 'output' }*.exported = false
+			}
+		}
+	}
+
 }
 
 ext.libraries = [
