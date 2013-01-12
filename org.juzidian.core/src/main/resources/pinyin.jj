@@ -72,6 +72,7 @@ class PinyinParseInstance {
 	}
 	
 	private boolean canConsumeChars(String chars, int nextTokenOffset) {
+		boolean charsInvalid;
 		char lastChar = chars.charAt(chars.length() - 1);
 		int lastCharTokenIndex = nextTokenOffset + chars.length();
 		Token token1 = getToken(lastCharTokenIndex + 1);
@@ -79,36 +80,43 @@ class PinyinParseInstance {
 		Token token3 = getToken(lastCharTokenIndex + 3);
 		switch (lastChar) {
 		case 'g':
-			return token1.kind != U &&
-				!(token1.kind == O && token2.kind == N && token3.kind == G) &&
-				!(token1.kind == E && token2.kind == N && token3.kind == G && canConsumeChars("eng", lastCharTokenIndex)) &&
-				token1.kind != Ü;
+			charsInvalid = token1.kind == U ||
+				token1.kind == O && token2.kind == N && token3.kind == G ||
+				token1.kind == E && token2.kind == N && token3.kind == G && canConsumeChars("eng", lastCharTokenIndex) ||
+				token1.kind == Ü;
+			break;
 		case 'n':
 			char secondChar = chars.charAt(1);
-			return token1.kind != I &&
-				token1.kind != U &&
-				token1.kind != Ü &&
-				!(token1.kind == O && token2.kind == N && token3.kind == G) &&
-				!(token1.kind == E && token2.kind == N && token3.kind == G && canConsumeChars("eng", lastCharTokenIndex)) &&
+			charsInvalid = token1.kind == I ||
+				token1.kind == U ||
+				token1.kind == Ü ||
+				token1.kind == O && token2.kind == N && token3.kind == G ||
+				token1.kind == E && token2.kind == N && token3.kind == G && canConsumeChars("eng", lastCharTokenIndex) ||
 				/* avoid producing dangling 'g' from 'uang' or 'iang' (eg: xu ang -> xuan g) */
-				!(secondChar == 'a' && token1.kind == G && !"uaeo".contains(token2.image));
+				secondChar == 'a' && token1.kind == G && !"uaeo".contains(token2.image);
+			break;
 		case 'o':
-			return token1.kind != U;
+			charsInvalid = token1.kind == U;
+			break;
 		case 'e':
-			return token1.kind != I &&
-				token1.kind != R &&
-				token1.kind != N;
+			charsInvalid = token1.kind == I ||
+				token1.kind == R ||
+				token1.kind == N;
+			break;
 		case 'a':
-			return token1.kind != I &&
-				!(token1.kind == N && token2.kind == G);
+			charsInvalid = token1.kind == I ||
+				token1.kind == N && token2.kind == G;
+			break;
 		case 'r':
-			return token1.kind != U &&
-				token1.kind != I &&
-				!(token1.kind == O && token2.kind == N) &&
-				!(token1.kind == E && token2.kind == N && token3.kind == G);
+			charsInvalid = token1.kind == U ||
+				token1.kind == I ||
+				token1.kind == O && token2.kind == N ||
+				token1.kind == E && token2.kind == N && token3.kind == G;
+			break;
 		default:
-			return true;
+			charsInvalid = false;
 		}
+		return !charsInvalid;
 	}
 
 }
