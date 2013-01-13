@@ -617,6 +617,9 @@ public class PinyinParserMultiSyllablesTest {
 				{ "benenga", "ben en ga" },
 				{ "bengunga", "ben gun ga" },
 				{ "dengenga", "deng en ga" },
+				{ "denuang", "de nu ang" },
+				{ "dianger", "di ang er" },
+				{ "diango", "di ang o" },
 		});
 		return entries;
 	}
