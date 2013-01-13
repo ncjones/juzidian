@@ -50,21 +50,29 @@ class PinyinParseInstance {
 		if (syllableFinal.length() == 1) {
 			return true;
 		}
+		final String validPrefix = this.getValidPrefix(syllable);
 		/* A final with no shorter alternatives can always be consumed. */
-		if (!hasValidPrefix(syllable)) {
+		if (validPrefix == null) {
+			return true;
+		}
+		/*
+		 * A final should always be consumed if shorter alternative would leave
+		 * suffix of "ng".
+		 */
+		if (syllableFinal.endsWith("ng") && !validPrefix.endsWith("n")) {
 			return true;
 		}
 		return canConsumeChars(syllableFinal);
 	}
-	
-	private boolean hasValidPrefix(String syllable) {
+
+	private String getValidPrefix(final String syllable) {
 		for (int i = syllable.length() - 1; i > 1; i--) {
 			final String syllablePrefix = syllable.substring(0, i);
-			if (isValidSyllable(syllablePrefix)) {
-				return true;
+			if (this.isValidSyllable(syllablePrefix)) {
+				return syllablePrefix;
 			}
 		}
-		return false;
+		return null;
 	}
 	
 	private boolean canConsumeChars(String chars) {
