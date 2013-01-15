@@ -20,6 +20,7 @@ package org.juzidian.core.datastore;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
@@ -208,6 +209,13 @@ public class DbDictionaryDataStoreTest {
 	}
 
 	@Test
+	public void findPinyinShouldHandleQueriesWithApostrophes() {
+		this.persistEntry("你好", "ni3hao3", "hello");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findPinyin(Arrays.asList(new PinyinSyllable("hao'")), 25, 0);
+		assertThat(entries, hasSize(0));
+	}
+
+	@Test
 	public void findDefinitionsShouldReturnEmptyResultWhenNoEntriesMatchSearch() {
 		this.persistDefaultTestEntries();
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("crabapples", 25, 0);
@@ -339,6 +347,13 @@ public class DbDictionaryDataStoreTest {
 	}
 
 	@Test
+	public void findDefinitionsShouldHandleQueriesWithApostrophes() {
+		this.persistEntry("不会", "bu4hui4", "can't");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findDefinitions("can't", 25, 0);
+		assertThat(entries, containsSimplified("不会"));
+	}
+
+	@Test
 	public void findHanziShouldOrderStartsWithMatchBeforeContainsMatch() {
 		this.persistEntry("你好", "ni3hao3", "hello (greeting)");
 		this.persistEntry("好看", "hao3kan4", "attractive; good looking");
@@ -422,6 +437,13 @@ public class DbDictionaryDataStoreTest {
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好", 25, 0);
 		final DictionaryEntry entry = entries.get(0);
 		assertThat(entry.getDefinitions(), contains("attractive", "good looking"));
+	}
+
+	@Test
+	public void findHanziShouldHandleQueriesWithApostrophes() {
+		this.persistEntry("你好", "ni3hao3", "hello");
+		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好'", 25, 0);
+		assertThat(entries, hasSize(0));
 	}
 
 }
