@@ -620,6 +620,7 @@ public class PinyinParserMultiSyllablesTest {
 				{ "denuang", "de nu ang" },
 				{ "dianger", "di ang er" },
 				{ "diango", "di ang o" },
+				{ "eronian", "er o nian" },
 		});
 		return entries;
 	}

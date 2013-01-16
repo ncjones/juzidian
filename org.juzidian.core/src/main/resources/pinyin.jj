@@ -124,7 +124,7 @@ class PinyinParseInstance {
 		case 'r':
 			charsInvalid = token1.kind == U ||
 				token1.kind == I ||
-				token1.kind == O && token2.kind == N ||
+				token1.kind == O && token2.kind == N && token3.kind == G ||
 				token1.kind == E && token2.kind == N && token3.kind == G;
 			break;
 		default:
