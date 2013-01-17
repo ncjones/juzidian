@@ -1,0 +1,583 @@
+/*
+ * Copyright Nathan Jones 2012
+ * 
+ * This file is part of Juzidian.
+ *
+ * Juzidian is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Juzidian is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
+ */
+ 
+options {
+	STATIC = false;
+	SUPPORT_CLASS_VISIBILITY_PUBLIC = false;
+	KEEP_LINE_COLUMN = false;
+	CACHE_TOKENS = true;
+}
+
+PARSER_BEGIN(PinyinParseInstance)
+
+package org.juzidian.core;
+
+import java.util.ArrayList;
+import java.util.List;
+
+class PinyinParseInstance {
+
+	private static final PinyinHelper PINYIN_HELPER = new PinyinHelper();
+
+	private String currentInitial;
+	
+	private boolean isValidSyllable(String syllable) {
+		return PINYIN_HELPER.getValidSyllables().contains(syllable);
+	}
+	
+	private boolean isValidFinal(String syllableFinal) {
+		String syllable  = currentInitial + syllableFinal;
+		if (!isValidSyllable(syllable)) {
+			return false;
+		}
+		/* A single-vowel final can always be consumed. */
+		if (syllableFinal.length() == 1) {
+			return true;
+		}
+		final String validPrefix = this.getValidPrefix(syllable);
+		/* A final with no shorter alternatives can always be consumed. */
+		if (validPrefix == null) {
+			return true;
+		}
+		/*
+		 * A final should always be consumed if shorter alternative would leave
+		 * suffix of "ng".
+		 */
+		if (syllableFinal.endsWith("ng") && !validPrefix.endsWith("n")) {
+			return true;
+		}
+		return canConsumeChars(syllableFinal);
+	}
+
+	private String getValidPrefix(final String syllable) {
+		for (int i = syllable.length() - 1; i > 1; i--) {
+			final String syllablePrefix = syllable.substring(0, i);
+			if (this.isValidSyllable(syllablePrefix)) {
+				return syllablePrefix;
+			}
+		}
+		return null;
+	}
+	
+	private boolean canConsumeChars(String chars) {
+		return canConsumeChars(chars, 0);
+	}
+	
+	private boolean canConsumeChars(String chars, int nextTokenOffset) {
+		boolean charsInvalid;
+		char lastChar = chars.charAt(chars.length() - 1);
+		int lastCharTokenIndex = nextTokenOffset + chars.length();
+		Token token1 = getToken(lastCharTokenIndex + 1);
+		Token token2 = getToken(lastCharTokenIndex + 2);
+		Token token3 = getToken(lastCharTokenIndex + 3);
+		switch (lastChar) {
+		case 'g':
+			charsInvalid = token1.kind == U ||
+				token1.kind == O && token2.kind == N && token3.kind == G ||
+				token1.kind == E && token2.kind == N && token3.kind == G && canConsumeChars("eng", lastCharTokenIndex) ||
+				token1.kind == Ü;
+			break;
+		case 'n':
+			char secondChar = chars.charAt(1);
+			charsInvalid = token1.kind == I ||
+				token1.kind == U ||
+				token1.kind == Ü ||
+				token1.kind == O && token2.kind == N && token3.kind == G ||
+				token1.kind == E && token2.kind == N && token3.kind == G && canConsumeChars("eng", lastCharTokenIndex) ||
+				/* avoid producing dangling 'g' from 'uang' or 'iang' (eg: xu ang -> xuan g) */
+				secondChar == 'a' && token1.kind == G && (
+						token2.kind == EOF ||
+						!"uaeo".contains(token2.image) ||
+						token2.kind == E && token3.kind == R && this.canConsumeChars("er", lastCharTokenIndex + 1) ||
+						token2.kind == O && this.canConsumeChars("o", lastCharTokenIndex + 1)
+					);
+			break;
+		case 'o':
+			charsInvalid = token1.kind == U ||
+				token1.kind == N && token2.kind == G;
+			break;
+		case 'e':
+			charsInvalid = token1.kind == I ||
+				token1.kind == R ||
+				token1.kind == N;
+			break;
+		case 'a':
+			charsInvalid = token1.kind == I ||
+				token1.kind == N && token2.kind == G;
+			break;
+		case 'r':
+			charsInvalid = token1.kind == U ||
+				token1.kind == I ||
+				token1.kind == O && token2.kind == N && token3.kind == G ||
+				token1.kind == E && token2.kind == N && token3.kind == G;
+			break;
+		default:
+			charsInvalid = false;
+		}
+		return !charsInvalid;
+	}
+
+}
+
+PARSER_END(PinyinParseInstance)
+
+TOKEN :
+{
+	<WHITESPACE: [" ", "\t", "\n", "\r"]> |
+	<APOSTROPHE: "'"> |
+	<TONE_NUMBER: ["1"-"5"]>
+}
+
+/** Initials */
+TOKEN :
+{
+	<B: "b"> |
+	<P: "p"> |
+	<M: "m"> |
+	<F: "f"> |
+	<D: "d"> |
+	<T: "t"> |
+	<N: "n"> |
+	<L: "l"> |
+	<G: "g"> |
+	<K: "k"> |
+	<H: "h"> |
+	<J: "j"> |
+	<Q: "q"> |
+	<X: "x"> |
+	<ZH: "zh"> |
+	<CH: "ch"> |
+	<SH: "sh"> |
+	<R: "r"> |
+	<Z: "z"> |
+	<C: "c"> |
+	<S: "s"> |
+	<W: "w"> |
+	<Y: "y">
+}
+
+/** Vowels */
+TOKEN :
+{
+	<A: "a"> |
+	<E: "e"> |
+	<I: "i"> |
+	<O: "o"> |
+	<U: "u"> |
+	<Ü: "ü">
+}
+
+List<PinyinSyllable> parseInput() :
+{
+	List<PinyinSyllable> syllables;
+}
+{
+	(<WHITESPACE>)* syllables = syllables() <EOF>
+	{
+		return syllables;
+	}
+}
+
+List<PinyinSyllable> syllables() :
+{
+	List<PinyinSyllable> syllables = new ArrayList<PinyinSyllable>();
+	PinyinSyllable s;
+}
+{
+	(
+		s = syllable() [ <APOSTROPHE> | (<WHITESPACE>)+ ]
+		{
+			syllables.add(s);
+		}
+	)+
+	{
+		return syllables;
+	}
+}
+
+PinyinSyllable syllable() :
+{
+	String p;
+	Tone t = Tone.ANY;
+}
+{
+	p = phoneme() [ t = tone() ]
+	{
+		return new PinyinSyllable(p, t);
+	}
+}
+
+String phoneme() :
+{
+	String final_ = null;
+	currentInitial = "";
+}
+{
+	(
+		currentInitial = initial()
+		final_ = final_() |
+		final_ = standalone()
+	)
+	{
+		return currentInitial + final_;
+	}
+}
+
+String initial() :
+{
+	Token t = null;
+}
+{
+	(
+		t = <B> | t = <P> | t = <M> | t = <F> |
+		t = <D> | t = <T> | t = <N> | t = <L> |
+		t = <G> | t = <K> | t = <H> |
+		t = <J> | t = <Q> | t = <X> |
+		t = <ZH> | t = <CH> | t = <SH> | t = <R> |
+		t = <Z> | t = <C> | t = <S> |
+		t = <W> | t = <Y>
+	)
+	{
+		return t.image;
+	}
+}
+
+String final_() :
+{
+	String s = null;
+}
+{
+	(
+		LOOKAHEAD(ang(), { isValidFinal("ang") })
+		s = ang() |
+		LOOKAHEAD(ai(), { isValidFinal("ai") })
+		s = ai() |
+		LOOKAHEAD(an(), { isValidFinal("an") })
+		s = an() |
+		LOOKAHEAD(ao(), { isValidFinal("ao") })
+		s = ao() |
+		LOOKAHEAD(a(), { isValidFinal("a") })
+		s = a() |
+		LOOKAHEAD(eng(), { isValidFinal("eng") })
+		s = eng() |
+		LOOKAHEAD(ei(), { isValidFinal("ei") })
+		s = ei() |
+		LOOKAHEAD(en(), { isValidFinal("en") })
+		s = en() |
+		LOOKAHEAD(e(), { isValidFinal("e") })
+		s = e() |
+		LOOKAHEAD(iang(), { isValidFinal("iang") })
+		s = iang() |
+		LOOKAHEAD(iong(), { isValidFinal("iong") })
+		s = iong() |
+		LOOKAHEAD(ing(), { isValidFinal("ing") })
+		s = ing() |
+		LOOKAHEAD(ian(), { isValidFinal("ian") })
+		s = ian() |
+		LOOKAHEAD(iao(), { isValidFinal("iao") })
+		s = iao() |
+		LOOKAHEAD(ia(), { isValidFinal("ia") })
+		s = ia() |
+		LOOKAHEAD(ie(), { isValidFinal("ie") })
+		s = ie() |
+		LOOKAHEAD(in(), { isValidFinal("in") })
+		s = in() |
+		LOOKAHEAD(iu(), { isValidFinal("iu") })
+		s = iu() |
+		LOOKAHEAD(i(), { isValidFinal("i") })
+		s = i() |
+		LOOKAHEAD(ong(), { isValidFinal("ong") })
+		s = ong() |
+		LOOKAHEAD(ou(), { isValidFinal("ou") })
+		s = ou() |
+		LOOKAHEAD(o(), { isValidFinal("o") })
+		s = o() |
+		LOOKAHEAD(uang(), { isValidFinal("uang") })
+		s = uang() |
+		LOOKAHEAD(uan(), { isValidFinal("uan") })
+		s = uan() |
+		LOOKAHEAD(uai(), { isValidFinal("uai") })
+		s = uai() |
+		LOOKAHEAD(ua(), { isValidFinal("ua") })
+		s = ua() |
+		LOOKAHEAD(ue(), { isValidFinal("ue") })
+		s = ue() |
+		LOOKAHEAD(ui(), { isValidFinal("ui") })
+		s = ui() |
+		LOOKAHEAD(un(), { isValidFinal("un") })
+		s = un() |
+		LOOKAHEAD(uo(), { isValidFinal("uo") })
+		s = uo() |
+		LOOKAHEAD(u(), { isValidFinal("u") })
+		s = u() |
+		LOOKAHEAD(üe(), { isValidFinal("üe") })
+		s = üe() |
+		LOOKAHEAD(ü(), { isValidFinal("ü") })
+		s = ü()
+	)
+	{
+		return s;
+	}
+}
+
+String standalone() :
+{
+	String s = null;
+}
+{
+	(
+		LOOKAHEAD(ang(), { canConsumeChars("ang") })
+		s = ang() |
+		LOOKAHEAD(an(), { canConsumeChars("an") })
+		s = an() |
+		LOOKAHEAD(ao(), { canConsumeChars("ao") })
+		s = ao() |
+		LOOKAHEAD(ai())
+		s = ai() |
+		s = a() |
+		LOOKAHEAD(er(), { canConsumeChars("er") })
+		s = er() |
+		LOOKAHEAD(en(), { canConsumeChars("en") })
+		s = en() |
+		LOOKAHEAD(ei())
+		s = ei() |
+		s = e() |
+		LOOKAHEAD(ou())
+		s = ou() |
+		s = o()
+	)
+	{
+		return s;
+	}
+}
+
+String a() :
+{} {
+	( <A> )
+	{ return "a"; }
+}
+
+String ai() :
+{} {
+	( <A> <I> )
+	{ return "ai"; }
+}
+
+String an() :
+{} {
+	( <A> <N> )
+	{ return "an"; }
+}
+
+String ang() :
+{} {
+	( <A> <N> <G> )
+	{ return "ang"; }
+}
+
+String ao() :
+{} {
+	( <A> <O> )
+	{ return "ao"; }
+}
+
+String e() :
+{} {
+	( <E> )
+	{ return "e"; }
+}
+
+String ei() :
+{} {
+	( <E> <I> )
+	{ return "ei"; }
+}
+
+String en() :
+{} {
+	( <E> <N> )
+	{
+		return "en";
+	}
+}
+
+String eng() :
+{} {
+	( <E> <N> <G> )
+	{ return "eng"; }
+}
+
+String er() :
+{} {
+	( <E> <R> )
+	{ return "er"; }
+}
+
+String i() :
+{} {
+	( <I> )
+	{ return "i"; }
+}
+
+String ia() :
+{} {
+	( <I> <A> )
+	{ return "ia"; }
+}
+
+String ian() :
+{} {
+	( <I> <A> <N> )
+	{ return "ian"; }
+}
+
+String iang() :
+{} {
+	( <I> <A> <N> <G> )
+	{ return "iang"; }
+}
+
+String iao() :
+{} {
+	( <I> <A> <O> )
+	{ return "iao"; }
+}
+
+String ie() :
+{} {
+	( <I> <E> )
+	{ return "ie"; }
+}
+
+String in() :
+{} {
+	( <I> <N> )
+	{ return "in"; }
+}
+
+String ing() :
+{} {
+	( <I> <N> <G> )
+	{ return "ing"; }
+}
+
+String iong() :
+{} {
+	( <I> <O> <N> <G> )
+	{ return "iong"; }
+}
+
+String iu() :
+{} {
+	( <I> <U> )
+	{ return "iu"; }
+}
+
+String o() :
+{} {
+	( <O> )
+	{ return "o"; }
+}
+
+String ong() :
+{} {
+	( <O> <N> <G> )
+	{ return "ong"; }
+}
+
+String ou() :
+{} {
+	( <O> <U> )
+	{return "ou"; }
+}
+
+String u() :
+{} {
+	( <U> )
+	{ return "u"; }
+}
+
+String ua() :
+{} {
+	( <U> <A> )
+	{ return "ua"; }
+}
+
+String uai() :
+{} {
+	( <U> <A> <I> )
+	{ return "uai"; }
+}
+
+String uan() :
+{} {
+	( <U> <A> <N> )
+	{ return "uan"; }
+}
+
+String uang() :
+{} {
+	( <U> <A> <N> <G> )
+	{ return "uang"; }
+}
+
+String ue() :
+{} {
+	( <U> <E> )
+	{ return "ue"; }
+}
+
+String ui() :
+{} {
+	( <U> <I> )
+	{ return "ui"; }
+}
+
+String un() :
+{} {
+	( <U> <N> )
+	{ return "un"; }
+}
+
+String uo() :
+{} {
+	( <U> <O> )
+	{ return "uo"; }
+}
+
+String ü() :
+{} {
+	( <Ü> )
+	{ return "ü"; }
+}
+
+String üe() :
+{} {
+	( <Ü> <E> )
+	{ return "üe"; }
+}
+
+Tone tone() :
+{}
+{
+	<TONE_NUMBER>
+	{
+		return Tone.valueOf(Integer.valueOf(token.image));
+	}
+}

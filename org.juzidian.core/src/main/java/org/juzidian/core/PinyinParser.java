@@ -18,7 +18,7 @@
  */
 package org.juzidian.core;
 
-import java.util.ArrayList;
+import java.io.StringReader;
 import java.util.List;
 
 /**
@@ -42,7 +42,12 @@ public class PinyinParser {
 	 * @return <code>true</code> if the input text can be parsed.
 	 */
 	public boolean isValid(final String text) {
-		return new ParseInstance(text).getSyllables() != null;
+		try {
+			this.parse(text);
+		} catch (final PinyinParseException e) {
+			return false;
+		}
+		return true;
 	}
 
 	/**
@@ -53,89 +58,11 @@ public class PinyinParser {
 	 * @see #isValid(String)
 	 */
 	public List<PinyinSyllable> parse(final String text) {
-		final List<PinyinSyllable> syllables = new ParseInstance(text).getSyllables();
-		if (syllables == null) {
-			throw new PinyinParseException("Invalid pinyin input: " + text);
+		try {
+			return new PinyinParseInstance(new StringReader(text.toLowerCase())).parseInput();
+		} catch (final Throwable e) {
+			throw new PinyinParseException("Invalid pinyin input: " + text, e);
 		}
-		return syllables;
-	}
-
-	private static class ParseInstance {
-
-		private static final PinyinHelper PINYIN_HELPER = new PinyinHelper();
-
-		private final String input;
-
-		private int index;
-
-		public ParseInstance(final String input) {
-			this.input = input.trim().toLowerCase();
-		}
-
-		public List<PinyinSyllable> getSyllables() {
-			final List<PinyinSyllable> syllables = new ArrayList<PinyinSyllable>();
-			for (this.index = 0; this.index < this.input.length();) {
-				final PinyinSyllable syllable = this.findSyllable();
-				if (syllable == null) {
-					return null;
-				}
-				syllables.add(syllable);
-			}
-			return syllables;
-		}
-
-		private PinyinSyllable findSyllable() {
-			/*
-			 * Consume characters until non-syllable character found. If
-			 * non-syllable character is digit then use as tone.
-			 */
-			String currentSyllablePart = "";
-			Tone tone = Tone.ANY;
-			this.consumeWhitespace();
-			for (; this.index < this.input.length(); this.index++) {
-				final char currentChar = this.input.charAt(this.index);
-				final String potentialPinyinSyllablePart = currentSyllablePart + currentChar;
-				if (!this.isValidPinyinSyllablePart(potentialPinyinSyllablePart)) {
-					if (Character.isDigit(currentChar)) {
-						final int toneNumber = Integer.parseInt("" + currentChar);
-						if (toneNumber >= 0 && toneNumber <= 5) {
-							tone = Tone.valueOf(toneNumber);
-							this.index++;
-						}
-					}
-					if (currentChar == '\'') {
-						this.index++;
-					}
-					break;
-				} else {
-					currentSyllablePart = potentialPinyinSyllablePart;
-				}
-			}
-			return this.isValidPinyinSyllable(currentSyllablePart) ? new PinyinSyllable(currentSyllablePart, tone) : null;
-		}
-
-		private void consumeWhitespace() {
-			for (; this.index < this.input.length(); this.index++) {
-				final char currentChar = this.input.charAt(this.index);
-				if (!Character.isWhitespace(currentChar)) {
-					break;
-				}
-			}
-		}
-
-		private boolean isValidPinyinSyllable(final String string) {
-			return PINYIN_HELPER.getValidSyllables().contains(string);
-		}
-
-		private boolean isValidPinyinSyllablePart(final String pinyinSyllablePart) {
-			for (final String validPinyinSyllable : PINYIN_HELPER.getValidSyllables()) {
-				if (validPinyinSyllable.startsWith(pinyinSyllablePart)) {
-					return true;
-				}
-			}
-			return false;
-		}
-
 	}
 
 }

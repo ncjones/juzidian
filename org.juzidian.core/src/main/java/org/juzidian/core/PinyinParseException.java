@@ -29,4 +29,8 @@ public class PinyinParseException extends RuntimeException {
 		super(message);
 	}
 
+	public PinyinParseException(final String message, final Throwable cause) {
+		super(message, cause);
+	}
+
 }
