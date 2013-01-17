@@ -15,10 +15,10 @@ configurations {
 }
 
 dependencies {
+	compile project(':org.juzidian.pinyin')
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_core
 	compile libraries.slf4j_api
-	generate project(':org.juzidian.build.pinyin')
 	generate libraries.javacc
 	testCompile libraries.junit
 	testCompile libraries.hamcrest_library
@@ -62,16 +62,6 @@ task uncompressCedictData {
 	}
 }
 
-task generatePinyinHelper (type: JavaExec, dependsOn: uncompressCedictData) {
-	ext.srcFile = file("$cedictDataPath")
-	ext.destDir = file("$genSrcDir")
-	inputs.file srcFile
-	outputs.dir destDir
-	classpath = configurations.generate
-	main = 	'org.juzidian.build.pinyin.PinyinHelperGenerator'
-	args srcFile, destDir, 'org.juzidian.core'
-}
-
 task generatePinyinParser (type: JavaExec) {
 	ext.srcFile = file('src/main/resources/pinyin.jj')
 	ext.destDir = file("$genSrcDir/org/juzidian/core")
@@ -83,7 +73,7 @@ task generatePinyinParser (type: JavaExec) {
 }
 
 task generateSources () {
-	dependsOn generatePinyinHelper, generatePinyinParser
+	dependsOn generatePinyinParser
 }
 
 compileJava.dependsOn generateSources

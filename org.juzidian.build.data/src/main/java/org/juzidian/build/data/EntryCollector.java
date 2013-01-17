@@ -26,7 +26,7 @@ import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictLoadHandler;
 import org.juzidian.cedict.CedictPinyinSyllable;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.PinyinHelper;
+import org.juzidian.pinyin.PinyinHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

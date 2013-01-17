@@ -3,6 +3,7 @@ apply plugin: 'java'
 dependencies {
 	compile project(':org.juzidian.cedict')
 	compile project(':org.juzidian.core')
+	compile project(':org.juzidian.pinyin')
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_jdbc
 	compile libraries.sqlite_jdbc

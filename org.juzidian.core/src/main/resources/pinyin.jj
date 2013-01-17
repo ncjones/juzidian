@@ -31,6 +31,8 @@ package org.juzidian.core;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.juzidian.pinyin.PinyinHelper;
+
 class PinyinParseInstance {
 
 	private static final PinyinHelper PINYIN_HELPER = new PinyinHelper();

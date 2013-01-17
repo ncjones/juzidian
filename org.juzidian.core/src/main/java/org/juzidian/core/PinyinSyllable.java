@@ -21,6 +21,8 @@ package org.juzidian.core;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.juzidian.pinyin.PinyinHelper;
+
 /**
  * A phonetic representation of a Chinese syllable using the Pinyin romanisation
  * system.
