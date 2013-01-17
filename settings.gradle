@@ -4,4 +4,5 @@ include "org.juzidian.build.pinyin"
 include "org.juzidian.cedict"
 include "org.juzidian.cli"
 include "org.juzidian.core"
+include "org.juzidian.pinyin"
 
