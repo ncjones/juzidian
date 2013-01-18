@@ -24,8 +24,8 @@ import java.util.List;
 import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictPinyinSyllable;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.PinyinSyllable;
-import org.juzidian.core.Tone;
+import org.juzidian.pinyin.PinyinSyllable;
+import org.juzidian.pinyin.Tone;
 
 /**
  * A {@link DictionaryEntry} which delegates to a {@link CedictEntry}.

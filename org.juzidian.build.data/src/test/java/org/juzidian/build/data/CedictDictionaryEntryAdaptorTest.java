@@ -27,7 +27,7 @@ import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictPinyinSyllable;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.DictionaryEntryTest;
-import org.juzidian.core.PinyinSyllable;
+import org.juzidian.pinyin.PinyinSyllable;
 
 public class CedictDictionaryEntryAdaptorTest extends DictionaryEntryTest {
 

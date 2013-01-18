@@ -16,16 +16,16 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.pinyin;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
-import static org.juzidian.core.Tone.ANY;
-import static org.juzidian.core.Tone.FIRST;
-import static org.juzidian.core.Tone.FOURTH;
-import static org.juzidian.core.Tone.NEUTRAL;
-import static org.juzidian.core.Tone.SECOND;
-import static org.juzidian.core.Tone.THIRD;
+import static org.juzidian.pinyin.Tone.ANY;
+import static org.juzidian.pinyin.Tone.FIRST;
+import static org.juzidian.pinyin.Tone.FOURTH;
+import static org.juzidian.pinyin.Tone.NEUTRAL;
+import static org.juzidian.pinyin.Tone.SECOND;
+import static org.juzidian.pinyin.Tone.THIRD;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,6 +34,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.juzidian.pinyin.Tone;
 
 @RunWith(Parameterized.class)
 public class ToneDiacriticCharacterTest {

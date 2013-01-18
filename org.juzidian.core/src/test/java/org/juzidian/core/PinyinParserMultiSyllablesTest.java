@@ -33,6 +33,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
+import org.juzidian.pinyin.PinyinSyllable;
 
 /**
  * Pinyin parser test suite for inputs with no delimiters between syllables (ie,

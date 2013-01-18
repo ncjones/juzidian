@@ -30,8 +30,8 @@ import javax.inject.Inject;
 
 import org.juzidian.core.DictionaryDataStore;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.PinyinSyllable;
-import org.juzidian.core.Tone;
+import org.juzidian.pinyin.PinyinSyllable;
+import org.juzidian.pinyin.Tone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

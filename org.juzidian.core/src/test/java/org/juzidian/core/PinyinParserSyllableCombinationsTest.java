@@ -23,6 +23,7 @@ import java.util.List;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.juzidian.pinyin.PinyinHelper;
+import org.juzidian.pinyin.PinyinSyllable;
 
 public class PinyinParserSyllableCombinationsTest {
 

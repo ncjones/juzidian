@@ -16,12 +16,11 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.pinyin;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.juzidian.pinyin.PinyinHelper;
 
 /**
  * A phonetic representation of a Chinese syllable using the Pinyin romanisation

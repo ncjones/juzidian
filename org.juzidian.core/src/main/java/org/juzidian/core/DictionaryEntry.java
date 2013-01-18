@@ -21,6 +21,8 @@ package org.juzidian.core;
 import java.util.Collection;
 import java.util.List;
 
+import org.juzidian.pinyin.PinyinSyllable;
+
 /**
  * A dictionary definition of a Chinese word.
  */

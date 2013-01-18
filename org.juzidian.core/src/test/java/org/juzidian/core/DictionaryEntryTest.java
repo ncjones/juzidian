@@ -25,6 +25,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Test;
+import org.juzidian.pinyin.PinyinSyllable;
+import org.juzidian.pinyin.Tone;
 
 public abstract class DictionaryEntryTest {
 

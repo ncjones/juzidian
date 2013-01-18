@@ -16,12 +16,14 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.pinyin;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.juzidian.pinyin.PinyinSyllable;
+import org.juzidian.pinyin.Tone;
 
 public class PinyinSyllableTest {
 

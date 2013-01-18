@@ -21,7 +21,7 @@ package org.juzidian.android;
 import java.util.List;
 
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.PinyinSyllable;
+import org.juzidian.pinyin.PinyinSyllable;
 
 import android.content.Context;
 import android.text.Spannable;

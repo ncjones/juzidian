@@ -36,8 +36,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.PinyinParser;
-import org.juzidian.core.PinyinSyllable;
-import org.juzidian.core.Tone;
+import org.juzidian.pinyin.PinyinSyllable;
+import org.juzidian.pinyin.Tone;
 
 import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;

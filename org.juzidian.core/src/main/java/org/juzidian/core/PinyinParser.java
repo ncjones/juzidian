@@ -21,6 +21,8 @@ package org.juzidian.core;
 import java.io.StringReader;
 import java.util.List;
 
+import org.juzidian.pinyin.PinyinSyllable;
+
 /**
  * Parses an input string to create a sequence of {@link PinyinSyllable}s.
  * <p>

@@ -22,7 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.PinyinSyllable;
+import org.juzidian.pinyin.PinyinSyllable;
 
 
 /**

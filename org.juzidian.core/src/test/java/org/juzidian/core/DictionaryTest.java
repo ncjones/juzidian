@@ -33,6 +33,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.juzidian.pinyin.PinyinSyllable;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 
