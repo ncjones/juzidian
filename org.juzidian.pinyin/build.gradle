@@ -1,6 +1,39 @@
 apply plugin: 'java'
 
+def genDir = "$buildDir/generated"
+
+def genSrcDir = "$genDir/java"
+
+configurations {
+	generate
+}
+
 dependencies {
 	testCompile libraries.junit
 	testCompile libraries.hamcrest_library
+	generate libraries.javacc
 }
+
+sourceSets {
+	main {
+		java {
+			srcDirs "$genSrcDir"
+		}
+	}
+}
+
+task generatePinyinParser (type: JavaExec) {
+	ext.srcFile = file('src/main/resources/pinyin.jj')
+	ext.destDir = file("$genSrcDir/org/juzidian/pinyin")
+	inputs.file srcFile
+	outputs.dir destDir
+	classpath = configurations.generate
+	main = 	'javacc'
+	args "-OUTPUT_DIRECTORY=$destDir", srcFile
+}
+
+task generateSources () {
+	dependsOn generatePinyinParser
+}
+
+compileJava.dependsOn generateSources

@@ -15,6 +15,7 @@ dependencies {
 		/* slf4j-api conflicts with slf4j-android. */
 		exclude group: 'org.slf4j', module: 'slf4j-api'
 	}
+	compile (project(':org.juzidian.pinyin'))
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_android
 	compile libraries.slf4j_android

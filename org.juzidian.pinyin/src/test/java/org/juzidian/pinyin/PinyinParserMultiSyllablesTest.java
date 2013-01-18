@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.pinyin;
 
 import static org.hamcrest.Matchers.contains;
 import static org.junit.Assert.assertThat;

@@ -16,12 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core;
+package org.juzidian.pinyin;
 
 import java.io.StringReader;
 import java.util.List;
-
-import org.juzidian.pinyin.PinyinSyllable;
 
 /**
  * Parses an input string to create a sequence of {@link PinyinSyllable}s.

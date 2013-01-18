@@ -35,7 +35,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.PinyinParser;
+import org.juzidian.pinyin.PinyinParser;
 import org.juzidian.pinyin.PinyinSyllable;
 import org.juzidian.pinyin.Tone;
 

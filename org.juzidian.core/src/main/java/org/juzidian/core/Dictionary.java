@@ -22,6 +22,7 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import org.juzidian.pinyin.PinyinParser;
 import org.juzidian.pinyin.PinyinSyllable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

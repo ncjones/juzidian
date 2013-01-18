@@ -1,38 +1,21 @@
 apply plugin: 'java'
 
-def genDir = "$buildDir/generated"
-
-def genSrcDir = "$genDir/java"
-
 def cedictDataPath = "cedict-data.txt"
 
 def cedictCompressedDataPath = "cedict-data.gz"
 
 def cedictDataUrl = 'http://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz'
 
-configurations {
-	generate
-}
-
 dependencies {
 	compile project(':org.juzidian.pinyin')
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_core
 	compile libraries.slf4j_api
-	generate libraries.javacc
 	testCompile libraries.junit
 	testCompile libraries.hamcrest_library
 	testCompile libraries.mockito_core
 	testCompile libraries.ormlite_jdbc
 	testCompile libraries.sqlite_jdbc
-}
-
-sourceSets {
-    main {
-        java {
-            srcDirs "$genSrcDir" 
-        }
-    }
 }
 
 task fetchCedictData {
@@ -61,19 +44,3 @@ task uncompressCedictData {
 		new FileOutputStream(destFile) << inputStream
 	}
 }
-
-task generatePinyinParser (type: JavaExec) {
-	ext.srcFile = file('src/main/resources/pinyin.jj')
-	ext.destDir = file("$genSrcDir/org/juzidian/core")
-	inputs.file srcFile
-	outputs.dir destDir
-	classpath = configurations.generate
-	main = 	'javacc'
-	args "-OUTPUT_DIRECTORY=$destDir", srcFile
-}
-
-task generateSources () {
-	dependsOn generatePinyinParser
-}
-
-compileJava.dependsOn generateSources
