@@ -69,11 +69,11 @@ public class CedictDictionaryEntryAdaptorTest extends DictionaryEntryTest {
 	}
 
 	@Test
-	public void pinyinSyllablesShouldBeConvertedToLowerCase() {
+	public void pinyinSyllablesShouldPreserveCase() {
 		final CedictEntry cedictEntry = this.createMockCedictEntry(new CedictPinyinSyllable("Zhang", 1));
 		final DictionaryEntry dictionaryEntry = new CedictDictionaryEntryAdaptor(cedictEntry);
 		final PinyinSyllable pinyinSyllable = dictionaryEntry.getPinyin().get(0);
-		Assert.assertEquals("zhang", pinyinSyllable.getLetters());
+		Assert.assertEquals("Zhang", pinyinSyllable.getLetters());
 	}
 
 }

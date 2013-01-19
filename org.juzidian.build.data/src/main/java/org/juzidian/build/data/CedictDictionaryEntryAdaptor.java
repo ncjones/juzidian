@@ -61,8 +61,9 @@ class CedictDictionaryEntryAdaptor extends DictionaryEntry {
 	private List<PinyinSyllable> createPinyinSyllables(final List<CedictPinyinSyllable> pinyinSyllables) {
 		final List<PinyinSyllable> syllables = new ArrayList<PinyinSyllable>();
 		for (final CedictPinyinSyllable cedictSyllable : pinyinSyllables) {
-			final PinyinSyllable syllable = new PinyinSyllable(cedictSyllable.getLettersNormalized(), Tone.valueOf(cedictSyllable
-					.getToneNumber()));
+			final String syllableLetters = cedictSyllable.getLetters().replace("u:", "ü");
+			final Tone syllableTone = Tone.valueOf(cedictSyllable.getToneNumber());
+			final PinyinSyllable syllable = new PinyinSyllable(syllableLetters, syllableTone);
 			syllables.add(syllable);
 		}
 		return syllables;

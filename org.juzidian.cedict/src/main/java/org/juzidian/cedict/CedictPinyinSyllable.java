@@ -36,14 +36,6 @@ public class CedictPinyinSyllable {
 		return this.letters;
 	}
 
-	/**
-	 * Get the letters of the syllable as lower case and with instances of "u:"
-	 * replaced with "ü".
-	 */
-	public String getLettersNormalized() {
-		return this.letters.toLowerCase().replace("u:", "ü");
-	}
-
 	public int getToneNumber() {
 		return this.toneNumber;
 	}
