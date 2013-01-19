@@ -22,8 +22,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.juzidian.pinyin.PinyinSyllable;
-import org.juzidian.pinyin.Tone;
 
 public class PinyinSyllableTest {
 
@@ -65,6 +63,21 @@ public class PinyinSyllableTest {
 	@Test
 	public void getDisplayValueShouldExcludeToneForInvalidPinyinWithNeutralTone() {
 		assertThat(new PinyinSyllable("r", Tone.NEUTRAL).getDisplayValue(), equalTo("r"));
+	}
+
+	@Test
+	public void getDisplayValueShouldExcludeToneForMultiCharInvalidPinyinWithNeutralTone() {
+		assertThat(new PinyinSyllable("xx", Tone.NEUTRAL).getDisplayValue(), equalTo("xx"));
+	}
+
+	@Test
+	public void getDisplayValueShouldPreserveCaseForValidValue() {
+		assertThat(new PinyinSyllable("Niu", Tone.THIRD).getDisplayValue(), equalTo("Niǔ"));
+	}
+
+	@Test
+	public void getDisplayValueShouldPreserveCaseForInvalidValue() {
+		assertThat(new PinyinSyllable("D", Tone.NEUTRAL).getDisplayValue(), equalTo("D"));
 	}
 
 }

@@ -21,10 +21,17 @@ package org.juzidian.pinyin;
 import java.util.HashMap;
 import java.util.Map;
 
-
 /**
- * A phonetic representation of a Chinese syllable using the Pinyin romanisation
- * system.
+ * A phonetic representation of a Mandarin Chinese syllable including
+ * pronunciation and tone.
+ * <p>
+ * The pronunciation component will usually be a valid Hanyu Pinyin syllable but
+ * this is not enforced; a syllable may also represent the pronunciation of a
+ * character that is not pure Chinese such as in "Ｕ盘" (USB flash drive) where
+ * the first "pinyin syllable" will be "U" with no tone.
+ * <p>
+ * If the pronunciation component is valid Pinyin then the tone mark will be
+ * placed correctly in syllable's display value.
  */
 public class PinyinSyllable {
 
@@ -79,7 +86,7 @@ public class PinyinSyllable {
 	 * @return the display value of the syllable using diacritical tone marks.
 	 */
 	public String getDisplayValue() {
-		if (!PINYIN_HELPER.getValidSyllables().contains(this.letters)) {
+		if (!PINYIN_HELPER.getValidSyllables().contains(this.letters.toLowerCase())) {
 			return this.letters;
 		}
 		switch (this.tone) {
@@ -91,7 +98,7 @@ public class PinyinSyllable {
 	}
 
 	private String getLettersWithDiacritic() {
-		final int diacriticIndex = DIACRITIC_INDICES.get(this.letters);
+		final int diacriticIndex = DIACRITIC_INDICES.get(this.letters.toLowerCase());
 		final char charToReplace = this.letters.charAt(diacriticIndex);
 		final char diacriticChar = this.tone.getDiacriticCharacter(charToReplace);
 		return this.letters.replace(charToReplace, diacriticChar);
