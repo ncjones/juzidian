@@ -35,12 +35,10 @@ import org.juzidian.pinyin.PinyinHelper;
 
 class PinyinParseInstance {
 
-	private static final PinyinHelper PINYIN_HELPER = new PinyinHelper();
-
 	private String currentInitial;
 	
 	private boolean isValidSyllable(String syllable) {
-		return PINYIN_HELPER.getValidSyllables().contains(syllable);
+		return PinyinHelper.getValidSyllables().contains(syllable);
 	}
 	
 	private boolean isValidFinal(String syllableFinal) {

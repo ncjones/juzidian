@@ -23,7 +23,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.TreeSet;
 
-public class PinyinHelper {
+class PinyinHelper {
 
 	private static final Collection<String> ALL_PINYIN_SYLLABLES;
 	static {
@@ -74,7 +74,11 @@ public class PinyinHelper {
 		ALL_PINYIN_SYLLABLES = Collections.unmodifiableSortedSet(new TreeSet<String>(Arrays.asList(pinyinArray)));
 	}
 
-	public Collection<String> getValidSyllables() {
+	private PinyinHelper() {
+		/* no instantiation */
+	}
+
+	public static Collection<String> getValidSyllables() {
 		return ALL_PINYIN_SYLLABLES;
 	}
 

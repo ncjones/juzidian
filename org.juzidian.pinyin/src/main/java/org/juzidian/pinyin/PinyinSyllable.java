@@ -35,11 +35,9 @@ import java.util.Map;
  */
 public class PinyinSyllable {
 
-	private static final PinyinHelper PINYIN_HELPER = new PinyinHelper();
-
 	private static Map<String, Integer> DIACRITIC_INDICES = new HashMap<String, Integer>();
 	static {
-		for (final String pinyin : PINYIN_HELPER.getValidSyllables()) {
+		for (final String pinyin : PinyinHelper.getValidSyllables()) {
 			DIACRITIC_INDICES.put(pinyin, getToneDiacriticIndex(pinyin));
 		}
 	}
@@ -86,7 +84,7 @@ public class PinyinSyllable {
 	 * @return the display value of the syllable using diacritical tone marks.
 	 */
 	public String getDisplayValue() {
-		if (!PINYIN_HELPER.getValidSyllables().contains(this.letters.toLowerCase())) {
+		if (!PinyinHelper.getValidSyllables().contains(this.letters.toLowerCase())) {
 			return this.letters;
 		}
 		switch (this.tone) {

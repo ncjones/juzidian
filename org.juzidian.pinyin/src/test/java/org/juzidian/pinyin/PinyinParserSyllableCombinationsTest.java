@@ -22,21 +22,18 @@ import java.util.List;
 
 import org.junit.Ignore;
 import org.junit.Test;
-import org.juzidian.pinyin.PinyinHelper;
-import org.juzidian.pinyin.PinyinSyllable;
 
 public class PinyinParserSyllableCombinationsTest {
 
 	@Ignore
 	@Test
 	public void parseAllThreeSyllableCombinations() {
-		final PinyinHelper pinyinHelper = new PinyinHelper();
-		final int syllableCount = pinyinHelper.getValidSyllables().size();
+		final int syllableCount = PinyinHelper.getValidSyllables().size();
 		final int combinations = syllableCount * syllableCount * syllableCount;
 		int count = 0;
-		for (final String syllable1 : pinyinHelper.getValidSyllables()) {
-			for (final String syllable2 : pinyinHelper.getValidSyllables()) {
-				for (final String syllable3 : pinyinHelper.getValidSyllables()) {
+		for (final String syllable1 : PinyinHelper.getValidSyllables()) {
+			for (final String syllable2 : PinyinHelper.getValidSyllables()) {
+				for (final String syllable3 : PinyinHelper.getValidSyllables()) {
 					count += 1;
 					final String pinyin = syllable1 + syllable2 + syllable3;
 					try {
@@ -62,12 +59,11 @@ public class PinyinParserSyllableCombinationsTest {
 	@Ignore
 	@Test
 	public void parseAllTwoSyllableCombinations() {
-		final PinyinHelper pinyinHelper = new PinyinHelper();
-		final int syllableCount = pinyinHelper.getValidSyllables().size();
+		final int syllableCount = PinyinHelper.getValidSyllables().size();
 		final int combinations = syllableCount * syllableCount;
 		int count = 0;
-		for (final String syllable1 : pinyinHelper.getValidSyllables()) {
-			for (final String syllable2 : pinyinHelper.getValidSyllables()) {
+		for (final String syllable1 : PinyinHelper.getValidSyllables()) {
+			for (final String syllable2 : PinyinHelper.getValidSyllables()) {
 				count += 1;
 				final String pinyin = syllable1 + syllable2;
 				try {
