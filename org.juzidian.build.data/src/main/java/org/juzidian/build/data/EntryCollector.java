@@ -24,9 +24,7 @@ import java.util.List;
 
 import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictLoadHandler;
-import org.juzidian.cedict.CedictPinyinSyllable;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.pinyin.PinyinHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,11 +32,7 @@ class EntryCollector implements CedictLoadHandler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EntryCollector.class);
 
-	private static final PinyinHelper PINYIN_HELPER = new PinyinHelper();
-
 	private final List<DictionaryEntry> entries = new LinkedList<DictionaryEntry>();
-
-	private final List<DictionaryEntry> excludedEntries = new LinkedList<DictionaryEntry>();
 
 	public Collection<DictionaryEntry> getEntries() {
 		return this.entries;
@@ -52,27 +46,12 @@ class EntryCollector implements CedictLoadHandler {
 	@Override
 	public void entryLoaded(final CedictEntry cedictEntry) {
 		final DictionaryEntry entry = new CedictDictionaryEntryAdaptor(cedictEntry);
-		if (this.allPinyinValid(cedictEntry)) {
-			this.entries.add(entry);
-		} else {
-			this.excludedEntries.add(entry);
-			LOGGER.debug("Excluding entry with invalid Pinyin: " + cedictEntry);
-		}
-	}
-
-	private boolean allPinyinValid(final CedictEntry cedictEntry) {
-		for (final CedictPinyinSyllable syllable : cedictEntry.getPinyinSyllables()) {
-			final String letters = syllable.getLettersNormalized();
-			if (!PINYIN_HELPER.getValidSyllables().contains(letters)) {
-				return false;
-			}
-		}
-		return true;
+		this.entries.add(entry);
 	}
 
 	@Override
 	public void loadingFinished() {
-		LOGGER.warn("Excluded {} entries with invalid Pinyin.", this.excludedEntries.size());
+		LOGGER.info("Loaded {} entries from CEDict data.", this.entries.size());
 	}
 
 }

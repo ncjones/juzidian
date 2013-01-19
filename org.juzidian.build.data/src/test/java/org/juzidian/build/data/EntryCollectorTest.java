@@ -38,10 +38,10 @@ public class EntryCollectorTest {
 	}
 
 	@Test
-	public void entryLoadedShouldDiscardInvalidPinyinSyllable() {
+	public void entryLoadedShouldKeepInvalidPinyinSyllable() {
 		final CedictEntry cedictEntry = createSingleSyllableCedictEntry("m", 5);
 		this.entryCollector.entryLoaded(cedictEntry);
-		Assert.assertThat(this.entryCollector.getEntries(), Matchers.hasSize(0));
+		Assert.assertThat(this.entryCollector.getEntries(), Matchers.hasSize(1));
 	}
 
 	@Test
