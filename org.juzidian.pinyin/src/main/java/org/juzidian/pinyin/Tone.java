@@ -23,34 +23,39 @@ package org.juzidian.pinyin;
  */
 public enum Tone {
 
-	FIRST(1, new char[] { 'ā', 'ē', 'ī', 'ō', 'ū', 'ǖ' }),
+	FIRST(1, "ĀāĒēĪīŌōŪūǕǖ"),
 
-	SECOND(2, new char[] { 'á', 'é', 'í', 'ó', 'ú', 'ǘ' }),
+	SECOND(2, "ÁáÉéÍíÓóÚúǗǘ"),
 
-	THIRD(3, new char[] { 'ǎ', 'ĕ', 'ǐ', 'ǒ', 'ǔ', 'ǚ' }),
+	THIRD(3, "ǍǎĚĕǏǐǑǒǓǔǙǚ"),
 
-	FOURTH(4, new char[] { 'à', 'è', 'ì', 'ò', 'ù', 'ǜ' }),
+	FOURTH(4, "ÀàÈèÌìÒòÙùǛǜ"),
 
-	NEUTRAL(5, new char[] { 'a', 'e', 'i', 'o', 'u', 'ü' }),
+	NEUTRAL(5, "AaEeIiOoUuÜü"),
 
-	ANY(null, new char[] { 'a', 'e', 'i', 'o', 'u', 'ü' });
+	ANY(null, "AaEeIiOoUuÜü");
 
-	private static final String AEIOUÜ = "aeiouü";
+	private static final String NON_DIACRITIC_VOWELS = "AaEeIiOoUuÜü";
 
 	private final Integer number;
 
-	/*
-	 * Store the mapping between non-diacritical Pinyin vowels and the
-	 * diacritical vowels for this tone using an array for slightly faster
-	 * lookups than a hash map.
+	/**
+	 * Stores the mapping between non-diacritical Pinyin vowels and the
+	 * diacritical vowels for this tone.
+	 * <p>
+	 * We use an array for slightly faster lookups than a hash map and use the
+	 * integer value of the non-diacritical vowels as indices. Despite being
+	 * initialised for capacity of 253 the array will only contain entries for
+	 * each of the non-diacritical vowels &ndash; the entries are spread
+	 * throughout the array with the last at index 252 (the int value of 'ü').
 	 */
 	private final char[] diacritics = new char[253];
 
-	private Tone(final Integer number, final char[] diacritics) {
+	private Tone(final Integer number, final String diacriticVowelsForTone) {
 		this.number = number;
-		for (int i = 0; i < diacritics.length; i++) {
-			final char nonDiacriticVowel = AEIOUÜ.charAt(i);
-			final char diacritic = diacritics[i];
+		for (int i = 0; i < diacriticVowelsForTone.length(); i++) {
+			final char nonDiacriticVowel = NON_DIACRITIC_VOWELS.charAt(i);
+			final char diacritic = diacriticVowelsForTone.charAt(i);
 			this.diacritics[nonDiacriticVowel] = diacritic;
 		}
 	}
@@ -77,7 +82,7 @@ public enum Tone {
 	 *         lower case Pinyin vowel.
 	 */
 	public char getDiacriticCharacter(final char vowel) {
-		if (AEIOUÜ.indexOf(vowel) == -1) {
+		if (NON_DIACRITIC_VOWELS.indexOf(vowel) == -1) {
 			throw new IllegalArgumentException("character is not a valid pinyin vowel: " + vowel);
 		}
 		return this.diacritics[vowel];

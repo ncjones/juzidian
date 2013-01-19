@@ -27,77 +27,81 @@ import java.util.Collection;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameter;
 import org.junit.runners.Parameterized.Parameters;
-import org.juzidian.pinyin.PinyinSyllable;
 
 @RunWith(Parameterized.class)
 public class PinyinSyllableDisplayValueTest {
 
-	private static final PinyinParser PINYIN_PARSER = new PinyinParser();
 
-	private final PinyinSyllable pinyinSyllable;
+	@Parameter(0)
+	public String pinyinLetters;
 
-	private final String expectedFormattedPinyin;
+	@Parameter(1)
+	public Integer pinyinToneNumber;
 
-	public PinyinSyllableDisplayValueTest(final String pinyinString, final String expectedFormattedPinyin) {
-		this.pinyinSyllable = PINYIN_PARSER.parse(pinyinString).get(0);
-		this.expectedFormattedPinyin = expectedFormattedPinyin;
-	}
+	@Parameter(2)
+	public String expectedFormattedPinyin;
 
-	@Parameters(name = "Pinyin syllable ''{0}'' should have display value: {1}")
+	@Parameters(name = "Pinyin syllable ''{0}'' should have display value: {2}")
 	public static Collection<Object[]> data() {
 		return Arrays.asList(new Object[][] {
 				// verify tone marks for each vowel
-				{ "ma1", "mā" },
-				{ "ma2", "má" },
-				{ "ma3", "mǎ" },
-				{ "ma4", "mà" },
-				{ "he1", "hē" },
-				{ "he2", "hé" },
-				{ "he3", "hĕ" },
-				{ "he4", "hè" },
-				{ "yi1", "yī" },
-				{ "yi2", "yí" },
-				{ "yi3", "yǐ" },
-				{ "yi4", "yì" },
-				{ "po1", "pō" },
-				{ "po2", "pó" },
-				{ "po3", "pǒ" },
-				{ "po4", "pò" },
-				{ "bu1", "bū" },
-				{ "bu2", "bú" },
-				{ "bu3", "bǔ" },
-				{ "bu4", "bù" },
-				{ "lü1", "lǖ" },
-				{ "lü2", "lǘ" },
-				{ "lü3", "lǚ" },
-				{ "lü4", "lǜ" },
+				{ "ma", 1, "mā" },
+				{ "ma", 2, "má" },
+				{ "ma", 3, "mǎ" },
+				{ "ma", 4, "mà" },
+				{ "he", 1, "hē" },
+				{ "he", 2, "hé" },
+				{ "he", 3, "hĕ" },
+				{ "he", 4, "hè" },
+				{ "yi", 1, "yī" },
+				{ "yi", 2, "yí" },
+				{ "yi", 3, "yǐ" },
+				{ "yi", 4, "yì" },
+				{ "po", 1, "pō" },
+				{ "po", 2, "pó" },
+				{ "po", 3, "pǒ" },
+				{ "po", 4, "pò" },
+				{ "bu", 1, "bū" },
+				{ "bu", 2, "bú" },
+				{ "bu", 3, "bǔ" },
+				{ "bu", 4, "bù" },
+				{ "lü", 1, "lǖ" },
+				{ "lü", 2, "lǘ" },
+				{ "lü", 3, "lǚ" },
+				{ "lü", 4, "lǜ" },
 				/* verify position of tone mark for each vowel combination */
-				{ "lai1", "lāi" },
-				{ "lao3", "lǎo" },
-				{ "wei4", "wèi" },
-				{ "xia1", "xiā" },
-				{ "xiao3", "xiǎo" },
-				{ "xie4", "xiè" },
-				{ "xiong1", "xiōng" },
-				{ "xiu4", "xiù" },
-				{ "kou3", "kǒu" },
-				{ "hua1", "huā" },
-				{ "huai4", "huài" },
-				{ "yue4", "yuè" },
-				{ "hui2", "huí" },
-				{ "huo3", "huǒ" },
-				{ "lüe4", "lüè" },
+				{ "lai", 1, "lāi" },
+				{ "lao", 3, "lǎo" },
+				{ "wei", 4, "wèi" },
+				{ "xia", 1, "xiā" },
+				{ "xiao", 3, "xiǎo" },
+				{ "xie", 4, "xiè" },
+				{ "xiong", 1, "xiōng" },
+				{ "xiu", 4, "xiù" },
+				{ "kou", 3, "kǒu" },
+				{ "hua", 1, "huā" },
+				{ "huai", 4, "huài" },
+				{ "yue", 4, "yuè" },
+				{ "hui", 2, "huí" },
+				{ "huo", 3, "huǒ" },
+				{ "lüe", 4, "lüè" },
+				/* verify capitalised vowels */
+				{ "A", 1, "Ā" },
+				{ "E", 4, "È" },
+				{ "Ou", 1, "Ōu" },
 				/* verify neutral tone */
-				{ "ma5", "·ma" },
+				{ "ma", 5, "·ma" },
 				/* verify no tone */
-				{ "ma", "ma" },
+				{ "ma", null, "ma" },
 		});
 	}
 
 	@Test
 	public void test() {
-		assertThat(this.pinyinSyllable.getDisplayValue(), equalTo(this.expectedFormattedPinyin));
+		final PinyinSyllable pinyinSyllable = new PinyinSyllable(this.pinyinLetters, Tone.valueOf(this.pinyinToneNumber));
+		assertThat(pinyinSyllable.getDisplayValue(), equalTo(this.expectedFormattedPinyin));
 	}
 
 }

@@ -21,7 +21,6 @@ package org.juzidian.pinyin;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
-import org.juzidian.pinyin.Tone;
 
 public class ToneTest {
 
@@ -75,9 +74,9 @@ public class ToneTest {
 		Tone.FIRST.getDiacriticCharacter('ā');
 	}
 
-	@Test(expected = IllegalArgumentException.class)
-	public void getDiacriticCharacterShouldRejectUpperCaseCharacter() {
-		Tone.FIRST.getDiacriticCharacter('A');
+	@Test
+	public void getDiacriticCharacterShouldHandleUpperCaseCharacter() {
+		assertEquals('Ā', Tone.FIRST.getDiacriticCharacter('A'));
 	}
 
 	@Test(expected = IllegalArgumentException.class)
