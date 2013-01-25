@@ -96,6 +96,13 @@ public class DictionaryTest {
 	}
 
 	@Test
+	public void findPinyinShouldChangeVToUmlaut() {
+		this.dictionary.find(new SearchQuery(PINYIN, "nv", 5, 0));
+		final List<PinyinSyllable> pinyin = Arrays.asList(new PinyinSyllable("nü"));
+		Mockito.verify(this.dataStore).findPinyin(eq(pinyin), anyLong(), anyLong());
+	}
+
+	@Test
 	public void findEntriesShouldReturnSearchResultsWithDataStoreEntries() {
 		final List<DictionaryEntry> entries = Arrays.asList(Mockito.mock(DictionaryEntry.class), Mockito.mock(DictionaryEntry.class));
 		Mockito.when(this.dataStore.findDefinitions(anyString(), anyLong(), anyLong())).thenReturn(entries);

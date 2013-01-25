@@ -90,7 +90,8 @@ public class Dictionary {
 	 */
 	List<DictionaryEntry> findPinyin(final String queryString, final long limit, final long offset) {
 		LOGGER.debug("Find pinyin: " + queryString);
-		final List<PinyinSyllable> pinyinSyllables = this.pinyinParser.parse(queryString);
+		final String filteredQueryString = queryString.replace('v', 'ü');
+		final List<PinyinSyllable> pinyinSyllables = this.pinyinParser.parse(filteredQueryString);
 		return this.dataStore.findPinyin(pinyinSyllables, limit, offset);
 	}
 
