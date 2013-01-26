@@ -33,6 +33,7 @@ import java.util.List;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.juzidian.pinyin.PinyinParser;
 import org.juzidian.pinyin.PinyinSyllable;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
@@ -46,7 +47,7 @@ public class DictionaryTest {
 	@Before
 	public void setUp() {
 		this.dataStore = Mockito.mock(DictionaryDataStore.class);
-		this.dictionary = new Dictionary(this.dataStore);
+		this.dictionary = new Dictionary(this.dataStore, new PinyinParser());
 	}
 
 	@Test(expected = IllegalArgumentException.class)

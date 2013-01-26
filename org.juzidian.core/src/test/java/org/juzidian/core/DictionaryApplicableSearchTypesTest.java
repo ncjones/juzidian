@@ -33,6 +33,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.juzidian.pinyin.PinyinParser;
 import org.mockito.Mockito;
 
 @RunWith(Parameterized.class)
@@ -103,7 +104,7 @@ public class DictionaryApplicableSearchTypesTest {
 	@Test
 	public void test() {
 		final DictionaryDataStore dataStore = Mockito.mock(DictionaryDataStore.class);
-		final Dictionary dictionary = new Dictionary(dataStore);
+		final Dictionary dictionary = new Dictionary(dataStore, new PinyinParser());
 		final Set<SearchType> searchTypes = dictionary.getApplicableSearchTypes(this.inputText);
 		Assert.assertEquals(this.inputText, this.expectedTypes, searchTypes);
 	}

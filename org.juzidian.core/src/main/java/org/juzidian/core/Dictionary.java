@@ -58,11 +58,12 @@ public class Dictionary {
 
 	private final DictionaryDataStore dataStore;
 
-	private final PinyinParser pinyinParser = new PinyinParser();
+	private final PinyinParser pinyinParser;
 
 	@Inject
-	public Dictionary(final DictionaryDataStore dataStore) {
+	public Dictionary(final DictionaryDataStore dataStore, final PinyinParser pinyinParser) {
 		this.dataStore = dataStore;
+		this.pinyinParser = pinyinParser;
 	}
 
 	/**
