@@ -113,7 +113,7 @@ public class Dictionary {
 	 */
 	List<DictionaryEntry> findPinyin(final String queryString, final long limit, final long offset) {
 		LOGGER.debug("Find pinyin: " + queryString);
-		final String filteredQueryString = queryString.replace('v', 'ü');
+		final String filteredQueryString = this.filterPinyinQuery(queryString);
 		final List<PinyinSyllable> pinyinSyllables = this.pinyinParser.parse(filteredQueryString);
 		return this.dataStore.findPinyin(pinyinSyllables, limit, offset);
 	}
@@ -130,6 +130,10 @@ public class Dictionary {
 	List<DictionaryEntry> findDefinitions(final String queryString, final long limit, final long offset) {
 		LOGGER.debug("Find definitions: " + queryString);
 		return this.dataStore.findDefinitions(queryString, limit, offset);
+	}
+
+	private String filterPinyinQuery(final String queryString) {
+		return queryString.replace('v', 'ü');
 	}
 
 	/**
@@ -151,7 +155,7 @@ public class Dictionary {
 				return Collections.singleton(SearchType.HANZI);
 			}
 		}
-		if (this.pinyinParser.isValid(searchText)) {
+		if (this.pinyinParser.isValid(this.filterPinyinQuery(searchText))) {
 			return Collections.unmodifiableSet(PINYIN_AND_REVERSE);
 		}
 		return Collections.singleton(SearchType.REVERSE);

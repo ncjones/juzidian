@@ -79,7 +79,7 @@ public class DictionaryApplicableSearchTypesTest {
 				// { "ni h", PINYIN_AND_REVERSE },
 				{ "ni hao", PINYIN_AND_REVERSE },
 				// { "nǐhǎo", PINYIN_AND_REVERSE },
-				// { "lv", PINYIN_AND_REVERSE },
+				{ "lv", PINYIN_AND_REVERSE },
 				{ "nihi", REVERSE_ONLY },
 				{ "v", REVERSE_ONLY },
 				{ "un", REVERSE_ONLY },
