@@ -18,7 +18,13 @@
  */
 package org.juzidian.core;
 
+import java.lang.Character.UnicodeBlock;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -33,6 +39,22 @@ import org.slf4j.LoggerFactory;
 public class Dictionary {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Dictionary.class);
+
+	private static final Collection<UnicodeBlock> CHINESE_UNICODE_BLOCKS = Arrays.asList(
+			UnicodeBlock.CJK_COMPATIBILITY,
+			UnicodeBlock.CJK_COMPATIBILITY_FORMS,
+			UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS,
+			UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS_SUPPLEMENT,
+			UnicodeBlock.CJK_RADICALS_SUPPLEMENT,
+			UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION,
+			UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS,
+			UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A,
+			UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B,
+			UnicodeBlock.KANGXI_RADICALS,
+			UnicodeBlock.IDEOGRAPHIC_DESCRIPTION_CHARACTERS
+			);
+
+	private static Set<SearchType> PINYIN_AND_REVERSE = new HashSet<SearchType>(Arrays.asList(SearchType.PINYIN, SearchType.REVERSE));
 
 	private final DictionaryDataStore dataStore;
 
@@ -107,6 +129,35 @@ public class Dictionary {
 	List<DictionaryEntry> findDefinitions(final String queryString, final long limit, final long offset) {
 		LOGGER.debug("Find definitions: " + queryString);
 		return this.dataStore.findDefinitions(queryString, limit, offset);
+	}
+
+	/**
+	 * Get the search types that are applicable for the given text.
+	 * <p>
+	 * If the input is <code>null</code> or empty or contains only whitespace
+	 * then no search types are considered applicable and an empty set is
+	 * returned.
+	 * 
+	 * @param searchText a search query input.
+	 * @return a Set of {@link SearchType}.
+	 */
+	public Set<SearchType> getApplicableSearchTypes(final String searchText) {
+		if (searchText == null || "".equals(searchText.trim())) {
+			return Collections.emptySet();
+		}
+		for (final char c : searchText.toCharArray()) {
+			if (isChineseCharacter(c)) {
+				return Collections.singleton(SearchType.HANZI);
+			}
+		}
+		if (this.pinyinParser.isValid(searchText)) {
+			return Collections.unmodifiableSet(PINYIN_AND_REVERSE);
+		}
+		return Collections.singleton(SearchType.REVERSE);
+	}
+
+	private static boolean isChineseCharacter(final char c) {
+		return CHINESE_UNICODE_BLOCKS.contains(UnicodeBlock.of(c));
 	}
 
 }

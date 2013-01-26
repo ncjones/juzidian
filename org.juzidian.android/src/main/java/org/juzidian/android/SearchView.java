@@ -48,6 +48,7 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 
 	public void setDictionary(final Dictionary dictionary) {
 		this.dictionary = dictionary;
+		this.getSearchBar().setDictionary(dictionary);
 	}
 
 	private void doSearch(final SearchQuery searchQuery) {

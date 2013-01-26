@@ -33,9 +33,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
+import org.mockito.Mockito;
 
 @RunWith(Parameterized.class)
-public class SearchTypeForTextTest {
+public class DictionaryApplicableSearchTypesTest {
 
 	private static Set<SearchType> NONE = Collections.emptySet();
 
@@ -49,7 +50,7 @@ public class SearchTypeForTextTest {
 
 	private final Set<SearchType> expectedTypes;
 
-	public SearchTypeForTextTest(final String inputText, final Set<SearchType> expectedType) {
+	public DictionaryApplicableSearchTypesTest(final String inputText, final Set<SearchType> expectedType) {
 		this.inputText = inputText;
 		this.expectedTypes = expectedType;
 	}
@@ -101,7 +102,9 @@ public class SearchTypeForTextTest {
 
 	@Test
 	public void test() {
-		final Set<SearchType> searchTypes = SearchType.allApplicableFor(this.inputText);
+		final DictionaryDataStore dataStore = Mockito.mock(DictionaryDataStore.class);
+		final Dictionary dictionary = new Dictionary(dataStore);
+		final Set<SearchType> searchTypes = dictionary.getApplicableSearchTypes(this.inputText);
 		Assert.assertEquals(this.inputText, this.expectedTypes, searchTypes);
 	}
 

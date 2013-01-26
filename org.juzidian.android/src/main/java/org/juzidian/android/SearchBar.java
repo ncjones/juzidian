@@ -20,6 +20,7 @@ package org.juzidian.android;
 
 import java.util.Set;
 
+import org.juzidian.core.Dictionary;
 import org.juzidian.core.SearchType;
 
 import android.content.Context;
@@ -41,6 +42,8 @@ public class SearchBar extends RelativeLayout {
 
 	private SearchTriggerListener searchTriggerListener;
 
+	private Dictionary dictionary;
+
 	public SearchBar(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		LayoutInflater.from(context).inflate(R.layout.search_bar, this, true);
@@ -50,6 +53,10 @@ public class SearchBar extends RelativeLayout {
 
 	public void setSearchTriggerListener(final SearchTriggerListener searchTriggerListener) {
 		this.searchTriggerListener = searchTriggerListener;
+	}
+
+	public void setDictionary(final Dictionary dictionary) {
+		this.dictionary = dictionary;
 	}
 
 	public String getSearchText() {
@@ -98,7 +105,7 @@ public class SearchBar extends RelativeLayout {
 		@Override
 		public void afterTextChanged(final Editable searchInputText) {
 			final String searchText = SearchBar.this.getSearchInput().getEditableText().toString();
-			final Set<SearchType> applicableSearchTypes = SearchType.allApplicableFor(searchText);
+			final Set<SearchType> applicableSearchTypes = SearchBar.this.dictionary.getApplicableSearchTypes(searchText);
 			final RadioGroup searchTypeRadioGroup = SearchBar.this.getSearchTypeRadioGroup();
 			for (int i = 0; i < searchTypeRadioGroup.getChildCount(); i++) {
 				final RadioButton searchTypeRadioButton = (RadioButton) searchTypeRadioGroup.getChildAt(i);
