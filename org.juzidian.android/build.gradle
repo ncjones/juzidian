@@ -41,7 +41,7 @@ android {
 }
 
 task generateResources {
-	dependsOn ':org.juzidian.build.data:build'
+	dependsOn ':org.juzidian.build.data:build', ':org.juzidian.core:uncompressCedictData'
 	inputs.file file("$cedictDataPath")
 	outputs.file file("$dictionaryDbPath")
 	doLast {

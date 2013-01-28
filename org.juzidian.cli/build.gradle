@@ -32,6 +32,7 @@ jar {
 }
 
 task generateResources {
+	dependsOn ':org.juzidian.core:uncompressCedictData'
 	inputs.file file("$cedictDataPath")
 	outputs.file file("$dictionaryDbPath")
 	doLast {
