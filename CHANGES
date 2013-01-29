@@ -1,3 +1,18 @@
+Version 0.6.0
+-------------
+
+Enhancements:
+
+* Preserve case of Pinyin words from CEDict data.
+* Preserve words from CEDict data with unparseable Pinyin.
+* Interpret 'v' as 'ü' for Pinyin input.
+
+Bugfixes:
+
+* Fix interpretation of Pinyin input with abiguously joined syllables, such as
+  "hanguo", which were previously considered invalid.
+
+
 Version 0.5.0
 -------------
 
