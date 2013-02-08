@@ -36,8 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.misc.TransactionManager;
 import com.j256.ormlite.stmt.PreparedQuery;
+import com.j256.ormlite.stmt.SelectArg;
 import com.j256.ormlite.support.ConnectionSource;
 
 public class DbDictionaryDataStore implements DictionaryDataStore {
@@ -212,13 +214,14 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		try {
 			final String pinyinQueryString = this.formatPinyinQuery(pinyin);
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
-					.orderByRaw("case when like ('" + pinyinQueryString + " %', " + DbDictionaryEntry.COLUMN_PINYIN + ") " +
+					.orderByRaw("case when like (?, " + DbDictionaryEntry.COLUMN_PINYIN + ") " +
 								"then 1 else 0 end desc, " +
 							"length(" + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + "), " +
-							DbDictionaryEntry.COLUMN_PINYIN)
+							DbDictionaryEntry.COLUMN_PINYIN,
+						new SelectArg(SqlType.STRING, "" + pinyinQueryString + " %"))
 					.limit(limit)
 					.offset(offset)
-					.where().like(DbDictionaryEntry.COLUMN_PINYIN, pinyinQueryString + "%")
+					.where().like(DbDictionaryEntry.COLUMN_PINYIN, new SelectArg(pinyinQueryString + "%"))
 					.prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
 		} catch (final SQLException e) {
@@ -254,13 +257,14 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
 					.orderByRaw("case " +
-							"when like ('" + chineseCharacters + "%', " + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + ") then 0 " +
+							"when like (?, " + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + ") then 0 " +
 							"else 1 end, " +
 						"length(" + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + "), " +
-						DbDictionaryEntry.COLUMN_PINYIN)
+						DbDictionaryEntry.COLUMN_PINYIN,
+						new SelectArg(SqlType.STRING, chineseCharacters + "%"))
 					.limit(limit)
 					.offset(offset)
-					.where().like(DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED, "%" + chineseCharacters + "%")
+					.where().like(DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED, new SelectArg("%" + chineseCharacters + "%"))
 					.prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
 		} catch (final SQLException e) {
@@ -280,16 +284,20 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		try {
 			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
 					.orderByRaw("case " +
-								"when like ('/ " + englishWords + " /%', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 0 " +
-								"when like ('%/ " + englishWords + " /%', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 1 " +
-								"when like ('%/ " + englishWords + " %', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 2 " +
-								"when like ('% " + englishWords + " %', " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 3 " +
+								"when like (?, " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 0 " +
+								"when like (?, " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 1 " +
+								"when like (?, " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 2 " +
+								"when like (?, " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 3 " +
 								"else 4 end, " +
 							"length(" + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + "), " +
-							DbDictionaryEntry.COLUMN_PINYIN)
+							DbDictionaryEntry.COLUMN_PINYIN,
+						new SelectArg(SqlType.STRING, "/ " + englishWords + " /%"),
+						new SelectArg(SqlType.STRING, "%/ " + englishWords + " /%"),
+						new SelectArg(SqlType.STRING, "%/ " + englishWords + " %"),
+						new SelectArg(SqlType.STRING, "% " + englishWords + " %"))
 					.limit(limit)
 					.offset(offset)
-					.where().like(DbDictionaryEntry.COLUMN_ENGLISH, "%" + englishWords + "%")
+					.where().like(DbDictionaryEntry.COLUMN_ENGLISH, new SelectArg("%" + englishWords + "%"))
 					.prepare();
 			return this.transformEntries(this.dictionaryEntryDao.query(query));
 		} catch (final SQLException e) {
