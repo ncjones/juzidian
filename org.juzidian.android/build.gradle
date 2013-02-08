@@ -2,9 +2,7 @@ apply plugin: 'android'
 
 def rawResDir = "src/main/res/raw"
 
-def dictionaryDbPath = "$rawResDir/juzidian_dictionary.db"
-
-def cedictDataPath = "${project(':org.juzidian.core').projectDir}/cedict-data.txt"
+def dictionaryDbSourceDir = "${project(':org.juzidian.build.data').projectDir}/build"
 
 configurations {
 	generate
@@ -19,13 +17,9 @@ dependencies {
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_android
 	compile libraries.slf4j_android
-	compile files("$dictionaryDbPath") {
-		builtBy 'generateResources'
+	compile files("$rawResDir/juzidian_dictionary.db") {
+		builtBy 'copyRawDbResource'
 	}
-	generate project(':org.juzidian.build.data')
-	generate libraries.sqlite_jdbc
-	generate libraries.ormlite_jdbc
-	generate libraries.slf4j_simple
 }
 
 project.ext.androidTargetPlatform = 'android-16'
@@ -40,21 +34,19 @@ android {
 	}
 }
 
-task generateResources {
-	dependsOn ':org.juzidian.build.data:build', ':org.juzidian.core:uncompressCedictData'
-	inputs.file file("$cedictDataPath")
-	outputs.file file("$dictionaryDbPath")
-	doLast {
-		mkdir("$rawResDir")
-		javaexec {
-			main = 	'org.juzidian.build.data.DictionaryDataBaseCreator'
-			classpath = configurations.generate
-			args cedictDataPath, dictionaryDbPath
-		}
+task copyRawDbResource(type:Copy) {
+	dependsOn ':org.juzidian.build.data:generateDatabase', 'createRawResDir'
+	from ("$dictionaryDbSourceDir") {
+		include 'juzidian_dictionary.db'
 	}
+	into "$rawResDir"
 }
 
-clean.dependsOn cleanGenerateResources
+task createRawResDir << {
+	file("$rawResDir").mkdirs()
+}
+
+clean.dependsOn cleanCopyRawDbResource
 
 eclipse {
 	classpath {

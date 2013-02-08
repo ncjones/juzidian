@@ -50,7 +50,7 @@ public class JuzidianCli {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JuzidianCli.class);
 
-	private static final String DICTIONARY_DB_FILENAME = "juzidian-dictionary.db";
+	private static final String DICTIONARY_DB_FILENAME = "juzidian_dictionary.db";
 
 	public static void main(final String[] args) throws IOException {
 		if (args.length < 1) {

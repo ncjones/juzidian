@@ -4,13 +4,10 @@ def genDir = "$buildDir/generated"
 
 def genResDir = "$genDir/resources"
 
-def dictionaryDbPath = "$genResDir/juzidian-dictionary.db"
-
-def cedictDataPath = "${project(':org.juzidian.core').projectDir}/cedict-data.txt"
+def dictionaryDbSourceDir = "${project(':org.juzidian.build.data').projectDir}/build"
 
 dependencies {
 	compile project(':org.juzidian.core')
-	compile project(':org.juzidian.build.data')
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_jdbc
 	compile libraries.sqlite_jdbc
@@ -31,18 +28,16 @@ jar {
     }
 }
 
-task generateResources {
-	dependsOn ':org.juzidian.core:uncompressCedictData'
-	inputs.file file("$cedictDataPath")
-	outputs.file file("$dictionaryDbPath")
-	doLast {
-		mkdir("$genResDir")
-		javaexec {
-			main = 	'org.juzidian.build.data.DictionaryDataBaseCreator'
-			classpath = sourceSets.main.runtimeClasspath
-			args cedictDataPath, dictionaryDbPath
-		}
+task copyRawDbResource(type:Copy) {
+	dependsOn ':org.juzidian.build.data:generateDatabase', 'createGenResDir'
+	from ("$dictionaryDbSourceDir") {
+		include 'juzidian_dictionary.db'
 	}
+	into "$genResDir"
 }
 
-compileJava.dependsOn generateResources
+task createGenResDir << {
+	file("$genResDir").mkdirs()
+}
+
+compileJava.dependsOn copyRawDbResource

@@ -1,5 +1,15 @@
 apply plugin: 'java'
 
+def buildDir = "build"
+
+def dictionaryDbPath = "$buildDir/juzidian_dictionary.db"
+
+def cedictDataPath = "${project(':org.juzidian.core').projectDir}/cedict-data.txt"
+
+configurations {
+	generate
+}
+
 dependencies {
 	compile project(':org.juzidian.cedict')
 	compile project(':org.juzidian.core')
@@ -7,11 +17,29 @@ dependencies {
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_jdbc
 	compile libraries.sqlite_jdbc
+	generate project.sourceSets.main.output
+	generate libraries.slf4j_simple
 	testCompile project(':org.juzidian.core').sourceSets.test.output
 	testCompile libraries.junit
 	testCompile libraries.hamcrest_library
 	testRuntime libraries.slf4j_simple
 }
+
+task generateDatabase {
+	dependsOn classes
+	inputs.file file("$cedictDataPath")
+	outputs.file file("$dictionaryDbPath")
+	doLast {
+		mkdir("$buildDir")
+		javaexec {
+			main = 	'org.juzidian.build.data.DictionaryDataBaseCreator'
+			classpath = configurations.compile.plus(configurations.generate)
+			args cedictDataPath, dictionaryDbPath
+		}
+	}
+}
+
+clean.dependsOn cleanGenerateDatabase
 
 eclipse.classpath.file {
 	whenMerged { classpath ->
