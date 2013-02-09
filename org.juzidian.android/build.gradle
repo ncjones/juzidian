@@ -1,12 +1,8 @@
 apply plugin: 'android'
 
-def rawResDir = "src/main/res/raw"
+def adbExec = "${androidSdkDir}/platform-tools/adb"
 
-def dictionaryDbSourceDir = "${project(':org.juzidian.build.data').projectDir}/build"
-
-configurations {
-	generate
-}
+def dictionaryDbDataFile = "${project(':org.juzidian.build.data').projectDir}/build/juzidian_dictionary.db"
 
 dependencies {
 	compile (project(':org.juzidian.core')) {
@@ -17,9 +13,6 @@ dependencies {
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_android
 	compile libraries.slf4j_android
-	compile files("$rawResDir/juzidian_dictionary.db") {
-		builtBy 'copyRawDbResource'
-	}
 }
 
 project.ext.androidTargetPlatform = 'android-16'
@@ -34,19 +27,22 @@ android {
 	}
 }
 
-task copyRawDbResource(type:Copy) {
-	dependsOn ':org.juzidian.build.data:generateDatabase', 'createRawResDir'
-	from ("$dictionaryDbSourceDir") {
-		include 'juzidian_dictionary.db'
+task installData {
+	dependsOn ':org.juzidian.build.data:generateDatabase'
+	inputs.file file("$dictionaryDbDataFile")
+	doLast {
+		exec {
+			executable "${adbExec}"
+			args 'root'
+		}
+		exec {
+			executable "${adbExec}"
+			args 'push'
+			args "${dictionaryDbDataFile}"
+			args "/data/data/org.juzidian.android/juzidian-dictionary.db"
+		}
 	}
-	into "$rawResDir"
 }
-
-task createRawResDir << {
-	file("$rawResDir").mkdirs()
-}
-
-clean.dependsOn cleanCopyRawDbResource
 
 eclipse {
 	classpath {

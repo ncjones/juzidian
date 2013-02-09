@@ -43,7 +43,7 @@ Installing
 
 Install the built APK on to a connected Android device:
 
-	$ adb install org.juzidian.android/build/apk/*debug-unaligned.apk
+	$ gradle installDebug installData
 
 
 IDE Setup
