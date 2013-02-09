@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.build.data;
+package org.juzidian.core.datastore;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +27,7 @@ import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictPinyinSyllable;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.DictionaryEntryTest;
+import org.juzidian.core.datastore.CedictDictionaryEntryAdaptor;
 import org.juzidian.pinyin.PinyinSyllable;
 
 public class CedictDictionaryEntryAdaptorTest extends DictionaryEntryTest {

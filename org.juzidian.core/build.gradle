@@ -8,6 +8,7 @@ def cedictDataUrl = 'http://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_ut
 
 dependencies {
 	compile project(':org.juzidian.pinyin')
+	compile project(':org.juzidian.cedict')
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_core
 	compile libraries.slf4j_api

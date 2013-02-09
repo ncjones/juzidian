@@ -26,6 +26,8 @@ import java.sql.SQLException;
 import org.juzidian.cedict.CedictInputStreamProvider;
 import org.juzidian.cedict.CedictLoader;
 import org.juzidian.core.datastore.DbDictionaryDataStore;
+import org.juzidian.core.datastore.DbDictionaryDataStoreDbInitializer;
+import org.juzidian.core.datastore.DbDictionaryDataStoreEntryPopulator;
 import org.juzidian.core.inject.DictionaryModule;
 
 import com.google.inject.Guice;

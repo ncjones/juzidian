@@ -16,11 +16,10 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.build.data;
+package org.juzidian.core.datastore;
 
 import javax.inject.Inject;
 
-import org.juzidian.core.datastore.DbDictionaryDataStore;
 
 public class DbDictionaryDataStoreDbInitializer {
 
