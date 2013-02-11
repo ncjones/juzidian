@@ -19,10 +19,6 @@ dependencies {
 	compile libraries.sqlite_jdbc
 	generate project.sourceSets.main.output
 	generate libraries.slf4j_simple
-	testCompile project(':org.juzidian.core').sourceSets.test.output
-	testCompile libraries.junit
-	testCompile libraries.hamcrest_library
-	testRuntime libraries.slf4j_simple
 }
 
 task generateDatabase {
