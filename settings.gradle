@@ -1,5 +1,4 @@
 include "org.juzidian.android"
-include "org.juzidian.build.data"
 include "org.juzidian.build.pinyin"
 include "org.juzidian.cedict"
 include "org.juzidian.cli"

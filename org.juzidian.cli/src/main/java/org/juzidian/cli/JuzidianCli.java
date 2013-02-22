@@ -18,11 +18,6 @@
  */
 package org.juzidian.cli;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -50,23 +45,25 @@ public class JuzidianCli {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JuzidianCli.class);
 
-	private static final String DICTIONARY_DB_FILENAME = "juzidian_dictionary.db";
-
-	public static void main(final String[] args) throws IOException {
+	public static void main(final String[] args) {
 		if (args.length < 1) {
-			System.out.println("Search type must be specified.");
+			System.out.println("Dictionary DB file must be specified.");
 			return;
 		}
 		if (args.length < 2) {
+			System.out.println("Search type must be specified.");
+			return;
+		}
+		if (args.length < 3) {
 			System.out.println("Search query must be specified.");
 			return;
 		}
-		initializeDbFile();
-		final SearchType searchType = SearchType.valueOf(args[0]);
+		final String dictionaryDbFilePath = args[0];
+		final SearchType searchType = SearchType.valueOf(args[1]);
 		final Injector injector = Guice.createInjector(new DictionaryModule() {
 			@Override
 			protected ConnectionSource createConnectionSource() throws SQLException {
-				return new JdbcConnectionSource("jdbc:sqlite:" + DICTIONARY_DB_FILENAME);
+				return new JdbcConnectionSource("jdbc:sqlite:" + dictionaryDbFilePath);
 			}
 		});
 		final Dictionary dictionary = injector.getInstance(Dictionary.class);
@@ -74,27 +71,9 @@ public class JuzidianCli {
 		final long totalMemory = runtime.totalMemory();
 		final long freeMemory = runtime.freeMemory();
 		LOGGER.debug(MessageFormat.format("Memory used: {0}KB", (totalMemory - freeMemory) / 1024));
-		final String queryString = args[1];
+		final String queryString = args[2];
 		final List<DictionaryEntry> foundCharacters = findAllWords(dictionary, queryString, searchType);
 		printSearchResults(foundCharacters);
-	}
-
-	private static void initializeDbFile() throws IOException {
-		final InputStream inputStream = JuzidianCli.class.getResourceAsStream("/" + DICTIONARY_DB_FILENAME);
-		final File dbFile = new File(DICTIONARY_DB_FILENAME);
-		dbFile.delete();
-		dbFile.createNewFile();
-		copy(inputStream, new FileOutputStream(dbFile));
-	}
-
-	public static void copy(final InputStream in, final OutputStream out) throws IOException {
-		final byte[] buf = new byte[10000];
-		int len;
-		while ((len = in.read(buf)) > 0) {
-			out.write(buf, 0, len);
-		}
-		in.close();
-		out.close();
 	}
 
 	private static List<DictionaryEntry> findAllWords(final Dictionary dictionary, final String queryString, final SearchType searchType) {

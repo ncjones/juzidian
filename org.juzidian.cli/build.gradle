@@ -1,11 +1,5 @@
 apply plugin: 'java'
 
-def genDir = "$buildDir/generated"
-
-def genResDir = "$genDir/resources"
-
-def dictionaryDbSourceDir = "${project(':org.juzidian.build.data').projectDir}/build"
-
 dependencies {
 	compile project(':org.juzidian.core')
 	compile libraries.guice_no_aop
@@ -14,30 +8,8 @@ dependencies {
 	runtime libraries.slf4j_jdk14
 }
 
-sourceSets {
-	main {
-		resources {
-			srcDirs "$genResDir"
-		}
-	}
-}
-
 jar {
     manifest {
         attributes 'Main-Class': 'org.juzidian.cli.JuzidianCli'
     }
 }
-
-task copyRawDbResource(type:Copy) {
-	dependsOn ':org.juzidian.build.data:generateDatabase', 'createGenResDir'
-	from ("$dictionaryDbSourceDir") {
-		include 'juzidian_dictionary.db'
-	}
-	into "$genResDir"
-}
-
-task createGenResDir << {
-	file("$genResDir").mkdirs()
-}
-
-compileJava.dependsOn copyRawDbResource

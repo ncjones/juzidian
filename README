@@ -43,7 +43,26 @@ Installing
 
 Install the built APK on to a connected Android device:
 
-	$ gradle installDebug installData
+	$ gradle installDebug
+
+
+Installing Data
+===============
+
+* Install core projects into local maven cache:
+
+	$ gradle install
+
+* Generate the dictionary database:
+
+	$ gradle -c settings-data.gradle generateDatabase
+
+* Copy the database file onto a connected Android device:
+
+	$ adb push org.juzidian.build.data/build/juzidian_dictionary.db \
+	/data/data/org.juzidian.android/juzidian-dictionary.db
+
+Note: data installation requires adb root access on the device.
 
 
 IDE Setup

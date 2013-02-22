@@ -1,9 +1,5 @@
 apply plugin: 'android'
 
-def adbExec = "${androidSdkDir}/platform-tools/adb"
-
-def dictionaryDbDataFile = "${project(':org.juzidian.build.data').projectDir}/build/juzidian_dictionary.db"
-
 dependencies {
 	compile (project(':org.juzidian.core')) {
 		/* slf4j-api conflicts with slf4j-android. */
@@ -24,23 +20,6 @@ android {
 		versionName = "${juzidianVersion}"
 		minSdkVersion = 8
 		targetSdkVersion = 15
-	}
-}
-
-task installData {
-	dependsOn ':org.juzidian.build.data:generateDatabase'
-	inputs.file file("$dictionaryDbDataFile")
-	doLast {
-		exec {
-			executable "${adbExec}"
-			args 'root'
-		}
-		exec {
-			executable "${adbExec}"
-			args 'push'
-			args "${dictionaryDbDataFile}"
-			args "/data/data/org.juzidian.android/juzidian-dictionary.db"
-		}
 	}
 }
 

@@ -1,19 +1,28 @@
 apply plugin: 'java'
 
+def cedictDataUrl = 'http://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz'
+
 def buildDir = "build"
 
-def dictionaryDbPath = "$buildDir/juzidian_dictionary.db"
+def cedictDataPath = "$buildDir/cedict.dat"
 
-def cedictDataPath = "${project(':org.juzidian.core').projectDir}/cedict-data.txt"
+def cedictCompressedDataPath = "$buildDir/cedict.dat.gz"
+
+def dictionaryDbPath = "$buildDir/juzidian_dictionary.db"
 
 configurations {
 	generate
 }
 
+repositories {
+	mavenLocal()
+	mavenCentral()
+}
+
 dependencies {
-	compile project(':org.juzidian.cedict')
-	compile project(':org.juzidian.core')
-	compile project(':org.juzidian.pinyin')
+	compile "org.juzidian:org.juzidian.cedict:${juzidianVersion}"
+	compile "org.juzidian:org.juzidian.core:${juzidianVersion}"
+	compile "org.juzidian:org.juzidian.pinyin:${juzidianVersion}"
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_jdbc
 	compile libraries.sqlite_jdbc
@@ -21,8 +30,35 @@ dependencies {
 	generate libraries.slf4j_simple
 }
 
+task fetchCedictData {
+	ext.srcUrl = "$cedictDataUrl"
+	ext.destFile = file("$cedictCompressedDataPath")
+	inputs.property 'srcUrl', srcUrl
+	outputs.file destFile
+	doLast {
+		def outputStream = new FileOutputStream(destFile)
+		println "Downloading CEDict data from $srcUrl"
+		new URL("$srcUrl").withInputStream({
+			outputStream << it
+		})
+	}
+}
+
+task uncompressCedictData {
+	dependsOn fetchCedictData
+	ext.srcFile = file("$cedictCompressedDataPath")
+	ext.destFile = file("$cedictDataPath")
+	inputs.file srcFile
+	outputs.file destFile
+	doLast {
+		println "Uncompressing $srcFile to $destFile"
+		def inputStream = new java.util.zip.GZIPInputStream(new FileInputStream(srcFile))
+		new FileOutputStream(destFile) << inputStream
+	}
+}
+
 task generateDatabase {
-	dependsOn classes
+	dependsOn classes, uncompressCedictData
 	inputs.file file("$cedictDataPath")
 	outputs.file file("$dictionaryDbPath")
 	doLast {
