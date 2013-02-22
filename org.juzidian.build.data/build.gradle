@@ -1,8 +1,39 @@
-apply plugin: 'java'
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.InputStream
+import java.sql.SQLException
+
+import org.juzidian.cedict.CedictInputStreamProvider
+import org.juzidian.cedict.CedictLoader
+import org.juzidian.core.datastore.DbDictionaryDataStore
+import org.juzidian.core.datastore.DbDictionaryDataStoreDbInitializer
+import org.juzidian.core.datastore.DbDictionaryDataStoreEntryPopulator
+import org.juzidian.core.inject.DictionaryModule
+
+import com.google.inject.Guice
+import com.google.inject.Injector
+import com.j256.ormlite.jdbc.JdbcConnectionSource
+import com.j256.ormlite.support.ConnectionSource
+
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.juzidian:org.juzidian.cedict:${juzidianVersion}"
+		classpath "org.juzidian:org.juzidian.core:${juzidianVersion}"
+		classpath "org.juzidian:org.juzidian.pinyin:${juzidianVersion}"
+		classpath libraries.guice_no_aop
+		classpath libraries.ormlite_jdbc
+		classpath libraries.sqlite_jdbc
+		classpath libraries.slf4j_simple
+	}
+}
 
 def cedictDataUrl = 'http://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz'
 
-def buildDir = "build"
+def buildDir = "$projectDir/build"
 
 def cedictDataPath = "$buildDir/cedict.dat"
 
@@ -12,27 +43,19 @@ def cedictCompressedDataPath = "$buildDir/cedict.dat.gz"
 
 def dictionaryDbPath = "$buildDir/juzidian_dictionary.db"
 
-configurations {
-	generate
+task clean << {
+	project.delete("$buildDir")
 }
 
-repositories {
-	mavenLocal()
-	mavenCentral()
-}
-
-dependencies {
-	compile "org.juzidian:org.juzidian.cedict:${juzidianVersion}"
-	compile "org.juzidian:org.juzidian.core:${juzidianVersion}"
-	compile "org.juzidian:org.juzidian.pinyin:${juzidianVersion}"
-	compile libraries.guice_no_aop
-	compile libraries.ormlite_jdbc
-	compile libraries.sqlite_jdbc
-	generate project.sourceSets.main.output
-	generate libraries.slf4j_simple
+task createBuildDir {
+	outputs.dir "$buildDir"
+	doLast {
+		file("$buildDir").mkdirs()
+	}
 }
 
 task fetchCedictData {
+	dependsOn createBuildDir
 	ext.srcUrl = "$cedictDataUrl"
 	ext.destFile = file("$cedictCompressedDataPath")
 	ext.timestampFile = file("$cedictTimestampPath")
@@ -65,24 +88,33 @@ task uncompressCedictData {
 }
 
 task generateDatabase {
-	dependsOn classes, uncompressCedictData
+	dependsOn uncompressCedictData
 	inputs.file file("$cedictDataPath")
 	outputs.file file("$dictionaryDbPath")
 	doLast {
-		mkdir("$buildDir")
-		javaexec {
-			main = 	'org.juzidian.build.data.DictionaryDataBaseCreator'
-			classpath = configurations.compile.plus(configurations.generate)
-			args cedictDataPath, dictionaryDbPath
-		}
+		DictionaryDataBaseCreator.createDataBase(cedictDataPath, dictionaryDbPath)
 	}
 }
 
-clean.dependsOn cleanGenerateDatabase
+class DictionaryDataBaseCreator {
 
-eclipse.classpath.file {
-	whenMerged { classpath ->
-		// remove conflicting juzidian-core test source-set
-		classpath.entries.removeAll { entry -> entry.kind == 'lib' && !entry.path.endsWith('.jar')}
+	static def createDataBase(cedictDataFile, dbFileName) {
+		def jdbcUrl = "jdbc:sqlite:" + dbFileName
+		def injector = Guice.createInjector(new DictionaryModule() {
+			@Override
+			protected ConnectionSource createConnectionSource() throws SQLException {
+				return new JdbcConnectionSource(jdbcUrl)
+			}
+		});
+		def dbInitializer = new DbDictionaryDataStoreDbInitializer(
+				new DbDictionaryDataStoreEntryPopulator(new CedictLoader(new CedictInputStreamProvider() {
+					@Override
+					public InputStream getInputStream() {
+						return new FileInputStream(cedictDataFile)
+					}
+				})));
+		def dictionaryDataStore = injector.getInstance(DbDictionaryDataStore.class)
+		dbInitializer.initializeDb(dictionaryDataStore)
 	}
+
 }
