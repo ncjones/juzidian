@@ -43,6 +43,10 @@ def cedictCompressedDataPath = "$buildDir/cedict.dat.gz"
 
 def dictionaryDbPath = "$buildDir/juzidian_dictionary.db"
 
+def dbFormat = "${DictionaryDataBaseInfo.getDataBaseFormatVersion()}"
+
+def compressedDictionaryDbPath
+
 task clean << {
 	project.delete("$buildDir")
 }
@@ -96,16 +100,57 @@ task generateDatabase {
 	}
 }
 
+task initCompressedDictionaryDbPath {
+	dependsOn fetchCedictData
+	doLast {
+		def cedictTimestamp = new Long(file("$cedictTimestampPath").text.trim())
+		def cedictVersion = new Date(cedictTimestamp).format("yyyyMMddHHmmss", TimeZone.getTimeZone("GMT"))
+		compressedDictionaryDbPath = "$buildDir/juzidian_dictionary_${dbFormat}_${cedictVersion}.db.gz"
+	}
+}
+
+task compressDatabase {
+	dependsOn generateDatabase, initCompressedDictionaryDbPath
+	inputs.file file("$dictionaryDbPath")
+	outputs.file file("$compressedDictionaryDbPath")
+	doLast {
+		ant.gzip(src: "$dictionaryDbPath", destfile: "$compressedDictionaryDbPath")
+	}
+}
+
+task generateChecksum {
+	dependsOn compressDatabase
+	inputs.file file("$compressedDictionaryDbPath")
+	outputs.file file("${compressedDictionaryDbPath}.SHA1")
+	doLast {
+		ant.checksum(file: "$compressedDictionaryDbPath", algorithm: 'SHA1')
+	}
+}
+
+task build {
+	dependsOn generateChecksum
+}
+
+class DataBuildModule extends DictionaryModule {
+
+	def jdbcUrl;
+
+	public DataBuildModule(jdbcUrl) {
+		this.jdbcUrl = jdbcUrl;
+	}
+
+	@Override
+	protected ConnectionSource createConnectionSource() {
+		return new JdbcConnectionSource(this.jdbcUrl);
+	}
+
+}
+
 class DictionaryDataBaseCreator {
 
 	static def createDataBase(cedictDataFile, dbFileName) {
 		def jdbcUrl = "jdbc:sqlite:" + dbFileName
-		def injector = Guice.createInjector(new DictionaryModule() {
-			@Override
-			protected ConnectionSource createConnectionSource() throws SQLException {
-				return new JdbcConnectionSource(jdbcUrl)
-			}
-		});
+		def injector = Guice.createInjector(new DataBuildModule(jdbcUrl))
 		def dbInitializer = new DbDictionaryDataStoreDbInitializer(
 				new DbDictionaryDataStoreEntryPopulator(new CedictLoader(new CedictInputStreamProvider() {
 					@Override
@@ -117,4 +162,14 @@ class DictionaryDataBaseCreator {
 		dbInitializer.initializeDb(dictionaryDataStore)
 	}
 
+}
+
+class DictionaryDataBaseInfo {
+	
+	static def getDataBaseFormatVersion() {
+		def injector = Guice.createInjector(new DataBuildModule("jdbc:sqlite::memory:"));
+		def dataStore = injector.getInstance(DbDictionaryDataStore.class);
+		return dataStore.getDataFormatVersion();
+	}
+	
 }

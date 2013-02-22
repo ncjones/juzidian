@@ -55,7 +55,7 @@ Installing Data
 
 * Generate the dictionary database:
 
-	$ gradle -c settings-data.gradle generateDatabase
+	$ gradle -c settings-data.gradle build
 
 * Copy the database file onto a connected Android device:
 
