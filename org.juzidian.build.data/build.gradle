@@ -79,6 +79,7 @@ task fetchCedictData {
 task generateDatabase {
 	dependsOn fetchCedictData
 	inputs.file file("$cedictDataPath")
+	inputs.property 'dbFormat', dbFormat
 	outputs.file file("$dictionaryDbPath")
 	doLast {
 		DictionaryDataBaseCreator.createDataBase(cedictDataPath, dictionaryDbPath)
