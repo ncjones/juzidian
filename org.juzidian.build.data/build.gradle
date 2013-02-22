@@ -6,6 +6,8 @@ def buildDir = "build"
 
 def cedictDataPath = "$buildDir/cedict.dat"
 
+def cedictTimestampPath = "$buildDir/cedict.timestamp"
+
 def cedictCompressedDataPath = "$buildDir/cedict.dat.gz"
 
 def dictionaryDbPath = "$buildDir/juzidian_dictionary.db"
@@ -33,13 +35,18 @@ dependencies {
 task fetchCedictData {
 	ext.srcUrl = "$cedictDataUrl"
 	ext.destFile = file("$cedictCompressedDataPath")
+	ext.timestampFile = file("$cedictTimestampPath")
 	inputs.property 'srcUrl', srcUrl
 	outputs.file destFile
+	outputs.file timestampFile
 	doLast {
 		def outputStream = new FileOutputStream(destFile)
 		println "Downloading CEDict data from $srcUrl"
 		new URL("$srcUrl").withInputStream({
 			outputStream << it
+		})
+		timestampFile.withWriter({
+			it.println(new Date().getTime())
 		})
 	}
 }
