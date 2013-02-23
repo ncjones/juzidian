@@ -112,6 +112,7 @@ task generateChecksum {
 task generateArtifactRegistry {
 	dependsOn generateChecksum
 	inputs.property 'dbFormat', dbFormat
+	inputs.file compressedDictionaryDbPath
 	inputs.file compressedDictionaryDbSha1Path
 	inputs.file cedictTimestampPath
 	outputs.file artifactRegistryPath
@@ -119,6 +120,7 @@ task generateArtifactRegistry {
 		def xml = new MarkupBuilder(new FileWriter(artifactRegistryPath))
 		xml.juzidianDictionaries() {
 			dictionary(formatVersion: dbFormat) {
+				size(file(compressedDictionaryDbPath).size())
 				sha1(file(compressedDictionaryDbSha1Path).text.trim())
 				url("${artifactRepositoryUrlPrefix}${getDistArtifactName()}")
 			}
