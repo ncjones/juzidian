@@ -41,9 +41,9 @@ def cedictTimestampPath = "$buildDir/cedict.timestamp"
 
 def dictionaryDbPath = "$buildDir/juzidian_dictionary.db"
 
-def dbFormat = "${DictionaryDataBaseInfo.getDataBaseFormatVersion()}"
+def compressedDictionaryDbPath = "$buildDir/juzidian_dictionary.db.gz"
 
-def compressedDictionaryDbPath
+def dbFormat = "${DictionaryDataBaseInfo.getDataBaseFormatVersion()}"
 
 task clean << {
 	project.delete("$buildDir")
@@ -86,17 +86,8 @@ task generateDatabase {
 	}
 }
 
-task initCompressedDictionaryDbPath {
-	dependsOn fetchCedictData
-	doLast {
-		def cedictTimestamp = new Long(file("$cedictTimestampPath").text.trim())
-		def cedictVersion = new Date(cedictTimestamp).format("yyyyMMddHHmmss", TimeZone.getTimeZone("GMT"))
-		compressedDictionaryDbPath = "$buildDir/juzidian_dictionary_${dbFormat}_${cedictVersion}.db.gz"
-	}
-}
-
 task compressDatabase {
-	dependsOn generateDatabase, initCompressedDictionaryDbPath
+	dependsOn generateDatabase
 	inputs.file file("$dictionaryDbPath")
 	outputs.file file("$compressedDictionaryDbPath")
 	doLast {
