@@ -20,12 +20,14 @@ package org.juzidian.core.datastore;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import org.hamcrest.CoreMatchers;
@@ -49,6 +51,8 @@ public class DbDictionaryDataStoreTest {
 	private JdbcConnectionSource connectionSource;
 
 	private Dao<DbDictionaryEntry, Long> dictionaryEntryDao;
+	
+	private Dao<DbDictionaryMetadata, Long> dictionaryMetadataDao;
 
 	private DbDictionaryDataStore dbDictionaryDataStore;
 
@@ -59,7 +63,7 @@ public class DbDictionaryDataStoreTest {
 		this.connectionSource = new JdbcConnectionSource("jdbc:sqlite::memory:");
 		new DbDictionaryDataStoreSchemaCreator().createSchema(this.connectionSource);
 		this.dictionaryEntryDao = DaoManager.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry>createDao(this.connectionSource, DbDictionaryEntry.class);
-		final Dao<DbDictionaryMetadata, Long> dictionaryMetadataDao = DaoManager.<Dao<DbDictionaryMetadata, Long>, DbDictionaryMetadata>createDao(this.connectionSource, DbDictionaryMetadata.class);
+		this.dictionaryMetadataDao = DaoManager.<Dao<DbDictionaryMetadata, Long>, DbDictionaryMetadata>createDao(this.connectionSource, DbDictionaryMetadata.class);
 		this.dbDictionaryDataStore = new DbDictionaryDataStore(this.dictionaryEntryDao, dictionaryMetadataDao);
 		this.dbDictionaryDataStore.createSchema();
 		this.pinyinParser = new PinyinParser();
@@ -444,6 +448,16 @@ public class DbDictionaryDataStoreTest {
 		this.persistEntry("你好", "ni3hao3", "hello");
 		final List<DictionaryEntry> entries = this.dbDictionaryDataStore.findChinese("好'", 25, 0);
 		assertThat(entries, hasSize(0));
+	}
+	
+	@Test
+	public void currentFormatVersionShouldRetrieveVersionFromMetadataTable() throws Exception {
+		final DbDictionaryMetadata metadata = new DbDictionaryMetadata();
+		metadata.setId(1L);
+		metadata.setVersion(5);
+		metadata.setBuildDate(new Date());
+		dictionaryMetadataDao.create(metadata);
+		assertThat(this.dbDictionaryDataStore.getCurrentDataFormatVersion(), equalTo(5));
 	}
 
 }

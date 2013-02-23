@@ -99,6 +99,23 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		return DATA_FORMAT_VERSION_NUMBER;
 	}
 
+	/**
+	 * Get the version number of the data format that is currently used in this
+	 * data store's data.
+	 * <p>
+	 * The data format includes the database schema as well as the format of
+	 * values within the database.
+	 * 
+	 * @return a sequential integer version number.
+	 */
+	public int getCurrentDataFormatVersion() {
+		try {
+			return this.dictionaryMetadataDao.queryForId(METADATA_ROW_ID).getVersion();
+		} catch (final SQLException e) {
+			throw new DictionaryDataStoreException("Failed to load datastore metadata", e);
+		}
+	}
+
 	private void saveMetadata(final DbDictionaryMetadata metadata) {
 		LOGGER.debug("Saving DB metadata: {}.", metadata);
 		try {
