@@ -3,6 +3,8 @@ import java.io.FileNotFoundException
 import java.io.InputStream
 import java.sql.SQLException
 
+import groovy.xml.MarkupBuilder
+
 import org.juzidian.cedict.CedictInputStreamProvider
 import org.juzidian.cedict.CedictLoader
 import org.juzidian.core.datastore.DbDictionaryDataStore
@@ -31,19 +33,25 @@ buildscript {
 	}
 }
 
-def cedictDataUrl = 'http://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz'
+ext.cedictDataUrl = 'http://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz'
 
-def buildDir = "$projectDir/build"
+ext.buildDir = "$projectDir/build"
 
-def cedictDataPath = "$buildDir/cedict.dat"
+ext.cedictDataPath = "$buildDir/cedict.dat"
 
-def cedictTimestampPath = "$buildDir/cedict.timestamp"
+ext.cedictTimestampPath = "$buildDir/cedict.timestamp"
 
-def dictionaryDbPath = "$buildDir/juzidian_dictionary.db"
+ext.dictionaryDbPath = "$buildDir/juzidian_dictionary.db"
 
-def compressedDictionaryDbPath = "$buildDir/juzidian_dictionary.db.gz"
+ext.compressedDictionaryDbPath = "$buildDir/juzidian_dictionary.db.gz"
 
-def dbFormat = "${DictionaryDataBaseInfo.getDataBaseFormatVersion()}"
+ext.compressedDictionaryDbSha1Path = "${compressedDictionaryDbPath}.SHA1"
+
+ext.artifactRegistryPath = "$buildDir/registry.xml"
+
+ext.dbFormat = "${DictionaryDataBaseInfo.getDataBaseFormatVersion()}"
+
+ext.artifactRepositoryUrlPrefix = "https://s3.amazonaws.com/juzidian-dictionaries/"
 
 task clean << {
 	project.delete("$buildDir")
@@ -95,14 +103,51 @@ task compressDatabase {
 task generateChecksum {
 	dependsOn compressDatabase
 	inputs.file compressedDictionaryDbPath
-	outputs.file "${compressedDictionaryDbPath}.SHA1"
+	outputs.file compressedDictionaryDbSha1Path
 	doLast {
 		ant.checksum(file: "$compressedDictionaryDbPath", algorithm: 'SHA1')
 	}
 }
 
-task build {
+task generateArtifactRegistry {
 	dependsOn generateChecksum
+	inputs.property 'dbFormat', dbFormat
+	inputs.file compressedDictionaryDbSha1Path
+	inputs.file cedictTimestampPath
+	outputs.file artifactRegistryPath
+	doLast {
+		def xml = new MarkupBuilder(new FileWriter(artifactRegistryPath))
+		xml.juzidianDictionaries() {
+			dictionary(formatVersion: dbFormat) {
+				sha1(file(compressedDictionaryDbSha1Path).text.trim())
+				url("${artifactRepositoryUrlPrefix}${getDistArtifactName()}")
+			}
+		}
+	}
+}
+
+task createDistArtifact(type: Copy) {
+	dependsOn compressDatabase
+	from file(compressedDictionaryDbPath).parent
+	include file(compressedDictionaryDbPath).name
+	into buildDir
+	rename {
+		getDistArtifactName()
+	}
+}
+
+def getDistArtifactName() {
+	def cedictTimestamp = new Long(file(cedictTimestampPath).text.trim())
+	def cedictVersion = new Date(cedictTimestamp).format("yyyyMMddHHmmss", TimeZone.getTimeZone("GMT"))
+	return "juzidian_dictionary_${dbFormat}_${cedictVersion}.db.gz"
+}
+
+task build {
+	dependsOn generateDatabase
+}
+
+task dist {
+	dependsOn createDistArtifact, generateArtifactRegistry
 }
 
 class DataBuildModule extends DictionaryModule {
