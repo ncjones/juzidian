@@ -58,19 +58,16 @@ task createBuildDir {
 
 task fetchCedictData {
 	dependsOn createBuildDir
-	ext.srcUrl = "$cedictDataUrl"
-	ext.destFile = file("$cedictDataPath")
-	ext.timestampFile = file("$cedictTimestampPath")
-	inputs.property 'srcUrl', srcUrl
-	outputs.file destFile
-	outputs.file timestampFile
+	inputs.property 'srcUrl', cedictDataUrl
+	outputs.file cedictDataPath
+	outputs.file cedictTimestampPath
 	doLast {
-		def outputStream = new FileOutputStream(destFile)
-		println "Downloading CEDict data from $srcUrl"
-		new URL("$srcUrl").withInputStream({
+		def outputStream = new FileOutputStream(cedictDataPath)
+		println "Downloading CEDict data from $cedictDataUrl"
+		new URL("$cedictDataUrl").withInputStream({
 			outputStream << new java.util.zip.GZIPInputStream(it)
 		})
-		timestampFile.withWriter({
+		file("$cedictTimestampPath").withWriter({
 			it.println(new Date().getTime())
 		})
 	}
@@ -78,9 +75,9 @@ task fetchCedictData {
 
 task generateDatabase {
 	dependsOn fetchCedictData
-	inputs.file file("$cedictDataPath")
+	inputs.file cedictDataPath
 	inputs.property 'dbFormat', dbFormat
-	outputs.file file("$dictionaryDbPath")
+	outputs.file dictionaryDbPath
 	doLast {
 		DictionaryDataBaseCreator.createDataBase(cedictDataPath, dictionaryDbPath)
 	}
@@ -88,8 +85,8 @@ task generateDatabase {
 
 task compressDatabase {
 	dependsOn generateDatabase
-	inputs.file file("$dictionaryDbPath")
-	outputs.file file("$compressedDictionaryDbPath")
+	inputs.file dictionaryDbPath
+	outputs.file compressedDictionaryDbPath
 	doLast {
 		ant.gzip(src: "$dictionaryDbPath", destfile: "$compressedDictionaryDbPath")
 	}
@@ -97,8 +94,8 @@ task compressDatabase {
 
 task generateChecksum {
 	dependsOn compressDatabase
-	inputs.file file("$compressedDictionaryDbPath")
-	outputs.file file("${compressedDictionaryDbPath}.SHA1")
+	inputs.file compressedDictionaryDbPath
+	outputs.file "${compressedDictionaryDbPath}.SHA1"
 	doLast {
 		ant.checksum(file: "$compressedDictionaryDbPath", algorithm: 'SHA1')
 	}
