@@ -190,7 +190,7 @@ class DictionaryDataBaseInfo {
 	static def getDataBaseFormatVersion() {
 		def injector = Guice.createInjector(new DataBuildModule("jdbc:sqlite::memory:"));
 		def dataStore = injector.getInstance(DbDictionaryDataStore.class);
-		return dataStore.getDataFormatVersion();
+		return dataStore.getRequiredDataFormatVersion();
 	}
 	
 }

@@ -81,7 +81,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		LOGGER.debug("Populating DB metadata.");
 		final DbDictionaryMetadata metadata = new DbDictionaryMetadata();
 		metadata.setId(METADATA_ROW_ID);
-		metadata.setVersion(this.getDataFormatVersion());
+		metadata.setVersion(this.getRequiredDataFormatVersion());
 		metadata.setBuildDate(new Date());
 		this.saveMetadata(metadata);
 	}
@@ -95,7 +95,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	 * 
 	 * @return a sequential integer version number.
 	 */
-	public int getDataFormatVersion() {
+	public int getRequiredDataFormatVersion() {
 		return DATA_FORMAT_VERSION_NUMBER;
 	}
 
