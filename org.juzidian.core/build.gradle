@@ -12,4 +12,5 @@ dependencies {
 	testCompile libraries.mockito_core
 	testCompile libraries.ormlite_jdbc
 	testCompile libraries.sqlite_jdbc
+	testCompile libraries.url_scheme_registry
 }
