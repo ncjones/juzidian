@@ -18,9 +18,15 @@
  */
 package org.juzidian.core.inject;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.sql.SQLException;
 
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
 import org.juzidian.core.DictionaryDataStore;
+import org.juzidian.core.dataload.DictionaryServiceUrl;
 import org.juzidian.core.datastore.DbDictionaryDataStore;
 import org.juzidian.core.datastore.DbDictionaryEntry;
 import org.juzidian.core.datastore.DbDictionaryMetadata;
@@ -46,6 +52,28 @@ public abstract class DictionaryModule extends AbstractModule {
 		}).toInstance(this.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry> createDao(connectionSource, DbDictionaryEntry.class));
 		this.bind(new TypeLiteral<Dao<DbDictionaryMetadata, Long>>() {
 		}).toInstance(this.<Dao<DbDictionaryMetadata, Long>, DbDictionaryMetadata> createDao(connectionSource, DbDictionaryMetadata.class));
+		this.bind(URL.class).annotatedWith(DictionaryServiceUrl.class)
+				.toInstance(this.createUrl("http://juzidian.org/dictionaries/"));
+		this.bind(SAXParser.class).toInstance(this.createSaxParser());
+	}
+
+	private URL createUrl(final String spec) {
+		try {
+			return new URL(spec);
+		} catch (final MalformedURLException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	private SAXParser createSaxParser() {
+		final SAXParserFactory factory = SAXParserFactory.newInstance();
+		SAXParser saxParser;
+		try {
+			saxParser = factory.newSAXParser();
+		} catch (final Exception e) {
+			throw new RuntimeException(e);
+		}
+		return saxParser;
 	}
 
 	private <T extends Dao<U, Long>, U> T createDao(final ConnectionSource connectionSource, final Class<U> entityClass) {

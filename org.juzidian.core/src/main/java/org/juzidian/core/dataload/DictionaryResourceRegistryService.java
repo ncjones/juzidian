@@ -33,7 +33,8 @@ public class DictionaryResourceRegistryService {
 	private final DictionaryResourceRegistryDeserializer deserializer;
 
 	@Inject
-	public DictionaryResourceRegistryService(final URL serviceEndPointUrl, final DictionaryResourceRegistryDeserializer deserializer) {
+	public DictionaryResourceRegistryService(@DictionaryServiceUrl final URL serviceEndPointUrl,
+			final DictionaryResourceRegistryDeserializer deserializer) {
 		this.serviceEndPointUrl = serviceEndPointUrl;
 		this.deserializer = deserializer;
 	}
