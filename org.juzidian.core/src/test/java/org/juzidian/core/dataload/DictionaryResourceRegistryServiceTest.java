@@ -48,7 +48,7 @@ public class DictionaryResourceRegistryServiceTest {
 	@Test
 	public void getDictionaryResourceRegistryShouldRequestUrlForGivenVersion() throws Exception {
 		final String xml = "<dictionaries></dictionaries>";
-		when(MockUrlHandler.delegate.openConnection(Matchers.any(URL.class))).thenReturn(new StringContentUrlConnection(xml));
+		when(MockUrlHandler.delegate.openConnection(Matchers.any(URL.class))).thenReturn(new MockUrlConnection(xml));
 		this.dictionaryResourceRegistryService.getDictionaryResourceRegistry(3);
 		Mockito.verify(MockUrlHandler.delegate).openConnection(Matchers.eq(new URL("mock://dictionaries/v3/registry.xml")));
 	}
@@ -56,7 +56,7 @@ public class DictionaryResourceRegistryServiceTest {
 	@Test
 	public void getDictionaryResourceRegistryShouldReturnDeserializedRegistry() throws Exception {
 		final String xml = "<dictionaries><dictionary><url>http://foo/bar</url></dictionary></dictionaries>";
-		when(MockUrlHandler.delegate.openConnection(Matchers.any(URL.class))).thenReturn(new StringContentUrlConnection(xml));
+		when(MockUrlHandler.delegate.openConnection(Matchers.any(URL.class))).thenReturn(new MockUrlConnection(xml));
 		final DictionaryResourceRegistry dictionaryResourceRegistry = this.dictionaryResourceRegistryService.getDictionaryResourceRegistry(3);
 		assertThat(dictionaryResourceRegistry.getDictionaryResources(), hasSize(1));
 		final DictionaryResource dictionaryResource = dictionaryResourceRegistry.getDictionaryResources().get(0);

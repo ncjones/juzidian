@@ -23,13 +23,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URLConnection;
 
-public class StringContentUrlConnection extends URLConnection {
+public class MockUrlConnection extends URLConnection {
 
-	private final String content;
+	private final byte[] content;
 
-	public StringContentUrlConnection(final String content) {
+	public MockUrlConnection(final byte[] content) {
 		super(null);
 		this.content = content;
+	}
+
+	public MockUrlConnection(final String content) {
+		this(content.getBytes());
 	}
 
 	@Override
@@ -38,8 +42,13 @@ public class StringContentUrlConnection extends URLConnection {
 	}
 
 	@Override
+	public int getContentLength() {
+		return this.content.length;
+	}
+
+	@Override
 	public InputStream getInputStream() throws IOException {
-		return new ByteArrayInputStream(this.content.getBytes());
+		return new ByteArrayInputStream(this.content);
 	}
 
 }
