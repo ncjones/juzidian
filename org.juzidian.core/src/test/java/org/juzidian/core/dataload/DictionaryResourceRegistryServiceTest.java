@@ -29,11 +29,9 @@ import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
-import org.skife.url.UrlSchemeRegistry;
 
 public class DictionaryResourceRegistryServiceTest {
 
