@@ -25,8 +25,12 @@ public class DictionaryResourceDownloaderException extends Exception {
 
 	private static final long serialVersionUID = 1L;
 
-	public DictionaryResourceDownloaderException(String message, Throwable cause) {
-		super(message, cause);
+	public DictionaryResourceDownloaderException(final String message) {
+		super(message);
+	}
+
+	public DictionaryResourceDownloaderException(final Throwable cause) {
+		super(cause);
 	}
 
 }

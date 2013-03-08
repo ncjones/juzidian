@@ -18,7 +18,18 @@
  */
 package org.juzidian.core.dataload;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.zip.GZIPInputStream;
 
 /**
  * Downloads the actual data referred to by a {@link DictionaryResource}.
@@ -40,7 +51,61 @@ public class DictionaryResourceDownloader {
 	 *         code does not match.
 	 */
 	public void download(final DictionaryResource resource, final OutputStream out, final DownloadProgressHandler handler) throws DictionaryResourceDownloaderException {
+		final URL url = createUrl(resource);
+		try {
+			final int contentLength = url.openConnection().getContentLength();
+			final InputStream rawInputStream = url.openStream();
+			final InputStream progressMonitoringInputStream = new ProgressMonitoringInputStream(rawInputStream, contentLength, handler);
+			final MessageDigest messageDigest = getSha1Digest();
+			final InputStream digestInputStream = new DigestInputStream(progressMonitoringInputStream, messageDigest);
+			final File tempFile = File.createTempFile("juzidian-dictionary-download", null);
+			copy(digestInputStream, new FileOutputStream(tempFile));
+			this.verifyChecksum(resource, messageDigest.digest());
+			final InputStream tempFileInputStream = new FileInputStream(tempFile);
+			final InputStream gzipInputStream = new GZIPInputStream(tempFileInputStream);
+			copy(gzipInputStream, out);
+		} catch (final IOException e) {
+			throw new DictionaryResourceDownloaderException(e);
+		}
+	}
 
+	private void verifyChecksum(final DictionaryResource resource, final byte[] digest) throws DictionaryResourceDownloaderException {
+		final String digestHex = HexUtil.bytesToHex(digest);
+		if (!digestHex.equals(resource.getSha1())) {
+			throw new DictionaryResourceDownloaderException("Checksum mismatch. Expected " + resource.getSha1() + " but was " + digestHex);
+		}
+	}
+
+	private static MessageDigest getSha1Digest() throws DictionaryResourceDownloaderException {
+		try {
+			return MessageDigest.getInstance("SHA1");
+		} catch (final NoSuchAlgorithmException e) {
+			throw new DictionaryResourceDownloaderException(e);
+		}
+	}
+
+	private static URL createUrl(final DictionaryResource resource) throws DictionaryResourceDownloaderException {
+		try {
+			return new URL(resource.getUrl());
+		} catch (final MalformedURLException e) {
+			throw new DictionaryResourceDownloaderException(e);
+		}
+	}
+
+	public static void copy(final InputStream in, final OutputStream out) throws IOException {
+		try {
+			final byte[] buffer = new byte[10000];
+			int bufferedBytes;
+			while ((bufferedBytes = in.read(buffer)) > 0) {
+				out.write(buffer, 0, bufferedBytes);
+			}
+		} finally {
+			try {
+				in.close();
+			} finally {
+				out.close();
+			}
+		}
 	}
 
 }
