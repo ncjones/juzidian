@@ -44,13 +44,13 @@ public class DictionaryResourceRegistryDeserializerTest {
 
 	@Test
 	public void test() throws Exception {
-		final String xml = "<registry>" +
-				"<dictionary>" +
-				"<sha1>1234abcd</sha1>" +
-				"<size>12345678</size>" +
-				"<url>http://test/dict1</url>" +
-				"</dictionary>" +
-				"</registry>";
+		final String xml = "<juzidianDictionaries>\n" +
+				"	  <dictionary formatVersion='0'>\n" +
+				"	    <size>12345678</size>\n" +
+				"	    <sha1>1234abcd</sha1>\n" +
+				"	    <url>http://test/dict1</url>\n" +
+				"	  </dictionary>\n" +
+				"	</juzidianDictionaries>\n";
 		final DictionaryResourceRegistry registry = this.deserializer.deserialize(new ByteArrayInputStream(xml.getBytes()));
 		final List<DictionaryResource> dictionaryResources = registry.getDictionaryResources();
 		assertThat(dictionaryResources, hasSize(1));

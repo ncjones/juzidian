@@ -67,7 +67,6 @@ final class DictionaryRegistrySaxHandler extends DefaultHandler {
 
 	@Override
 	public void startElement(final String uri, final String localName, final String qName, final Attributes attributes) throws SAXException {
-		this.currentTextHandler = null;
 		if ("dictionary".equals(qName)) {
 			this.currentDictionaryResource = new DictionaryResourceImpl();
 			this.dictionaryResources.add(this.currentDictionaryResource);
@@ -78,6 +77,11 @@ final class DictionaryRegistrySaxHandler extends DefaultHandler {
 		}else if ("sha1".equals(qName)) {
 			this.currentTextHandler = DICTIONARY_SHA1_HANDLER;
 		}
+	}
+
+	@Override
+	public void endElement(final String uri, final String localName, final String qName) throws SAXException {
+		this.currentTextHandler = null;
 	}
 
 	@Override
