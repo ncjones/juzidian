@@ -48,7 +48,14 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 
 	private static final Long METADATA_ROW_ID = 1L;
 
-	private static final int DATA_FORMAT_VERSION_NUMBER = 0;
+	/**
+	 * The sequential integer version number of the data format that is created
+	 * by and expected by this data store.
+	 * <p>
+	 * The data format includes the database schema as well as the format of
+	 * values within the database.
+	 */
+	public static final int DATA_FORMAT_VERSION = 0;
 
 	private final Dao<DbDictionaryEntry, Long> dictionaryEntryDao;
 
@@ -81,22 +88,9 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		LOGGER.debug("Populating DB metadata.");
 		final DbDictionaryMetadata metadata = new DbDictionaryMetadata();
 		metadata.setId(METADATA_ROW_ID);
-		metadata.setVersion(this.getRequiredDataFormatVersion());
+		metadata.setVersion(DATA_FORMAT_VERSION);
 		metadata.setBuildDate(new Date());
 		this.saveMetadata(metadata);
-	}
-
-	/**
-	 * Get the version number of the data format that is created by and expected
-	 * by this data store.
-	 * <p>
-	 * The data format includes the database schema as well as the format of
-	 * values within the database.
-	 * 
-	 * @return a sequential integer version number.
-	 */
-	public int getRequiredDataFormatVersion() {
-		return DATA_FORMAT_VERSION_NUMBER;
 	}
 
 	/**

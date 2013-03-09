@@ -49,7 +49,7 @@ ext.compressedDictionaryDbSha1Path = "${compressedDictionaryDbPath}.SHA1"
 
 ext.artifactRegistryPath = "$buildDir/registry.xml"
 
-ext.dbFormat = "${DictionaryDataBaseInfo.getDataBaseFormatVersion()}"
+ext.dbFormat = "${DbDictionaryDataStore.DATA_FORMAT_VERSION}"
 
 ext.artifactRepositoryUrlPrefix = "https://s3.amazonaws.com/juzidian-dictionaries/"
 
@@ -183,14 +183,4 @@ class DictionaryDataBaseCreator {
 		dbInitializer.initializeDb(dictionaryDataStore)
 	}
 
-}
-
-class DictionaryDataBaseInfo {
-	
-	static def getDataBaseFormatVersion() {
-		def injector = Guice.createInjector(new DataBuildModule("jdbc:sqlite::memory:"));
-		def dataStore = injector.getInstance(DbDictionaryDataStore.class);
-		return dataStore.getRequiredDataFormatVersion();
-	}
-	
 }
