@@ -1,5 +1,7 @@
 apply plugin: 'android'
 
+ext.androidSdkDir = localProperties.get('sdk.dir')
+
 dependencies {
 	compile (project(':org.juzidian.core')) {
 		/* slf4j-api conflicts with slf4j-android. */

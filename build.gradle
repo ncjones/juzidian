@@ -10,8 +10,6 @@ buildscript {
 ext.localProperties = new Properties();
 file("local.properties").withInputStream { localProperties.load(it) }
 
-ext.androidSdkDir = localProperties.get('sdk.dir')
-
 subprojects {
 	apply plugin: 'eclipse'
 	apply plugin: 'project-report'
