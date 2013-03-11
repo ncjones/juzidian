@@ -33,7 +33,7 @@ buildscript {
 	}
 }
 
-ext.cedictDataUrl = localProperties.get('cedictDataUrl') ?: 'http://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz'
+ext.cedictDataUrl = localProperties['cedictDataUrl'] ?: 'http://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz'
 
 ext.buildDir = "$projectDir/build"
 

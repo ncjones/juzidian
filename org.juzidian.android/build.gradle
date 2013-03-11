@@ -1,6 +1,6 @@
 apply plugin: 'android'
 
-ext.androidSdkDir = localProperties.get('sdk.dir')
+ext.androidSdkDir = localProperties['sdk.dir']
 
 dependencies {
 	compile (project(':org.juzidian.core')) {
