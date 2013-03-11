@@ -18,9 +18,6 @@
  */
 package org.juzidian.core.dataload;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -40,11 +37,8 @@ import org.juzidian.util.IoUtil;
 public class DictionaryResourceDownloader {
 
 	/**
-	 * Download a compressed dictionary resource and write it, uncompressed, to
-	 * the given output stream.
-	 * <p>
-	 * The SHA1 hash code of the resource will be verified. If the hash code
-	 * does not match then the output stream will not be written to.
+	 * Download a compressed dictionary resource, verify its SHA1 hash code and
+	 * uncompress it into the given output stream.
 	 * 
 	 * @param resource a {@link DictionaryResource} to download.
 	 * @param out the output stream to write the downloaded data to.
@@ -61,12 +55,9 @@ public class DictionaryResourceDownloader {
 			final InputStream progressMonitoringInputStream = new ProgressMonitoringInputStream(rawInputStream, contentLength, handler);
 			final MessageDigest messageDigest = getSha1Digest();
 			final InputStream digestInputStream = new DigestInputStream(progressMonitoringInputStream, messageDigest);
-			final File tempFile = File.createTempFile("juzidian-dictionary-download", null);
-			IoUtil.copy(digestInputStream, new FileOutputStream(tempFile));
-			this.verifyChecksum(resource, messageDigest.digest());
-			final InputStream tempFileInputStream = new FileInputStream(tempFile);
-			final InputStream gzipInputStream = new GZIPInputStream(tempFileInputStream);
+			final InputStream gzipInputStream = new GZIPInputStream(digestInputStream);
 			IoUtil.copy(gzipInputStream, out);
+			this.verifyChecksum(resource, messageDigest.digest());
 		} catch (final IOException e) {
 			throw new DictionaryResourceDownloaderException(e);
 		}

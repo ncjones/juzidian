@@ -105,7 +105,7 @@ public class DictionaryResourceDownloaderTest {
 	}
 
 	@Test
-	public void downloadShouldNotWriteOutputWhenHashcodeMismatches() throws Exception {
+	public void downloadShouldWriteOutputWhenHashcodeMismatches() throws Exception {
 		this.initMockDictionaryResource("foo");
 		when(this.mockResource.getSha1()).thenReturn("abc123");
 		final ByteArrayOutputStream baos = new ByteArrayOutputStream();
@@ -113,7 +113,7 @@ public class DictionaryResourceDownloaderTest {
 			this.downloader.download(this.mockResource, baos, this.mockProgressHandler);
 		} catch (final DictionaryResourceDownloaderException e) {
 		}
-		assertThat(baos.toString(), equalTo(""));
+		assertThat(baos.toString(), equalTo("foo"));
 	}
 
 	@Test

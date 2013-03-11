@@ -19,6 +19,7 @@
 package org.juzidian.cli;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.sql.SQLException;
 import java.text.MessageFormat;
@@ -31,12 +32,12 @@ import org.juzidian.core.SearchQuery;
 import org.juzidian.core.SearchType;
 import org.juzidian.core.dataload.DictionaryResource;
 import org.juzidian.core.dataload.DictionaryResourceDownloader;
-import org.juzidian.core.dataload.DictionaryResourceDownloaderException;
 import org.juzidian.core.dataload.DictionaryResourceRegistry;
 import org.juzidian.core.dataload.DictionaryResourceRegistryService;
 import org.juzidian.core.dataload.DictonaryResourceRegistryServiceException;
 import org.juzidian.core.datastore.DbDictionaryDataStore;
 import org.juzidian.core.inject.DictionaryModule;
+import org.juzidian.util.IoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -88,32 +89,26 @@ public class JuzidianCli {
 	private static void initializeDb() throws Exception {
 		if (!DICTIONARY_DB_FILE.exists()) {
 			LOGGER.info("Dictionary DB missing.");
-			downloadDb(true);
+			downloadDb();
 		} else {
 			final DbDictionaryDataStore dataStore = INJECTOR.getInstance(DbDictionaryDataStore.class);
 			if (dataStore.getCurrentDataFormatVersion() != DbDictionaryDataStore.DATA_FORMAT_VERSION) {
 				LOGGER.info("Dictionary DB incompatible.");
-				downloadDb(false);
+				downloadDb();
 			} else {
 				LOGGER.debug("Dictionary DB compatible.");
 			}
 		}
 	}
 
-	private static void downloadDb(final boolean createNewFile) throws Exception {
+	private static void downloadDb() throws Exception {
 		DICTIONARY_DB_FILE.getParentFile().mkdirs();
 		final DictionaryResource resource = getDictionaryResource();
 		final DictionaryResourceDownloader downloader = INJECTOR.getInstance(DictionaryResourceDownloader.class);
 		LOGGER.info("Downloading dictionary DB: " + resource.getUrl());
-		try {
-			downloader.download(resource, new FileOutputStream(DICTIONARY_DB_FILE), new DownloadProgressLogger());
-		} catch (final DictionaryResourceDownloaderException e) {
-			if (createNewFile) {
-				/* make sure the newly created (empty) file is removed */
-				DICTIONARY_DB_FILE.delete();
-			}
-			throw e;
-		}
+		final File tempFile = File.createTempFile("juzidian-dictionary-download", null);
+		downloader.download(resource, new FileOutputStream(tempFile), new DownloadProgressLogger());
+		IoUtil.copy(new FileInputStream(tempFile), new FileOutputStream(DICTIONARY_DB_FILE));
 	}
 
 	private static DictionaryResource getDictionaryResource() throws DictonaryResourceRegistryServiceException {
