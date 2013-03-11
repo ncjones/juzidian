@@ -31,6 +31,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.zip.GZIPInputStream;
 
+import org.juzidian.util.IoUtil;
+
 /**
  * Downloads the actual data referred to by a {@link DictionaryResource}.
  */
@@ -59,11 +61,11 @@ public class DictionaryResourceDownloader {
 			final MessageDigest messageDigest = getSha1Digest();
 			final InputStream digestInputStream = new DigestInputStream(progressMonitoringInputStream, messageDigest);
 			final File tempFile = File.createTempFile("juzidian-dictionary-download", null);
-			copy(digestInputStream, new FileOutputStream(tempFile));
+			IoUtil.copy(digestInputStream, new FileOutputStream(tempFile));
 			this.verifyChecksum(resource, messageDigest.digest());
 			final InputStream tempFileInputStream = new FileInputStream(tempFile);
 			final InputStream gzipInputStream = new GZIPInputStream(tempFileInputStream);
-			copy(gzipInputStream, out);
+			IoUtil.copy(gzipInputStream, out);
 		} catch (final IOException e) {
 			throw new DictionaryResourceDownloaderException(e);
 		}
@@ -89,22 +91,6 @@ public class DictionaryResourceDownloader {
 			return new URL(resource.getUrl());
 		} catch (final MalformedURLException e) {
 			throw new DictionaryResourceDownloaderException(e);
-		}
-	}
-
-	public static void copy(final InputStream in, final OutputStream out) throws IOException {
-		try {
-			final byte[] buffer = new byte[10000];
-			int bufferedBytes;
-			while ((bufferedBytes = in.read(buffer)) > 0) {
-				out.write(buffer, 0, bufferedBytes);
-			}
-		} finally {
-			try {
-				in.close();
-			} finally {
-				out.close();
-			}
 		}
 	}
 
