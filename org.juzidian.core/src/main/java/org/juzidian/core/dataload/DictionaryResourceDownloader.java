@@ -31,6 +31,7 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.zip.GZIPInputStream;
 
+import org.juzidian.util.HexUtil;
 import org.juzidian.util.IoUtil;
 
 /**

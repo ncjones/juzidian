@@ -34,6 +34,7 @@ import java.util.zip.GZIPOutputStream;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.juzidian.util.HexUtil;
 import org.mockito.Matchers;
 import org.mockito.Mockito;
 

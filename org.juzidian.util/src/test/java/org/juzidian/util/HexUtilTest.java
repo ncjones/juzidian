@@ -16,11 +16,12 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.util;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.juzidian.util.HexUtil;
 
 public class HexUtilTest {
 
