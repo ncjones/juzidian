@@ -51,7 +51,7 @@ ext.artifactRegistryPath = "$buildDir/registry.xml"
 
 ext.dbFormat = "${DbDictionaryDataStore.DATA_FORMAT_VERSION}"
 
-ext.artifactRepositoryUrlPrefix = "https://s3.amazonaws.com/juzidian-dictionaries/"
+ext.artifactRepositoryUrlPrefix = localProperties['artifactRepositoryUrlPrefix'] ?: "https://s3.amazonaws.com/juzidian-dictionaries/"
 
 task clean << {
 	project.delete("$buildDir")

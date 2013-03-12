@@ -1,6 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
+ext.dictionaryRegistryServiceUrl = localProperties['dictionaryRegistryServiceUrl'] ?: "http://juzidian.org/dictionaries/"
+
 dependencies {
 	compile project(':org.juzidian.pinyin')
 	compile project(':org.juzidian.cedict')
@@ -14,4 +16,18 @@ dependencies {
 	testCompile libraries.ormlite_jdbc
 	testCompile libraries.sqlite_jdbc
 	testCompile libraries.url_scheme_registry
+}
+
+processResources.configure {
+	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens:[dictionaryRegistryServiceUrl: dictionaryRegistryServiceUrl])
+}
+
+eclipse.classpath.file {
+	whenMerged { classpath ->
+		classpath.entries.removeAll { entry -> entry.path == 'src/main/resources' }
+	}
+	withXml { provider ->
+		def node = provider.asNode()
+		node.appendNode('classpathentry', [kind: 'src', path: 'build/resources/main'])
+	}
 }

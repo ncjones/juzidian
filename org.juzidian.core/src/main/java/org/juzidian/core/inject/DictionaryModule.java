@@ -18,9 +18,12 @@
  */
 package org.juzidian.core.inject;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
+import java.util.Properties;
 
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
@@ -52,9 +55,23 @@ public abstract class DictionaryModule extends AbstractModule {
 		}).toInstance(this.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry> createDao(connectionSource, DbDictionaryEntry.class));
 		this.bind(new TypeLiteral<Dao<DbDictionaryMetadata, Long>>() {
 		}).toInstance(this.<Dao<DbDictionaryMetadata, Long>, DbDictionaryMetadata> createDao(connectionSource, DbDictionaryMetadata.class));
-		this.bind(URL.class).annotatedWith(DictionaryServiceUrl.class)
-		.toInstance(this.createUrl("http://juzidian.org/dictionaries/"));
+		final String dictionaryRegistryServiceUrl = this.getProperty("dictionaryRegistryServiceUrl");
+		this.bind(URL.class).annotatedWith(DictionaryServiceUrl.class).toInstance(this.createUrl(dictionaryRegistryServiceUrl));
 		this.bind(SAXParser.class).toInstance(this.createSaxParser());
+	}
+
+	private String getProperty(final String key) {
+		final Properties properties = new Properties();
+		final InputStream inputStream = this.getClass().getResourceAsStream("/juzidian-core.properties");
+		if (inputStream == null) {
+			throw new ModuleConfigurationException("Missing resource: /juzidian-core.properties");
+		}
+		try {
+			properties.load(inputStream);
+		} catch (final IOException e) {
+			throw new ModuleConfigurationException(e);
+		}
+		return properties.getProperty(key);
 	}
 
 	private URL createUrl(final String spec) {
