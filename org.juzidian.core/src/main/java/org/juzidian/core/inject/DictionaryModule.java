@@ -46,14 +46,14 @@ public abstract class DictionaryModule extends AbstractModule {
 		try {
 			connectionSource = this.createConnectionSource();
 		} catch (final SQLException e) {
-			throw new RuntimeException(e);
+			throw new ModuleConfigurationException(e);
 		}
 		this.bind(new TypeLiteral<Dao<DbDictionaryEntry, Long>>() {
 		}).toInstance(this.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry> createDao(connectionSource, DbDictionaryEntry.class));
 		this.bind(new TypeLiteral<Dao<DbDictionaryMetadata, Long>>() {
 		}).toInstance(this.<Dao<DbDictionaryMetadata, Long>, DbDictionaryMetadata> createDao(connectionSource, DbDictionaryMetadata.class));
 		this.bind(URL.class).annotatedWith(DictionaryServiceUrl.class)
-				.toInstance(this.createUrl("http://juzidian.org/dictionaries/"));
+		.toInstance(this.createUrl("http://juzidian.org/dictionaries/"));
 		this.bind(SAXParser.class).toInstance(this.createSaxParser());
 	}
 
@@ -61,7 +61,7 @@ public abstract class DictionaryModule extends AbstractModule {
 		try {
 			return new URL(spec);
 		} catch (final MalformedURLException e) {
-			throw new RuntimeException(e);
+			throw new ModuleConfigurationException(e);
 		}
 	}
 
@@ -71,7 +71,7 @@ public abstract class DictionaryModule extends AbstractModule {
 		try {
 			saxParser = factory.newSAXParser();
 		} catch (final Exception e) {
-			throw new RuntimeException(e);
+			throw new ModuleConfigurationException(e);
 		}
 		return saxParser;
 	}
@@ -80,7 +80,7 @@ public abstract class DictionaryModule extends AbstractModule {
 		try {
 			return DaoManager.<T, U> createDao(connectionSource, entityClass);
 		} catch (final SQLException e) {
-			throw new RuntimeException(e);
+			throw new ModuleConfigurationException(e);
 		}
 	}
 
