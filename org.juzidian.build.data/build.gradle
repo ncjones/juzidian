@@ -166,8 +166,17 @@ task deployArtifact {
 	}
 }
 
+task deployRegistry(type: Exec) {
+	dependsOn generateArtifactRegistry
+	def host = localProperties['dictionaryRegistryRemoteHost'] ?: 'web.sourceforge.net'
+	def path = localProperties['dictionaryRegistryRemotePath'] ?: '/home/project-web/juzidian/htdocs/dictionaries'
+	def user = localProperties['dictionaryRegistryRemoteUser']
+	commandLine 'rsync'
+	args artifactRegistryPath, "$user@$host:$path/v${dbFormat}/"
+}
+
 task deploy {
-	dependsOn deployArtifact
+	dependsOn deployArtifact, deployRegistry
 }
 
 class DataBuildModule extends DictionaryModule {
