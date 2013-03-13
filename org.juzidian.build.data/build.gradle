@@ -153,9 +153,8 @@ task build {
 	dependsOn createDistArtifact, generateArtifactRegistry
 }
 
-task deployArtifact {
-	dependsOn createDistArtifact
-	doLast {
+def dictionaryArtifactDeployers = [
+	'amazon': { localArtifactPath, targetArtifactName ->
 		def accessKey = localProperties['awsAccessKey']
 		def secretKey  = localProperties['awsSecretKey']
 		def awsCredentials = new BasicAWSCredentials(accessKey, secretKey)
@@ -163,6 +162,23 @@ task deployArtifact {
 		def putObjectRequest = new PutObjectRequest('juzidian-dictionaries', getDistArtifactName(), file(compressedDictionaryDbPath))
 				.withCannedAcl(CannedAccessControlList.PublicRead)
 		s3.putObject(putObjectRequest)
+	},
+	'rsync': { localArtifactPath, targetArtifactName ->
+		def host = localProperties['dictionaryArtifactRemoteHost'] ?: 'localhost'
+		def path = localProperties['dictionaryArtifactRemotePath'] ?: '/usr/share/juzidian-dictionary-repo'
+		def user = localProperties['dictionaryArtifactRemoteUser'] ?: System.getProperty("user.name")
+		exec({
+			commandLine 'rsync'
+			args localArtifactPath, "$user@$host:$path/$targetArtifactName"
+		})
+	}
+]
+
+task deployArtifact {
+	dependsOn createDistArtifact
+	doLast {
+		def deployType = localProperties['dictionaryArtifactDeployType'] ?: 'amazon'
+		dictionaryArtifactDeployers[deployType](compressedDictionaryDbPath, getDistArtifactName())
 	}
 }
 
