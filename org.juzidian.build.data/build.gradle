@@ -12,6 +12,10 @@ import org.juzidian.core.datastore.DbDictionaryDataStoreDbInitializer
 import org.juzidian.core.datastore.DbDictionaryDataStoreEntryPopulator
 import org.juzidian.core.inject.DictionaryModule
 
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.CannedAccessControlList
+import com.amazonaws.services.s3.model.PutObjectRequest
 import com.google.inject.Guice
 import com.google.inject.Injector
 import com.j256.ormlite.jdbc.JdbcConnectionSource
@@ -30,6 +34,7 @@ buildscript {
 		classpath libraries.ormlite_jdbc
 		classpath libraries.sqlite_jdbc
 		classpath libraries.slf4j_simple
+		classpath libraries.aws_sdk
 	}
 }
 
@@ -146,6 +151,23 @@ def getDistArtifactName() {
 
 task build {
 	dependsOn createDistArtifact, generateArtifactRegistry
+}
+
+task deployArtifact {
+	dependsOn createDistArtifact
+	doLast {
+		def accessKey = localProperties['awsAccessKey']
+		def secretKey  = localProperties['awsSecretKey']
+		def awsCredentials = new BasicAWSCredentials(accessKey, secretKey)
+		def s3 = new AmazonS3Client(awsCredentials)
+		def putObjectRequest = new PutObjectRequest('juzidian-dictionaries', getDistArtifactName(), file(compressedDictionaryDbPath))
+				.withCannedAcl(CannedAccessControlList.PublicRead)
+		s3.putObject(putObjectRequest)
+	}
+}
+
+task deploy {
+	dependsOn deployArtifact
 }
 
 class DataBuildModule extends DictionaryModule {
