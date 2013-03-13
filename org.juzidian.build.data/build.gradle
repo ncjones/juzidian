@@ -133,16 +133,6 @@ task generateArtifactRegistry {
 	}
 }
 
-task createDistArtifact(type: Copy) {
-	dependsOn compressDatabase
-	from file(compressedDictionaryDbPath).parent
-	include file(compressedDictionaryDbPath).name
-	into buildDir
-	rename {
-		getDistArtifactName()
-	}
-}
-
 def getDistArtifactName() {
 	def cedictTimestamp = new Long(file(cedictTimestampPath).text.trim())
 	def cedictVersion = new Date(cedictTimestamp).format("yyyyMMddHHmmss", TimeZone.getTimeZone("GMT"))
@@ -150,7 +140,7 @@ def getDistArtifactName() {
 }
 
 task build {
-	dependsOn createDistArtifact, generateArtifactRegistry
+	dependsOn compressDatabase, generateArtifactRegistry
 }
 
 def dictionaryArtifactDeployers = [
@@ -175,7 +165,7 @@ def dictionaryArtifactDeployers = [
 ]
 
 task deployArtifact {
-	dependsOn createDistArtifact
+	dependsOn compressDatabase
 	doLast {
 		def deployType = localProperties['dictionaryArtifactDeployType'] ?: 'amazon'
 		dictionaryArtifactDeployers[deployType](compressedDictionaryDbPath, getDistArtifactName())
