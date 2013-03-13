@@ -145,10 +145,6 @@ def getDistArtifactName() {
 }
 
 task build {
-	dependsOn generateDatabase
-}
-
-task dist {
 	dependsOn createDistArtifact, generateArtifactRegistry
 }
 
