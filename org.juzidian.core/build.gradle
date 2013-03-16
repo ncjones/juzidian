@@ -19,6 +19,7 @@ dependencies {
 }
 
 processResources.configure {
+	inputs.property 'dictionaryRegistryServiceUrl', dictionaryRegistryServiceUrl
 	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens:[dictionaryRegistryServiceUrl: dictionaryRegistryServiceUrl])
 }
 
