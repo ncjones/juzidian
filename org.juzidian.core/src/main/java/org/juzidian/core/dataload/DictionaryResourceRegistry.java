@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * A registry of available {@link DictionaryResourceImpl}s.
+ * A registry of available {@link DictionaryResource}s.
  */
 public class DictionaryResourceRegistry {
 
