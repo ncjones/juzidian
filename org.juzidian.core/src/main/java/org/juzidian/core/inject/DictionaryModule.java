@@ -22,11 +22,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.sql.SQLException;
 import java.util.Properties;
 
 import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import org.juzidian.core.DictionaryDataStore;
 import org.juzidian.core.dataload.DictionaryServiceUrl;
@@ -37,27 +35,17 @@ import org.juzidian.core.datastore.DbDictionaryMetadata;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.support.ConnectionSource;
 
-public abstract class DictionaryModule extends AbstractModule {
+public class DictionaryModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
 		this.bind(DictionaryDataStore.class).to(DbDictionaryDataStore.class);
-		final ConnectionSource connectionSource;
-		try {
-			connectionSource = this.createConnectionSource();
-		} catch (final SQLException e) {
-			throw new ModuleConfigurationException(e);
-		}
-		this.bind(new TypeLiteral<Dao<DbDictionaryEntry, Long>>() {
-		}).toInstance(this.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry> createDao(connectionSource, DbDictionaryEntry.class));
-		this.bind(new TypeLiteral<Dao<DbDictionaryMetadata, Long>>() {
-		}).toInstance(this.<Dao<DbDictionaryMetadata, Long>, DbDictionaryMetadata> createDao(connectionSource, DbDictionaryMetadata.class));
+		this.bind(new TypeLiteral<Dao<DbDictionaryEntry, Long>>() {}).toProvider(DictionaryEntryDaoProvider.class);
+		this.bind(new TypeLiteral<Dao<DbDictionaryMetadata, Long>>() {}).toProvider(DictionaryMetadataDaoProvider.class);
 		final String dictionaryRegistryServiceUrl = this.getProperty("dictionaryRegistryServiceUrl");
 		this.bind(URL.class).annotatedWith(DictionaryServiceUrl.class).toInstance(this.createUrl(dictionaryRegistryServiceUrl));
-		this.bind(SAXParser.class).toInstance(this.createSaxParser());
+		this.bind(SAXParser.class).toProvider(SaxParserProvider.class);
 	}
 
 	private String getProperty(final String key) {
@@ -81,26 +69,5 @@ public abstract class DictionaryModule extends AbstractModule {
 			throw new ModuleConfigurationException(e);
 		}
 	}
-
-	private SAXParser createSaxParser() {
-		final SAXParserFactory factory = SAXParserFactory.newInstance();
-		SAXParser saxParser;
-		try {
-			saxParser = factory.newSAXParser();
-		} catch (final Exception e) {
-			throw new ModuleConfigurationException(e);
-		}
-		return saxParser;
-	}
-
-	private <T extends Dao<U, Long>, U> T createDao(final ConnectionSource connectionSource, final Class<U> entityClass) {
-		try {
-			return DaoManager.<T, U> createDao(connectionSource, entityClass);
-		} catch (final SQLException e) {
-			throw new ModuleConfigurationException(e);
-		}
-	}
-
-	protected abstract ConnectionSource createConnectionSource() throws SQLException;
 
 }

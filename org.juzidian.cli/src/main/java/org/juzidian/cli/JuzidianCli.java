@@ -21,7 +21,6 @@ package org.juzidian.cli;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,8 +42,6 @@ import org.slf4j.LoggerFactory;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
-import com.j256.ormlite.jdbc.JdbcConnectionSource;
-import com.j256.ormlite.support.ConnectionSource;
 
 /**
  * A basic command-line interface for performing dictionary searches.
@@ -55,15 +52,9 @@ public class JuzidianCli {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JuzidianCli.class);
 
-	private static final File DICTIONARY_DB_FILE = new File(System.getProperty("user.home") + "/.juzidian/juzidian-dictionary.db");
+	static final File DICTIONARY_DB_FILE = new File(System.getProperty("user.home") + "/.juzidian/juzidian-dictionary.db");
 
-	private static Injector INJECTOR = Guice.createInjector(new DictionaryModule() {
-
-		@Override
-		protected ConnectionSource createConnectionSource() throws SQLException {
-			return new JdbcConnectionSource("jdbc:sqlite:" + DICTIONARY_DB_FILE.getAbsolutePath());
-		}
-	});
+	private static Injector INJECTOR = Guice.createInjector(new DictionaryModule(), new JuzidianCliModule());
 
 	public static void main(final String[] args) throws Exception {
 		if (args.length < 1) {
