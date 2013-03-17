@@ -54,6 +54,10 @@ ext.artifactRegistryPath = "$buildDir/registry.xml"
 
 ext.dbFormat = "${DbDictionaryDataStore.DATA_FORMAT_VERSION}"
 
+ext.artifactDeployInfoPath = "$buildDir/artifactDeployInfo"
+
+ext.registryDeployInfoPath = "$buildDir/registryDeployInfo"
+
 task clean << {
 	project.delete("$buildDir")
 }
@@ -112,11 +116,8 @@ task generateChecksum {
 
 task generateArtifactRegistry {
 	dependsOn generateChecksum
-	inputs.property 'dbFormat', dbFormat
 	inputs.property 'artifactRepositoryUrlPrefix', artifactRepositoryUrlPrefix
 	inputs.file compressedDictionaryDbPath
-	inputs.file compressedDictionaryDbSha1Path
-	inputs.file cedictTimestampPath
 	outputs.file artifactRegistryPath
 	doLast {
 		def xml = new MarkupBuilder(new FileWriter(artifactRegistryPath))
@@ -149,23 +150,33 @@ def dictionaryArtifactDeployers = [
 		def putObjectRequest = new PutObjectRequest('juzidian-dictionaries', getDistArtifactName(), file(compressedDictionaryDbPath))
 				.withCannedAcl(CannedAccessControlList.PublicRead)
 		s3.putObject(putObjectRequest)
+		return "amazon $accessKey"
 	},
 	'rsync': { localArtifactPath, targetArtifactName ->
 		def host = dictionaryArtifactRemoteHost
-		def path = dictionaryArtifactRemotePath 
-		def user = dictionaryArtifactRemoteUser 
+		def path = dictionaryArtifactRemotePath
+		def user = dictionaryArtifactRemoteUser
 		exec({
 			commandLine 'rsync'
 			args localArtifactPath, "$user@$host:$path/$targetArtifactName"
 		})
+		return "rsync $host $path"
 	}
 ]
 
 task deployArtifact {
 	dependsOn compressDatabase
+	def deployType = dictionaryArtifactDeployType
+	inputs.property 'deployType', deployType
+	inputs.property 'deployHost', dictionaryArtifactRemoteHost
+	inputs.property 'deployPath', dictionaryArtifactRemotePath
+	inputs.file compressedDictionaryDbPath
+	outputs.file artifactDeployInfoPath
 	doLast {
-		def deployType = dictionaryArtifactDeployType
-		dictionaryArtifactDeployers[deployType](compressedDictionaryDbPath, getDistArtifactName())
+		def distArtifactName = getDistArtifactName()
+		def deployInfo = dictionaryArtifactDeployers[deployType](compressedDictionaryDbPath, distArtifactName)
+		/* create arbitrary output file for up-to-date check */
+		file(artifactDeployInfoPath) << deployInfo
 	}
 }
 
@@ -174,8 +185,16 @@ task deployRegistry(type: Exec) {
 	def host = dictionaryRegistryRemoteHost
 	def path = dictionaryRegistryRemotePath
 	def user = dictionaryRegistryRemoteUser
+	inputs.property 'deployHost', host
+	inputs.property 'deployPath', path
+	inputs.file artifactRegistryPath
+	outputs.file registryDeployInfoPath
 	commandLine 'rsync'
 	args artifactRegistryPath, "$user@$host:$path/v${dbFormat}/"
+	doLast {
+		/* create arbitrary output file for up-to-date check */
+		file(registryDeployInfoPath) << "$user $host $path"
+	}
 }
 
 task deploy {
