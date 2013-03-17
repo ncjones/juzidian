@@ -1,8 +1,6 @@
 apply plugin: 'java'
 apply plugin: 'maven'
 
-ext.dictionaryRegistryServiceUrl = localProperties['dictionaryRegistryServiceUrl'] ?: "http://juzidian.org/dictionaries/"
-
 dependencies {
 	compile project(':org.juzidian.pinyin')
 	compile project(':org.juzidian.cedict')
@@ -20,7 +18,7 @@ dependencies {
 
 processResources.configure {
 	inputs.property 'dictionaryRegistryServiceUrl', dictionaryRegistryServiceUrl
-	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens:[dictionaryRegistryServiceUrl: dictionaryRegistryServiceUrl])
+	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens:[dictionaryRegistryServiceUrl: dictionaryRegistryServiceUrl.toString()])
 }
 
 eclipse.classpath.file {

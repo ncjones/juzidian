@@ -38,8 +38,6 @@ buildscript {
 	}
 }
 
-ext.cedictDataUrl = localProperties['cedictDataUrl'] ?: 'http://www.mdbg.net/chindict/export/cedict/cedict_1_0_ts_utf-8_mdbg.txt.gz'
-
 ext.buildDir = "$projectDir/build"
 
 ext.cedictDataPath = "$buildDir/cedict.dat"
@@ -55,8 +53,6 @@ ext.compressedDictionaryDbSha1Path = "${compressedDictionaryDbPath}.SHA1"
 ext.artifactRegistryPath = "$buildDir/registry.xml"
 
 ext.dbFormat = "${DbDictionaryDataStore.DATA_FORMAT_VERSION}"
-
-ext.artifactRepositoryUrlPrefix = localProperties['artifactRepositoryUrlPrefix'] ?: "https://s3.amazonaws.com/juzidian-dictionaries/"
 
 task clean << {
 	project.delete("$buildDir")
@@ -155,9 +151,9 @@ def dictionaryArtifactDeployers = [
 		s3.putObject(putObjectRequest)
 	},
 	'rsync': { localArtifactPath, targetArtifactName ->
-		def host = localProperties['dictionaryArtifactRemoteHost'] ?: 'localhost'
-		def path = localProperties['dictionaryArtifactRemotePath'] ?: '/usr/share/juzidian-dictionary-repo'
-		def user = localProperties['dictionaryArtifactRemoteUser'] ?: System.getProperty("user.name")
+		def host = dictionaryArtifactRemoteHost
+		def path = dictionaryArtifactRemotePath 
+		def user = dictionaryArtifactRemoteUser 
 		exec({
 			commandLine 'rsync'
 			args localArtifactPath, "$user@$host:$path/$targetArtifactName"
@@ -168,16 +164,16 @@ def dictionaryArtifactDeployers = [
 task deployArtifact {
 	dependsOn compressDatabase
 	doLast {
-		def deployType = localProperties['dictionaryArtifactDeployType'] ?: 'amazon'
+		def deployType = dictionaryArtifactDeployType
 		dictionaryArtifactDeployers[deployType](compressedDictionaryDbPath, getDistArtifactName())
 	}
 }
 
 task deployRegistry(type: Exec) {
 	dependsOn generateArtifactRegistry
-	def host = localProperties['dictionaryRegistryRemoteHost'] ?: 'web.sourceforge.net'
-	def path = localProperties['dictionaryRegistryRemotePath'] ?: '/home/project-web/juzidian/htdocs/dictionaries'
-	def user = localProperties['dictionaryRegistryRemoteUser']
+	def host = dictionaryRegistryRemoteHost
+	def path = dictionaryRegistryRemotePath
+	def user = dictionaryRegistryRemoteUser
 	commandLine 'rsync'
 	args artifactRegistryPath, "$user@$host:$path/v${dbFormat}/"
 }

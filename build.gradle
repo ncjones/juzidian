@@ -10,6 +10,10 @@ buildscript {
 ext.localProperties = new Properties();
 file("local.properties").withInputStream { localProperties.load(it) }
 
+def profileName = hasProperty('profile') ? profile : 'default'
+
+apply from: "${profileName}.profile"
+
 subprojects {
 	apply plugin: 'eclipse'
 	apply plugin: 'project-report'
