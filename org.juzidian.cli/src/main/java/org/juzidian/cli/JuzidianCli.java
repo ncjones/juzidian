@@ -18,9 +18,6 @@
  */
 package org.juzidian.cli;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,14 +26,7 @@ import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.SearchQuery;
 import org.juzidian.core.SearchType;
-import org.juzidian.core.dataload.DictionaryResource;
-import org.juzidian.core.dataload.DictionaryResourceDownloader;
-import org.juzidian.core.dataload.DictionaryResourceRegistry;
-import org.juzidian.core.dataload.DictionaryResourceRegistryService;
-import org.juzidian.core.dataload.DictonaryResourceRegistryServiceException;
-import org.juzidian.core.datastore.DbDictionaryDataStore;
 import org.juzidian.core.inject.DictionaryModule;
-import org.juzidian.util.IoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,8 +42,6 @@ public class JuzidianCli {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JuzidianCli.class);
 
-	static final File DICTIONARY_DB_FILE = new File(System.getProperty("user.home") + "/.juzidian/juzidian-dictionary.db");
-
 	private static Injector INJECTOR = Guice.createInjector(new DictionaryModule(), new JuzidianCliModule());
 
 	public static void main(final String[] args) throws Exception {
@@ -66,7 +54,7 @@ public class JuzidianCli {
 			return;
 		}
 		final SearchType searchType = SearchType.valueOf(args[1]);
-		initializeDb();
+		INJECTOR.getInstance(DictionaryDbInitializer.class).initializeDb();
 		final Dictionary dictionary = INJECTOR.getInstance(Dictionary.class);
 		final Runtime runtime = Runtime.getRuntime();
 		final long totalMemory = runtime.totalMemory();
@@ -75,43 +63,6 @@ public class JuzidianCli {
 		final String queryString = args[2];
 		final List<DictionaryEntry> foundCharacters = findAllWords(dictionary, queryString, searchType);
 		printSearchResults(foundCharacters);
-	}
-
-	private static void initializeDb() throws Exception {
-		if (!DICTIONARY_DB_FILE.exists()) {
-			LOGGER.info("Dictionary DB missing.");
-			downloadDb();
-		} else {
-			final DbDictionaryDataStore dataStore = INJECTOR.getInstance(DbDictionaryDataStore.class);
-			if (dataStore.getCurrentDataFormatVersion() != DbDictionaryDataStore.DATA_FORMAT_VERSION) {
-				LOGGER.info("Dictionary DB incompatible.");
-				downloadDb();
-			} else {
-				LOGGER.debug("Dictionary DB compatible.");
-			}
-		}
-	}
-
-	private static void downloadDb() throws Exception {
-		DICTIONARY_DB_FILE.getParentFile().mkdirs();
-		final DictionaryResource resource = getDictionaryResource();
-		final DictionaryResourceDownloader downloader = INJECTOR.getInstance(DictionaryResourceDownloader.class);
-		LOGGER.info("Downloading dictionary DB: " + resource.getUrl());
-		final File tempFile = File.createTempFile("juzidian-dictionary-download", null);
-		downloader.download(resource, new FileOutputStream(tempFile), new DownloadProgressLogger());
-		IoUtil.copy(new FileInputStream(tempFile), new FileOutputStream(DICTIONARY_DB_FILE));
-	}
-
-	private static DictionaryResource getDictionaryResource() throws DictonaryResourceRegistryServiceException {
-		final DictionaryResourceRegistry registry = getDictionaryResourceRegistry();
-		return registry.getDictionaryResources().get(0);
-	}
-
-	private static DictionaryResourceRegistry getDictionaryResourceRegistry() throws DictonaryResourceRegistryServiceException {
-		final DictionaryResourceRegistryService registryService = INJECTOR.getInstance(DictionaryResourceRegistryService.class);
-		LOGGER.debug("Getting registry of available dictionary DBs.");
-		final DictionaryResourceRegistry registry = registryService.getDictionaryResourceRegistry(DbDictionaryDataStore.DATA_FORMAT_VERSION);
-		return registry;
 	}
 
 	private static List<DictionaryEntry> findAllWords(final Dictionary dictionary, final String queryString, final SearchType searchType) {

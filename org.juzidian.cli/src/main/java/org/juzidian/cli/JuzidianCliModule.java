@@ -18,6 +18,7 @@
  */
 package org.juzidian.cli;
 
+import java.io.File;
 import java.sql.SQLException;
 
 import org.juzidian.core.inject.ModuleConfigurationException;
@@ -28,15 +29,22 @@ import com.j256.ormlite.support.ConnectionSource;
 
 public class JuzidianCliModule extends AbstractModule {
 
+	static final File DICTIONARY_DB_FILE = new File(System.getProperty("user.home") + "/.juzidian/juzidian-dictionary.db");
+
 	@Override
 	protected void configure() {
+		this.bind(ConnectionSource.class).toInstance(this.createConnectionSource());
+		this.bind(File.class).annotatedWith(DictionaryDbPath.class).toInstance(DICTIONARY_DB_FILE);
+	}
+
+	private JdbcConnectionSource createConnectionSource() {
 		final JdbcConnectionSource jdbcConnectionSource;
 		try {
-			jdbcConnectionSource = new JdbcConnectionSource("jdbc:sqlite:" + JuzidianCli.DICTIONARY_DB_FILE.getAbsolutePath());
+			jdbcConnectionSource = new JdbcConnectionSource("jdbc:sqlite:" + DICTIONARY_DB_FILE.getAbsolutePath());
 		} catch (final SQLException e) {
 			throw new ModuleConfigurationException(e);
 		}
-		this.bind(ConnectionSource.class).toInstance(jdbcConnectionSource);
+		return jdbcConnectionSource;
 	}
 
 }
