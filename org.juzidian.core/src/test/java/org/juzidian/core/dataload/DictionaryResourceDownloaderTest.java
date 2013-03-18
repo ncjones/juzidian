@@ -71,7 +71,7 @@ public class DictionaryResourceDownloaderTest {
 		final String sha1 = sha1(gzipContent);
 		MockUrlHandler.delegate = Mockito.mock(MockUrlHandler.class);
 		when(MockUrlHandler.delegate.openConnection(Matchers.any(URL.class))).thenReturn(new MockUrlConnection(gzipContent));
-		this.mockResource = createMockDictionaryResource("mock://foo", sha1, gzipContent.length);
+		this.mockResource = createMockDictionaryResource("mock://localhost/foo", sha1, gzipContent.length);
 	}
 
 	private static DictionaryResource createMockDictionaryResource(final String url, final String hash, final int size) {

@@ -42,7 +42,7 @@ public class DictionaryResourceRegistryServiceTest {
 		final SAXParser saxParser = SAXParserFactory.newInstance().newSAXParser();
 		final DictionaryResourceRegistryDeserializer deserializer = new DictionaryResourceRegistryDeserializer(saxParser);
 		MockUrlHandler.delegate = Mockito.mock(MockUrlHandler.class);
-		this.dictionaryResourceRegistryService = new DictionaryResourceRegistryService(new URL("mock://dictionaries"), deserializer);
+		this.dictionaryResourceRegistryService = new DictionaryResourceRegistryService(new URL("mock://localhost/dictionaries/"), deserializer);
 	}
 
 	@Test
@@ -50,7 +50,7 @@ public class DictionaryResourceRegistryServiceTest {
 		final String xml = "<dictionaries></dictionaries>";
 		when(MockUrlHandler.delegate.openConnection(Matchers.any(URL.class))).thenReturn(new MockUrlConnection(xml));
 		this.dictionaryResourceRegistryService.getDictionaryResourceRegistry(3);
-		Mockito.verify(MockUrlHandler.delegate).openConnection(Matchers.eq(new URL("mock://dictionaries/v3/registry.xml")));
+		Mockito.verify(MockUrlHandler.delegate).openConnection(Matchers.eq(new URL("mock://localhost/dictionaries/v3/registry.xml")));
 	}
 
 	@Test
