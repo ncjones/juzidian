@@ -20,6 +20,7 @@ package org.juzidian.android;
 
 import static android.database.sqlite.SQLiteDatabase.NO_LOCALIZED_COLLATORS;
 import static android.database.sqlite.SQLiteDatabase.OPEN_READONLY;
+import static org.juzidian.android.DictionaryInitializer.DICTIONARY_DB_PATH;
 
 import javax.inject.Provider;
 
@@ -29,8 +30,6 @@ import com.j256.ormlite.android.AndroidConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
 public class DictionaryConnectionSourceProvider implements Provider<ConnectionSource> {
-
-	private static final String DICTIONARY_DB_PATH = "/data/data/org.juzidian.android/juzidian-dictionary.db";
 
 	@Override
 	public ConnectionSource get() {
