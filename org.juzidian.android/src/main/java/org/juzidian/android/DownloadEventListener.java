@@ -18,14 +18,18 @@
  */
 package org.juzidian.android;
 
-import com.google.inject.AbstractModule;
-import com.j256.ormlite.support.ConnectionSource;
+/**
+ * Handles download events from a {@link DownloadBroadcastReceiver}.
+ */
+interface DownloadEventListener {
 
-public class JuzidianAndroidModule extends AbstractModule {
-
-	@Override
-	protected void configure() {
-		this.bind(ConnectionSource.class).toProvider(DictionaryConnectionSourceProvider.class);
-	}
+	/**
+	 * A file download has completed.
+	 * 
+	 * @param receiver the {@link DownloadBroadcastReceiver} that received the
+	 *        download event.
+	 * @param downloadId the DownloadManager file download id.
+	 */
+	void downloadComplete(DownloadBroadcastReceiver receiver, long downloadId);
 
 }

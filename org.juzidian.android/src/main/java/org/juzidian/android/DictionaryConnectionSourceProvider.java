@@ -18,14 +18,24 @@
  */
 package org.juzidian.android;
 
-import com.google.inject.AbstractModule;
+import static android.database.sqlite.SQLiteDatabase.NO_LOCALIZED_COLLATORS;
+import static android.database.sqlite.SQLiteDatabase.OPEN_READONLY;
+import static org.juzidian.android.DictionaryInitializer.DICTIONARY_DB_PATH;
+
+import javax.inject.Provider;
+
+import android.database.sqlite.SQLiteDatabase;
+
+import com.j256.ormlite.android.AndroidConnectionSource;
 import com.j256.ormlite.support.ConnectionSource;
 
-public class JuzidianAndroidModule extends AbstractModule {
+public class DictionaryConnectionSourceProvider implements Provider<ConnectionSource> {
 
 	@Override
-	protected void configure() {
-		this.bind(ConnectionSource.class).toProvider(DictionaryConnectionSourceProvider.class);
+	public ConnectionSource get() {
+		final SQLiteDatabase sqliteDb = SQLiteDatabase.openDatabase(DICTIONARY_DB_PATH, null, OPEN_READONLY | NO_LOCALIZED_COLLATORS);
+		final ConnectionSource connectionSource = new AndroidConnectionSource(sqliteDb);
+		return connectionSource;
 	}
 
 }

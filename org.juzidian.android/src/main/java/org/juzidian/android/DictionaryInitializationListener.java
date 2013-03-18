@@ -18,14 +18,14 @@
  */
 package org.juzidian.android;
 
-import com.google.inject.AbstractModule;
-import com.j256.ormlite.support.ConnectionSource;
+/**
+ * Handles dictionary initialization events.
+ */
+public interface DictionaryInitializationListener {
 
-public class JuzidianAndroidModule extends AbstractModule {
-
-	@Override
-	protected void configure() {
-		this.bind(ConnectionSource.class).toProvider(DictionaryConnectionSourceProvider.class);
-	}
+	/**
+	 * Dictionary initialization completed successfully.
+	 */
+	void initializationCompleted();
 
 }

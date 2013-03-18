@@ -18,14 +18,23 @@
  */
 package org.juzidian.android;
 
-import com.google.inject.AbstractModule;
-import com.j256.ormlite.support.ConnectionSource;
+import android.os.AsyncTask;
 
-public class JuzidianAndroidModule extends AbstractModule {
+/**
+ * Background task to initialize the dictionary database.
+ */
+public class DictionaryInitializerTask extends AsyncTask<Void, Void, Void> {
+
+	private final DictionaryInitializer dictionaryInitializer;
+
+	public DictionaryInitializerTask(final DictionaryInitializer dictionaryInitializer) {
+		this.dictionaryInitializer = dictionaryInitializer;
+	}
 
 	@Override
-	protected void configure() {
-		this.bind(ConnectionSource.class).toProvider(DictionaryConnectionSourceProvider.class);
+	protected Void doInBackground(final Void... args) {
+		this.dictionaryInitializer.initializeDictionary();
+		return null;
 	}
 
 }
