@@ -18,33 +18,39 @@
  */
 package org.juzidian.android;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.zip.GZIPInputStream;
-
 import org.juzidian.core.dataload.DictionaryResource;
 import org.juzidian.core.dataload.DictionaryResourceRegistry;
 import org.juzidian.core.dataload.DictionaryResourceRegistryService;
 import org.juzidian.core.dataload.DictonaryResourceRegistryServiceException;
 import org.juzidian.core.datastore.DbDictionaryDataStore;
-import org.juzidian.util.IoUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.IntentFilter;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
 
 /**
- * Initializes the dictionary database so it is ready to be read.
+ * Triggers the download of a dictionary database file.
  */
-public class DictionaryInitializer implements DownloadEventListener {
+public class DictionaryDownloader {
 
-	public static final String DICTIONARY_DB_PATH = "/data/data/org.juzidian.android/juzidian-dictionary.db";
+	private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryDownloader.class);
+
+	/**
+	 * The name of the shared preference resource containing status information
+	 * for the currently active dictionary download.
+	 */
+	public static final String DOWNLOAD_PREFS = "juzidian-download-info";
+
+	/**
+	 * The name of the preference property containing the currently active
+	 * dictionary download id.
+	 */
+	public static final String CURRENT_DOWNLOAD_ID = "current-download-id";
 
 	private final Context context;
 
@@ -52,27 +58,22 @@ public class DictionaryInitializer implements DownloadEventListener {
 
 	private final DictionaryResourceRegistryService registryService;
 
-	private final DictionaryInitializationListener listener;
-
-	public DictionaryInitializer(final Context context, final DownloadManager downloadManager, final DictionaryResourceRegistryService registryService,
-			final DictionaryInitializationListener listener) {
+	public DictionaryDownloader(final Context context, final DownloadManager downloadManager, final DictionaryResourceRegistryService registryService) {
 		this.context = context;
 		this.downloadManager = downloadManager;
 		this.registryService = registryService;
-		this.listener = listener;
 	}
 
-	public void initializeDictionary() {
-		if (new File(DICTIONARY_DB_PATH).exists()) {
-			this.listener.initializationCompleted();
-			return;
-		}
+	public void downloadDictionary() {
+		LOGGER.debug("Initializing download of dictionary database.");
 		final DictionaryResource dictionaryResource = this.getDictionaryResource();
 		final Request request = new DownloadManager.Request(Uri.parse(dictionaryResource.getUrl()));
 		request.setTitle("Juzidian Dictionary Database");
 		final long downloadId = this.downloadManager.enqueue(request);
-		final BroadcastReceiver receiver = new DownloadBroadcastReceiver(downloadId, this);
-		this.context.registerReceiver(receiver, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+		final SharedPreferences sharedPreferences = this.context.getSharedPreferences(DOWNLOAD_PREFS, Context.MODE_PRIVATE);
+		final Editor editor = sharedPreferences.edit();
+		editor.putLong(CURRENT_DOWNLOAD_ID, downloadId);
+		editor.apply();
 	}
 
 	private DictionaryResource getDictionaryResource() {
@@ -83,21 +84,6 @@ public class DictionaryInitializer implements DownloadEventListener {
 			throw new RuntimeException(e);
 		}
 		return registry.getDictionaryResources().get(0);
-	}
-
-	@Override
-	public void downloadComplete(final DownloadBroadcastReceiver receiver, final long downloadId) {
-		this.context.unregisterReceiver(receiver);
-		final ParcelFileDescriptor fileDescriptor;
-		try {
-			fileDescriptor = this.downloadManager.openDownloadedFile(downloadId);
-			final InputStream rawInputStream = new ParcelFileDescriptor.AutoCloseInputStream(fileDescriptor);
-			final GZIPInputStream gzipInputStream = new GZIPInputStream(rawInputStream);
-			IoUtil.copy(gzipInputStream, new FileOutputStream(DICTIONARY_DB_PATH));
-			this.listener.initializationCompleted();
-		} catch (final IOException e) {
-			throw new RuntimeException(e);
-		}
 	}
 
 }

@@ -25,15 +25,15 @@ import android.os.AsyncTask;
  */
 public class DictionaryInitializerTask extends AsyncTask<Void, Void, Void> {
 
-	private final DictionaryInitializer dictionaryInitializer;
+	private final DictionaryDownloader dictionaryInitializer;
 
-	public DictionaryInitializerTask(final DictionaryInitializer dictionaryInitializer) {
+	public DictionaryInitializerTask(final DictionaryDownloader dictionaryInitializer) {
 		this.dictionaryInitializer = dictionaryInitializer;
 	}
 
 	@Override
 	protected Void doInBackground(final Void... args) {
-		this.dictionaryInitializer.initializeDictionary();
+		this.dictionaryInitializer.downloadDictionary();
 		return null;
 	}
 
