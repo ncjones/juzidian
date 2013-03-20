@@ -143,39 +143,49 @@ task build {
 }
 
 def dictionaryArtifactDeployers = [
-	'amazon': { localArtifactPath, targetArtifactName ->
-		def accessKey = localProperties['awsAccessKey']
-		def secretKey  = localProperties['awsSecretKey']
-		def awsCredentials = new BasicAWSCredentials(accessKey, secretKey)
-		def s3 = new AmazonS3Client(awsCredentials)
-		def putObjectRequest = new PutObjectRequest('juzidian-dictionaries', getDistArtifactName(), file(compressedDictionaryDbPath))
-				.withCannedAcl(CannedAccessControlList.PublicRead)
-		s3.putObject(putObjectRequest)
-		return "amazon $accessKey"
-	},
-	'rsync': { localArtifactPath, targetArtifactName ->
-		def host = dictionaryArtifactRemoteHost
-		def path = dictionaryArtifactRemotePath
-		def user = dictionaryArtifactRemoteUser
-		exec({
-			commandLine 'rsync'
-			args localArtifactPath, "$user@$host:$path/$targetArtifactName"
-		})
-		return "rsync $host $path"
-	}
+	'amazon': [
+		'configureInputs': { inputs ->
+			inputs.property 'awsAccessKey', localProperties['awsAccessKey']
+		},
+		'deploy': { localArtifactPath, targetArtifactName ->
+			def accessKey = localProperties['awsAccessKey']
+			def secretKey  = localProperties['awsSecretKey']
+			def awsCredentials = new BasicAWSCredentials(accessKey, secretKey)
+			def s3 = new AmazonS3Client(awsCredentials)
+			def putObjectRequest = new PutObjectRequest('juzidian-dictionaries', targetArtifactName, file(compressedDictionaryDbPath))
+					.withCannedAcl(CannedAccessControlList.PublicRead)
+			s3.putObject(putObjectRequest)
+			return "amazon $accessKey"
+		}
+	],
+	'rsync': [
+		'configureInputs': { inputs ->
+			inputs.property 'deployHost', dictionaryArtifactRemoteHost
+			inputs.property 'deployPath', dictionaryArtifactRemotePath
+		},
+		'deploy': { localArtifactPath, targetArtifactName ->
+			def host = dictionaryArtifactRemoteHost
+			def path = dictionaryArtifactRemotePath
+			def user = dictionaryArtifactRemoteUser
+			exec({
+				commandLine 'rsync'
+				args localArtifactPath, "$user@$host:$path/$targetArtifactName"
+			})
+			return "rsync $host $path"
+		}
+	]
 ]
 
 task deployArtifact {
 	dependsOn compressDatabase
 	def deployType = dictionaryArtifactDeployType
-	inputs.property 'deployType', deployType
-	inputs.property 'deployHost', dictionaryArtifactRemoteHost
-	inputs.property 'deployPath', dictionaryArtifactRemotePath
+	def deployer = dictionaryArtifactDeployers[deployType]
+	deployer.configureInputs(inputs)
 	inputs.file compressedDictionaryDbPath
 	outputs.file artifactDeployInfoPath
 	doLast {
 		def distArtifactName = getDistArtifactName()
-		def deployInfo = dictionaryArtifactDeployers[deployType](compressedDictionaryDbPath, distArtifactName)
+		def deployInfo = deployer.deploy(compressedDictionaryDbPath, distArtifactName)
 		/* create arbitrary output file for up-to-date check */
 		file(artifactDeployInfoPath) << deployInfo
 	}
