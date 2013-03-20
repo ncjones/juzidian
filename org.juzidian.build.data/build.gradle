@@ -16,6 +16,7 @@ import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3Client
 import com.amazonaws.services.s3.model.CannedAccessControlList
 import com.amazonaws.services.s3.model.PutObjectRequest
+import com.google.inject.AbstractModule
 import com.google.inject.Guice
 import com.google.inject.Injector
 import com.j256.ormlite.jdbc.JdbcConnectionSource
@@ -201,7 +202,7 @@ task deploy {
 	dependsOn deployArtifact, deployRegistry
 }
 
-class DataBuildModule extends DictionaryModule {
+class DataBuildModule extends AbstractModule {
 
 	def jdbcUrl;
 
@@ -210,8 +211,8 @@ class DataBuildModule extends DictionaryModule {
 	}
 
 	@Override
-	protected ConnectionSource createConnectionSource() {
-		return new JdbcConnectionSource(this.jdbcUrl);
+	protected void configure() {
+		this.bind(ConnectionSource.class).toInstance(new JdbcConnectionSource(this.jdbcUrl));
 	}
 
 }
@@ -220,7 +221,7 @@ class DictionaryDataBaseCreator {
 
 	static def createDataBase(cedictDataFile, dbFileName) {
 		def jdbcUrl = "jdbc:sqlite:" + dbFileName
-		def injector = Guice.createInjector(new DataBuildModule(jdbcUrl))
+		def injector = Guice.createInjector(new DictionaryModule(), new DataBuildModule(jdbcUrl))
 		def dbInitializer = new DbDictionaryDataStoreDbInitializer(
 				new DbDictionaryDataStoreEntryPopulator(new CedictLoader(new CedictInputStreamProvider() {
 					@Override
