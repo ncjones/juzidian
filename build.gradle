@@ -7,10 +7,12 @@ buildscript {
 	}
 }
 
-def localProperties = new Properties();
+ext.localProperties = new Properties();
 file("local.properties").withInputStream { localProperties.load(it) }
 
-ext.androidSdkDir = localProperties.get('sdk.dir')
+def profileName = hasProperty('profile') ? profile : 'default'
+
+apply from: "${profileName}.profile"
 
 subprojects {
 	apply plugin: 'eclipse'
@@ -49,8 +51,10 @@ ext.libraries = [
 	ormlite_android: 'com.j256.ormlite:ormlite-android:4.43',
 	sqlite_jdbc: 'org.xerial:sqlite-jdbc:3.7.2',
 	javacc: 'net.java.dev.javacc:javacc:5.0',
+	aws_sdk: 'com.amazonaws:aws-java-sdk:1.3.33',
 	junit: 'junit:junit:4.11',
 	hamcrest_library: 'org.hamcrest:hamcrest-library:1.3',
-	mockito_core: 'org.mockito:mockito-core:1.8.5'
+	mockito_core: 'org.mockito:mockito-core:1.8.5',
+	url_scheme_registry: 'org.skife.url:url-scheme-registry:0.0.1'
 ]
 

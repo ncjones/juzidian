@@ -3,6 +3,5 @@
 */gen/
 *~
 .*
-*.db
-cedict-data.*
 local.properties
+*.profile

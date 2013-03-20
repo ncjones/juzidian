@@ -18,9 +18,16 @@
  */
 package org.juzidian.core.inject;
 
-import java.sql.SQLException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Properties;
+
+import javax.xml.parsers.SAXParser;
 
 import org.juzidian.core.DictionaryDataStore;
+import org.juzidian.core.dataload.DictionaryServiceUrl;
 import org.juzidian.core.datastore.DbDictionaryDataStore;
 import org.juzidian.core.datastore.DbDictionaryEntry;
 import org.juzidian.core.datastore.DbDictionaryMetadata;
@@ -28,34 +35,39 @@ import org.juzidian.core.datastore.DbDictionaryMetadata;
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
 import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.DaoManager;
-import com.j256.ormlite.support.ConnectionSource;
 
-public abstract class DictionaryModule extends AbstractModule {
+public class DictionaryModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
 		this.bind(DictionaryDataStore.class).to(DbDictionaryDataStore.class);
-		final ConnectionSource connectionSource;
-		try {
-			connectionSource = this.createConnectionSource();
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
-		}
-		this.bind(new TypeLiteral<Dao<DbDictionaryEntry, Long>>() {
-		}).toInstance(this.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry> createDao(connectionSource, DbDictionaryEntry.class));
-		this.bind(new TypeLiteral<Dao<DbDictionaryMetadata, Long>>() {
-		}).toInstance(this.<Dao<DbDictionaryMetadata, Long>, DbDictionaryMetadata> createDao(connectionSource, DbDictionaryMetadata.class));
+		this.bind(new TypeLiteral<Dao<DbDictionaryEntry, Long>>() {}).toProvider(DictionaryEntryDaoProvider.class);
+		this.bind(new TypeLiteral<Dao<DbDictionaryMetadata, Long>>() {}).toProvider(DictionaryMetadataDaoProvider.class);
+		final String dictionaryRegistryServiceUrl = this.getProperty("dictionaryRegistryServiceUrl");
+		this.bind(URL.class).annotatedWith(DictionaryServiceUrl.class).toInstance(this.createUrl(dictionaryRegistryServiceUrl));
+		this.bind(SAXParser.class).toProvider(SaxParserProvider.class);
 	}
 
-	private <T extends Dao<U, Long>, U> T createDao(final ConnectionSource connectionSource, final Class<U> entityClass) {
-		try {
-			return DaoManager.<T, U> createDao(connectionSource, entityClass);
-		} catch (final SQLException e) {
-			throw new RuntimeException(e);
+	private String getProperty(final String key) {
+		final Properties properties = new Properties();
+		final InputStream inputStream = this.getClass().getResourceAsStream("/juzidian-core.properties");
+		if (inputStream == null) {
+			throw new ModuleConfigurationException("Missing resource: /juzidian-core.properties");
 		}
+		try {
+			properties.load(inputStream);
+		} catch (final IOException e) {
+			throw new ModuleConfigurationException(e);
+		}
+		return properties.getProperty(key);
 	}
 
-	protected abstract ConnectionSource createConnectionSource() throws SQLException;
+	private URL createUrl(final String spec) {
+		try {
+			return new URL(spec);
+		} catch (final MalformedURLException e) {
+			throw new ModuleConfigurationException(e);
+		}
+	}
 
 }

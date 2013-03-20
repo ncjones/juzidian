@@ -1,21 +1,247 @@
-apply plugin: 'java'
+import java.io.FileInputStream
+import java.io.FileNotFoundException
+import java.io.InputStream
+import java.sql.SQLException
 
-dependencies {
-	compile project(':org.juzidian.cedict')
-	compile project(':org.juzidian.core')
-	compile project(':org.juzidian.pinyin')
-	compile libraries.guice_no_aop
-	compile libraries.ormlite_jdbc
-	compile libraries.sqlite_jdbc
-	testCompile project(':org.juzidian.core').sourceSets.test.output
-	testCompile libraries.junit
-	testCompile libraries.hamcrest_library
-	testRuntime libraries.slf4j_simple
+import groovy.xml.MarkupBuilder
+
+import org.juzidian.cedict.CedictInputStreamProvider
+import org.juzidian.cedict.CedictLoader
+import org.juzidian.core.datastore.DbDictionaryDataStore
+import org.juzidian.core.datastore.DbDictionaryDataStoreDbInitializer
+import org.juzidian.core.datastore.DbDictionaryDataStoreEntryPopulator
+import org.juzidian.core.inject.DictionaryModule
+
+import com.amazonaws.auth.BasicAWSCredentials
+import com.amazonaws.services.s3.AmazonS3Client
+import com.amazonaws.services.s3.model.CannedAccessControlList
+import com.amazonaws.services.s3.model.PutObjectRequest
+import com.google.inject.AbstractModule
+import com.google.inject.Guice
+import com.google.inject.Injector
+import com.j256.ormlite.jdbc.JdbcConnectionSource
+import com.j256.ormlite.support.ConnectionSource
+
+buildscript {
+	repositories {
+		mavenLocal()
+		mavenCentral()
+	}
+	dependencies {
+		classpath "org.juzidian:org.juzidian.cedict:${juzidianVersion}"
+		classpath "org.juzidian:org.juzidian.core:${juzidianVersion}"
+		classpath "org.juzidian:org.juzidian.pinyin:${juzidianVersion}"
+		classpath libraries.guice_no_aop
+		classpath libraries.ormlite_jdbc
+		classpath libraries.sqlite_jdbc
+		classpath libraries.slf4j_simple
+		classpath libraries.aws_sdk
+	}
 }
 
-eclipse.classpath.file {
-	whenMerged { classpath ->
-		// remove conflicting juzidian-core test source-set
-		classpath.entries.removeAll { entry -> entry.kind == 'lib' && !entry.path.endsWith('.jar')}
+ext.buildDir = "$projectDir/build"
+
+ext.cedictDataPath = "$buildDir/cedict.dat"
+
+ext.cedictTimestampPath = "$buildDir/cedict.timestamp"
+
+ext.dictionaryDbPath = "$buildDir/juzidian_dictionary.db"
+
+ext.compressedDictionaryDbPath = "$buildDir/juzidian_dictionary.db.gz"
+
+ext.compressedDictionaryDbSha1Path = "${compressedDictionaryDbPath}.SHA1"
+
+ext.artifactRegistryPath = "$buildDir/registry.xml"
+
+ext.dbFormat = "${DbDictionaryDataStore.DATA_FORMAT_VERSION}"
+
+ext.artifactDeployInfoPath = "$buildDir/artifactDeployInfo"
+
+ext.registryDeployInfoPath = "$buildDir/registryDeployInfo"
+
+task clean << {
+	project.delete("$buildDir")
+}
+
+task createBuildDir {
+	outputs.dir "$buildDir"
+	doLast {
+		file("$buildDir").mkdirs()
 	}
+}
+
+task fetchCedictData {
+	dependsOn createBuildDir
+	inputs.property 'srcUrl', cedictDataUrl
+	outputs.file cedictDataPath
+	outputs.file cedictTimestampPath
+	doLast {
+		def outputStream = new FileOutputStream(cedictDataPath)
+		println "Downloading CEDict data from $cedictDataUrl"
+		new URL("$cedictDataUrl").withInputStream({
+			outputStream << new java.util.zip.GZIPInputStream(it)
+		})
+		file("$cedictTimestampPath").withWriter({
+			it.println(new Date().getTime())
+		})
+	}
+}
+
+task generateDatabase {
+	dependsOn fetchCedictData
+	inputs.file cedictDataPath
+	inputs.property 'dbFormat', dbFormat
+	outputs.file dictionaryDbPath
+	doLast {
+		DictionaryDataBaseCreator.createDataBase(cedictDataPath, dictionaryDbPath)
+	}
+}
+
+task compressDatabase {
+	dependsOn generateDatabase
+	inputs.file dictionaryDbPath
+	outputs.file compressedDictionaryDbPath
+	doLast {
+		ant.gzip(src: "$dictionaryDbPath", destfile: "$compressedDictionaryDbPath")
+	}
+}
+
+task generateChecksum {
+	dependsOn compressDatabase
+	inputs.file compressedDictionaryDbPath
+	outputs.file compressedDictionaryDbSha1Path
+	doLast {
+		ant.checksum(file: "$compressedDictionaryDbPath", algorithm: 'SHA1')
+	}
+}
+
+task generateArtifactRegistry {
+	dependsOn generateChecksum
+	inputs.property 'artifactRepositoryUrlPrefix', artifactRepositoryUrlPrefix
+	inputs.file compressedDictionaryDbPath
+	outputs.file artifactRegistryPath
+	doLast {
+		def xml = new MarkupBuilder(new FileWriter(artifactRegistryPath))
+		xml.juzidianDictionaries() {
+			dictionary(formatVersion: dbFormat) {
+				size(file(compressedDictionaryDbPath).size())
+				sha1(file(compressedDictionaryDbSha1Path).text.trim())
+				url("${artifactRepositoryUrlPrefix}${getDistArtifactName()}")
+			}
+		}
+	}
+}
+
+def getDistArtifactName() {
+	def cedictTimestamp = new Long(file(cedictTimestampPath).text.trim())
+	def cedictVersion = new Date(cedictTimestamp).format("yyyyMMddHHmmss", TimeZone.getTimeZone("GMT"))
+	return "juzidian_dictionary_${dbFormat}_${cedictVersion}.db.gz"
+}
+
+task build {
+	dependsOn compressDatabase, generateArtifactRegistry
+}
+
+def dictionaryArtifactDeployers = [
+	'amazon': [
+		'configureInputs': { inputs ->
+			inputs.property 'awsAccessKey', localProperties['awsAccessKey']
+		},
+		'deploy': { localArtifactPath, targetArtifactName ->
+			def accessKey = localProperties['awsAccessKey']
+			def secretKey  = localProperties['awsSecretKey']
+			def awsCredentials = new BasicAWSCredentials(accessKey, secretKey)
+			def s3 = new AmazonS3Client(awsCredentials)
+			def putObjectRequest = new PutObjectRequest('juzidian-dictionaries', targetArtifactName, file(compressedDictionaryDbPath))
+					.withCannedAcl(CannedAccessControlList.PublicRead)
+            println "Uploading dictionary artifact to Amazon S3 as $targetArtifactName"
+			s3.putObject(putObjectRequest)
+			return "amazon $accessKey"
+		}
+	],
+	'rsync': [
+		'configureInputs': { inputs ->
+			inputs.property 'deployHost', dictionaryArtifactRemoteHost
+			inputs.property 'deployPath', dictionaryArtifactRemotePath
+		},
+		'deploy': { localArtifactPath, targetArtifactName ->
+			def host = dictionaryArtifactRemoteHost
+			def path = dictionaryArtifactRemotePath
+			def user = dictionaryArtifactRemoteUser
+			exec({
+				commandLine 'rsync'
+				args localArtifactPath, "$user@$host:$path/$targetArtifactName"
+			})
+			return "rsync $host $path"
+		}
+	]
+]
+
+task deployArtifact {
+	dependsOn compressDatabase
+	def deployType = dictionaryArtifactDeployType
+	def deployer = dictionaryArtifactDeployers[deployType]
+	deployer.configureInputs(inputs)
+	inputs.file compressedDictionaryDbPath
+	outputs.file artifactDeployInfoPath
+	doLast {
+		def distArtifactName = getDistArtifactName()
+		def deployInfo = deployer.deploy(compressedDictionaryDbPath, distArtifactName)
+		/* create arbitrary output file for up-to-date check */
+		file(artifactDeployInfoPath) << deployInfo
+	}
+}
+
+task deployRegistry(type: Exec) {
+	dependsOn generateArtifactRegistry
+	def host = dictionaryRegistryRemoteHost
+	def path = dictionaryRegistryRemotePath
+	def user = dictionaryRegistryRemoteUser
+	inputs.property 'deployHost', host
+	inputs.property 'deployPath', path
+	inputs.file artifactRegistryPath
+	outputs.file registryDeployInfoPath
+	commandLine 'rsync'
+	args artifactRegistryPath, "$user@$host:$path/v${dbFormat}/"
+	doLast {
+		/* create arbitrary output file for up-to-date check */
+		file(registryDeployInfoPath) << "$user $host $path"
+	}
+}
+
+task deploy {
+	dependsOn deployArtifact, deployRegistry
+}
+
+class DataBuildModule extends AbstractModule {
+
+	def jdbcUrl;
+
+	public DataBuildModule(jdbcUrl) {
+		this.jdbcUrl = jdbcUrl;
+	}
+
+	@Override
+	protected void configure() {
+		this.bind(ConnectionSource.class).toInstance(new JdbcConnectionSource(this.jdbcUrl));
+	}
+
+}
+
+class DictionaryDataBaseCreator {
+
+	static def createDataBase(cedictDataFile, dbFileName) {
+		def jdbcUrl = "jdbc:sqlite:" + dbFileName
+		def injector = Guice.createInjector(new DictionaryModule(), new DataBuildModule(jdbcUrl))
+		def dbInitializer = new DbDictionaryDataStoreDbInitializer(
+				new DbDictionaryDataStoreEntryPopulator(new CedictLoader(new CedictInputStreamProvider() {
+					@Override
+					public InputStream getInputStream() {
+						return new FileInputStream(cedictDataFile)
+					}
+				})));
+		def dictionaryDataStore = injector.getInstance(DbDictionaryDataStore.class)
+		dbInitializer.initializeDb(dictionaryDataStore)
+	}
+
 }

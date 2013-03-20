@@ -1,28 +1,12 @@
 apply plugin: 'java'
 
-def genDir = "$buildDir/generated"
-
-def genResDir = "$genDir/resources"
-
-def dictionaryDbPath = "$genResDir/juzidian-dictionary.db"
-
-def cedictDataPath = "${project(':org.juzidian.core').projectDir}/cedict-data.txt"
-
 dependencies {
 	compile project(':org.juzidian.core')
-	compile project(':org.juzidian.build.data')
+	compile project(':org.juzidian.util')
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_jdbc
 	compile libraries.sqlite_jdbc
 	runtime libraries.slf4j_jdk14
-}
-
-sourceSets {
-	main {
-		resources {
-			srcDirs "$genResDir"
-		}
-	}
 }
 
 jar {
@@ -30,19 +14,3 @@ jar {
         attributes 'Main-Class': 'org.juzidian.cli.JuzidianCli'
     }
 }
-
-task generateResources {
-	dependsOn ':org.juzidian.core:uncompressCedictData'
-	inputs.file file("$cedictDataPath")
-	outputs.file file("$dictionaryDbPath")
-	doLast {
-		mkdir("$genResDir")
-		javaexec {
-			main = 	'org.juzidian.build.data.DictionaryDataBaseCreator'
-			classpath = sourceSets.main.runtimeClasspath
-			args cedictDataPath, dictionaryDbPath
-		}
-	}
-}
-
-compileJava.dependsOn generateResources

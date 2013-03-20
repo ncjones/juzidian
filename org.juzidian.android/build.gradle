@@ -1,31 +1,17 @@
 apply plugin: 'android'
 
-def rawResDir = "src/main/res/raw"
-
-def dictionaryDbPath = "$rawResDir/juzidian_dictionary.db"
-
-def cedictDataPath = "${project(':org.juzidian.core').projectDir}/cedict-data.txt"
-
-configurations {
-	generate
-}
+ext.androidSdkDir = localProperties['sdk.dir']
 
 dependencies {
 	compile (project(':org.juzidian.core')) {
 		/* slf4j-api conflicts with slf4j-android. */
 		exclude group: 'org.slf4j', module: 'slf4j-api'
 	}
-	compile (project(':org.juzidian.pinyin'))
+	compile project(':org.juzidian.pinyin')
+	compile project(':org.juzidian.util')
 	compile libraries.guice_no_aop
 	compile libraries.ormlite_android
 	compile libraries.slf4j_android
-	compile files("$dictionaryDbPath") {
-		builtBy 'generateResources'
-	}
-	generate project(':org.juzidian.build.data')
-	generate libraries.sqlite_jdbc
-	generate libraries.ormlite_jdbc
-	generate libraries.slf4j_simple
 }
 
 project.ext.androidTargetPlatform = 'android-16'
@@ -35,26 +21,10 @@ android {
 	defaultConfig {
 		versionCode = "${juzidianReleaseSequenceNumber}"
 		versionName = "${juzidianVersion}"
-		minSdkVersion = 8
+		minSdkVersion = 9
 		targetSdkVersion = 15
 	}
 }
-
-task generateResources {
-	dependsOn ':org.juzidian.build.data:build', ':org.juzidian.core:uncompressCedictData'
-	inputs.file file("$cedictDataPath")
-	outputs.file file("$dictionaryDbPath")
-	doLast {
-		mkdir("$rawResDir")
-		javaexec {
-			main = 	'org.juzidian.build.data.DictionaryDataBaseCreator'
-			classpath = configurations.generate
-			args cedictDataPath, dictionaryDbPath
-		}
-	}
-}
-
-clean.dependsOn cleanGenerateResources
 
 eclipse {
 	classpath {
