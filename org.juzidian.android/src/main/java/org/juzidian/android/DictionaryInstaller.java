@@ -65,7 +65,7 @@ public final class DictionaryInstaller extends BroadcastReceiver {
 	}
 
 	private void installDictionary(final Context context, final long downloadId) {
-		LOGGER.debug("Installing dictionary database from download id {})", downloadId);
+		LOGGER.debug("Installing dictionary database from download id {}", downloadId);
 		final DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 		final ParcelFileDescriptor fileDescriptor;
 		try {
