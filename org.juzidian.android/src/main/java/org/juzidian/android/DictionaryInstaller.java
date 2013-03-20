@@ -36,6 +36,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
 import android.os.ParcelFileDescriptor;
 
 /**
@@ -56,17 +57,38 @@ public final class DictionaryInstaller extends BroadcastReceiver {
 			final SharedPreferences sharedPreferences = context.getSharedPreferences(DOWNLOAD_PREFS, Context.MODE_PRIVATE);
 			final long juzidianDownloadId = sharedPreferences.getLong(CURRENT_DOWNLOAD_ID, 0);
 			if (downloadId == juzidianDownloadId) {
-				this.installDictionary(context, downloadId);
-				final Editor editor = sharedPreferences.edit();
-				editor.remove(CURRENT_DOWNLOAD_ID);
-				editor.apply();
+				final DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
+				if (this.isDownloadSuccessful(downloadManager, downloadId)) {
+					this.installDictionary(downloadManager, downloadId);
+				} else {
+					LOGGER.debug("Removing failed dictionary download with id {}", downloadId);
+					downloadManager.remove(downloadId);
+				}
+				this.clearCurrentDownload(sharedPreferences);
 			}
 		}
 	}
 
-	private void installDictionary(final Context context, final long downloadId) {
+	private void clearCurrentDownload(final SharedPreferences sharedPreferences) {
+		LOGGER.debug("Clearing current dictionary download id");
+		final Editor editor = sharedPreferences.edit();
+		editor.remove(CURRENT_DOWNLOAD_ID);
+		editor.apply();
+	}
+
+	private boolean isDownloadSuccessful(final DownloadManager downloadManager, final long downloadId) {
+		final DownloadManager.Query query = new DownloadManager.Query();
+		query.setFilterById(downloadId);
+		final Cursor cursor = downloadManager.query(query);
+		if (cursor.moveToFirst()) {
+			final int downloadStatus = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+			return DownloadManager.STATUS_SUCCESSFUL == downloadStatus;
+		}
+		return false;
+	}
+
+	private void installDictionary(final DownloadManager downloadManager, final long downloadId) {
 		LOGGER.debug("Installing dictionary database from download id {}", downloadId);
-		final DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
 		final ParcelFileDescriptor fileDescriptor;
 		try {
 			fileDescriptor = downloadManager.openDownloadedFile(downloadId);
