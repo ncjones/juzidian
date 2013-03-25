@@ -38,10 +38,11 @@ subprojects {
 }
 
 ext.libraries = [
-	guice_no_aop: dependencies.create('com.google.inject:guice:3.0:no_aop') {
+	roboguice: dependencies.create('org.roboguice:roboguice:2.0') {
 		exclude module: 'aopalliance'
 		exclude module: 'cglib'
 	},
+	guice: 'com.google.inject:guice:3.0',
 	slf4j_api: 'org.slf4j:slf4j-api:1.6.1',
 	slf4j_simple: 'org.slf4j:slf4j-simple:1.6.1',
 	slf4j_jdk14: 'org.slf4j:slf4j-jdk14:1.6.1',

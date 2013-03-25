@@ -18,27 +18,23 @@
  */
 package org.juzidian.android;
 
-import javax.inject.Inject;
+import org.juzidian.core.inject.DictionaryModule;
 
-import roboguice.util.RoboAsyncTask;
-import android.content.Context;
+import roboguice.RoboGuice;
+import android.app.Application;
 
 /**
- * Background task to initialize the dictionary database.
+ * Juzidian Android custom application object.
  */
-public class DictionaryInitializerTask extends RoboAsyncTask<Void> {
-
-	@Inject
-	private DictionaryDownloader dictionaryInitializer;
-
-	public DictionaryInitializerTask(final Context context) {
-		super(context);
-	}
+public class JuzidianApplication extends Application {
 
 	@Override
-	public Void call() throws Exception {
-		this.dictionaryInitializer.downloadDictionary();
-		return null;
+	public void onCreate() {
+		super.onCreate();
+		RoboGuice.setBaseApplicationInjector(this, RoboGuice.DEFAULT_STAGE,
+				RoboGuice.newDefaultRoboModule(this),
+				new DictionaryModule(),
+				new JuzidianAndroidModule());
 	}
 
 }

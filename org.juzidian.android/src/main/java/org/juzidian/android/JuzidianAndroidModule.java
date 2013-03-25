@@ -18,6 +18,10 @@
  */
 package org.juzidian.android;
 
+import roboguice.inject.SystemServiceProvider;
+import android.app.DownloadManager;
+import android.content.Context;
+
 import com.google.inject.AbstractModule;
 import com.j256.ormlite.support.ConnectionSource;
 
@@ -26,6 +30,7 @@ public class JuzidianAndroidModule extends AbstractModule {
 	@Override
 	protected void configure() {
 		this.bind(ConnectionSource.class).toProvider(DictionaryConnectionSourceProvider.class);
+		this.bind(DownloadManager.class).toProvider(new SystemServiceProvider<DownloadManager>(Context.DOWNLOAD_SERVICE));
 	}
 
 }

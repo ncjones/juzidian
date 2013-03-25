@@ -31,7 +31,7 @@ buildscript {
 		classpath "org.juzidian:org.juzidian.cedict:${juzidianVersion}"
 		classpath "org.juzidian:org.juzidian.core:${juzidianVersion}"
 		classpath "org.juzidian:org.juzidian.pinyin:${juzidianVersion}"
-		classpath libraries.guice_no_aop
+		classpath libraries.guice
 		classpath libraries.ormlite_jdbc
 		classpath libraries.sqlite_jdbc
 		classpath libraries.slf4j_simple

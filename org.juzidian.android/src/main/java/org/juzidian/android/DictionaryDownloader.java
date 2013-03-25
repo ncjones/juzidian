@@ -18,6 +18,8 @@
  */
 package org.juzidian.android;
 
+import javax.inject.Inject;
+
 import org.juzidian.core.dataload.DictionaryResource;
 import org.juzidian.core.dataload.DictionaryResourceRegistry;
 import org.juzidian.core.dataload.DictionaryResourceRegistryService;
@@ -58,6 +60,7 @@ public class DictionaryDownloader {
 
 	private final DictionaryResourceRegistryService registryService;
 
+	@Inject
 	public DictionaryDownloader(final Context context, final DownloadManager downloadManager, final DictionaryResourceRegistryService registryService) {
 		this.context = context;
 		this.downloadManager = downloadManager;
