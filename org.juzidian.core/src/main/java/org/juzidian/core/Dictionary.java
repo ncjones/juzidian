@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+import javax.inject.Singleton;
 
 import org.juzidian.pinyin.PinyinParser;
 import org.juzidian.pinyin.PinyinSyllable;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 /**
  * A searchable Chinese-English dictionary.
  */
+@Singleton
 public class Dictionary {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(Dictionary.class);

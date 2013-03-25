@@ -2,46 +2,31 @@ package org.juzidian.android;
 
 import java.io.File;
 
-import org.juzidian.core.Dictionary;
-import org.juzidian.core.inject.DictionaryModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roboguice.activity.RoboActivity;
-import roboguice.inject.InjectView;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 
-import com.google.inject.Guice;
-import com.google.inject.Injector;
-
 public class MainActivity extends RoboActivity {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainActivity.class);
 
-	private final Injector injector = Guice.createInjector(new DictionaryModule(), new JuzidianAndroidModule());
-
-	@InjectView(R.id.searchView)
-	private SearchView searchView;
-
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.setContentView(R.layout.activity_main);
-		this.initializeDatabase();
+		final boolean initialized = this.initializeDatabase();
+		if (initialized) {
+			this.setContentView(R.layout.activity_main);
+		}
 	}
 
-	@Override
-	public void onStart() {
-		super.onStart();
-		this.searchView.setDictionary(this.injector.getInstance(Dictionary.class));
-	}
-
-	private void initializeDatabase() {
+	private boolean initializeDatabase() {
 		if (new File(DictionaryInstaller.DICTIONARY_DB_PATH).exists()) {
-			return;
+			return true;
 		}
 		final SharedPreferences sharedPreferences = this.getSharedPreferences(DictionaryDownloader.DOWNLOAD_PREFS, Context.MODE_PRIVATE);
 		final long juzidianDownloadId = sharedPreferences.getLong(DictionaryDownloader.CURRENT_DOWNLOAD_ID, 0);
@@ -52,6 +37,7 @@ public class MainActivity extends RoboActivity {
 			LOGGER.debug("dictionary download already in progress");
 		}
 		this.finish();
+		return false;
 	}
 
 	@Override

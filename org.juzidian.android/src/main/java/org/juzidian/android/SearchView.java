@@ -18,11 +18,14 @@
  */
 package org.juzidian.android;
 
+import javax.inject.Inject;
+
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.SearchQuery;
 import org.juzidian.core.SearchResults;
 import org.juzidian.core.SearchType;
 
+import roboguice.RoboGuice;
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
@@ -35,6 +38,7 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 
 	private static final int PAGE_SIZE = 25;
 
+	@Inject
 	private Dictionary dictionary;
 
 	private SearchResults currentSearchResults;
@@ -42,13 +46,9 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 	public SearchView(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		LayoutInflater.from(context).inflate(R.layout.search_view, this, true);
+		RoboGuice.injectMembers(context, this);
 		this.getSearchBar().setSearchTriggerListener(this);
 		this.getSearchResultsView().setPageRequestListener(this);
-	}
-
-	public void setDictionary(final Dictionary dictionary) {
-		this.dictionary = dictionary;
-		this.getSearchBar().setDictionary(dictionary);
 	}
 
 	private void doSearch(final SearchQuery searchQuery) {

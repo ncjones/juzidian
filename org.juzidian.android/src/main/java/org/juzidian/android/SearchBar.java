@@ -20,9 +20,12 @@ package org.juzidian.android;
 
 import java.util.Set;
 
+import javax.inject.Inject;
+
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.SearchType;
 
+import roboguice.RoboGuice;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -42,21 +45,19 @@ public class SearchBar extends RelativeLayout {
 
 	private SearchTriggerListener searchTriggerListener;
 
+	@Inject
 	private Dictionary dictionary;
 
 	public SearchBar(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		LayoutInflater.from(context).inflate(R.layout.search_bar, this, true);
+		RoboGuice.injectMembers(context, this);
 		this.getSearchInput().addTextChangedListener(new SearchTextChangeListener());
 		this.getSearchButton().setOnClickListener(new SearchButtonClickListener());
 	}
 
 	public void setSearchTriggerListener(final SearchTriggerListener searchTriggerListener) {
 		this.searchTriggerListener = searchTriggerListener;
-	}
-
-	public void setDictionary(final Dictionary dictionary) {
-		this.dictionary = dictionary;
 	}
 
 	public String getSearchText() {
