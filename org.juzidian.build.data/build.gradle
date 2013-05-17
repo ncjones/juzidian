@@ -24,8 +24,8 @@ import com.j256.ormlite.support.ConnectionSource
 
 buildscript {
 	repositories {
-		mavenLocal()
 		mavenCentral()
+		mavenLocal()
 	}
 	dependencies {
 		classpath "org.juzidian:org.juzidian.cedict:${juzidianVersion}"
