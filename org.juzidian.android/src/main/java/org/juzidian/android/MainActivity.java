@@ -18,16 +18,19 @@ public class MainActivity extends RoboActivity {
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		final boolean initialized = this.initializeDatabase();
-		if (initialized) {
+		if (this.isDbInitialized()) {
 			this.setContentView(R.layout.activity_main);
+		} else {
+			this.initializeDatabase();
+			this.setContentView(R.layout.download_view);
 		}
 	}
 
-	private boolean initializeDatabase() {
-		if (new File(DictionaryInstaller.DICTIONARY_DB_PATH).exists()) {
-			return true;
-		}
+	private boolean isDbInitialized() {
+		return new File(DictionaryInstaller.DICTIONARY_DB_PATH).exists();
+	}
+
+	private void initializeDatabase() {
 		final SharedPreferences sharedPreferences = this.getSharedPreferences(DictionaryDownloader.DOWNLOAD_PREFS, Context.MODE_PRIVATE);
 		final long juzidianDownloadId = sharedPreferences.getLong(DictionaryDownloader.CURRENT_DOWNLOAD_ID, 0);
 		if (juzidianDownloadId == 0) {
@@ -36,8 +39,6 @@ public class MainActivity extends RoboActivity {
 		} else {
 			LOGGER.debug("dictionary download already in progress");
 		}
-		this.finish();
-		return false;
 	}
 
 	@Override

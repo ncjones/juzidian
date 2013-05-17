@@ -1,7 +1,7 @@
 <resources>
 
     <string name="app_name">Juzidian</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="downloadTitleText">Downloading Dictionary Data</string>
     <string name="menu_settings">Settings</string>
     <string name="title_activity_main">Juzidian</string>
     <string name="submit_search">Go</string>
