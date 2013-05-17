@@ -26,12 +26,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
+import javax.inject.Inject;
+
 import org.juzidian.util.IoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import roboguice.receiver.RoboBroadcastReceiver;
 import android.app.DownloadManager;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -43,26 +45,28 @@ import android.os.ParcelFileDescriptor;
  * BroadcastReceiver that installs a dictionary database that has been
  * downloaded by a {@link DictionaryDownloader}.
  */
-public final class DictionaryInstaller extends BroadcastReceiver {
+public final class DictionaryInstaller extends RoboBroadcastReceiver {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryInstaller.class);
 
 	public static final String DICTIONARY_DB_PATH = "/data/data/org.juzidian.android/juzidian-dictionary.db";
 
+	@Inject
+	private DownloadManager downloadManager;
+
 	@Override
-	public void onReceive(final Context context, final Intent intent) {
+	public void handleReceive(final Context context, final Intent intent) {
 		final String action = intent.getAction();
 		if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
 			final long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
 			final SharedPreferences sharedPreferences = context.getSharedPreferences(DOWNLOAD_PREFS, Context.MODE_PRIVATE);
 			final long juzidianDownloadId = sharedPreferences.getLong(CURRENT_DOWNLOAD_ID, 0);
 			if (downloadId == juzidianDownloadId) {
-				final DownloadManager downloadManager = (DownloadManager) context.getSystemService(Context.DOWNLOAD_SERVICE);
-				if (this.isDownloadSuccessful(downloadManager, downloadId)) {
-					this.installDictionary(downloadManager, downloadId);
+				if (this.isDownloadSuccessful(this.downloadManager, downloadId)) {
+					this.installDictionary(this.downloadManager, downloadId);
 				} else {
 					LOGGER.debug("Removing failed dictionary download with id {}", downloadId);
-					downloadManager.remove(downloadId);
+					this.downloadManager.remove(downloadId);
 				}
 				this.clearCurrentDownload(sharedPreferences);
 			}
