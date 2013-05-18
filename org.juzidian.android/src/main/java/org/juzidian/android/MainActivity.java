@@ -8,7 +8,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roboguice.activity.RoboActivity;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
 
@@ -17,8 +16,7 @@ public class MainActivity extends RoboActivity {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainActivity.class);
 
 	@Inject
-	@DownloadSharedPrefs
-	private SharedPreferences downloadPrefs;
+	private DownloadRegistry downloadRegistry;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -36,8 +34,7 @@ public class MainActivity extends RoboActivity {
 	}
 
 	private void initializeDatabase() {
-		final long juzidianDownloadId = this.downloadPrefs.getLong(DictionaryDownloader.CURRENT_DOWNLOAD_ID, 0);
-		if (juzidianDownloadId == 0) {
+		if (this.downloadRegistry.getCurrentDownloadId() == null) {
 			final DictionaryInitializerTask dictionaryDownloadTask = new DictionaryInitializerTask(this);
 			dictionaryDownloadTask.execute();
 		} else {

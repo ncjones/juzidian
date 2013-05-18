@@ -18,8 +18,6 @@
  */
 package org.juzidian.android;
 
-import static org.juzidian.android.DictionaryDownloader.CURRENT_DOWNLOAD_ID;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,8 +33,6 @@ import roboguice.receiver.RoboBroadcastReceiver;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.database.Cursor;
 import android.os.ParcelFileDescriptor;
 
@@ -54,15 +50,14 @@ public final class DictionaryInstaller extends RoboBroadcastReceiver {
 	private DownloadManager downloadManager;
 
 	@Inject
-	@DownloadSharedPrefs
-	private SharedPreferences downloadPrefs;
+	private DownloadRegistry downloadRegistry;
 
 	@Override
 	public void handleReceive(final Context context, final Intent intent) {
 		final String action = intent.getAction();
 		if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
 			final long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-			final long juzidianDownloadId = this.downloadPrefs.getLong(CURRENT_DOWNLOAD_ID, 0);
+			final long juzidianDownloadId = this.downloadRegistry.getCurrentDownloadId();
 			if (downloadId == juzidianDownloadId) {
 				if (this.isDownloadSuccessful(this.downloadManager, downloadId)) {
 					this.installDictionary(this.downloadManager, downloadId);
@@ -70,16 +65,9 @@ public final class DictionaryInstaller extends RoboBroadcastReceiver {
 					LOGGER.debug("Removing failed dictionary download with id {}", downloadId);
 					this.downloadManager.remove(downloadId);
 				}
-				this.clearCurrentDownload();
+				this.downloadRegistry.setCurrentDownloadId(null);
 			}
 		}
-	}
-
-	private void clearCurrentDownload() {
-		LOGGER.debug("Clearing current dictionary download id");
-		final Editor editor = this.downloadPrefs.edit();
-		editor.remove(CURRENT_DOWNLOAD_ID);
-		editor.apply();
 	}
 
 	private boolean isDownloadSuccessful(final DownloadManager downloadManager, final long downloadId) {

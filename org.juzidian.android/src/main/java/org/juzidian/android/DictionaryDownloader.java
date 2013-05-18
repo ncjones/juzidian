@@ -30,8 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.net.Uri;
 
 /**
@@ -41,24 +39,18 @@ public class DictionaryDownloader {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryDownloader.class);
 
-	/**
-	 * The name of the preference property containing the currently active
-	 * dictionary download id.
-	 */
-	public static final String CURRENT_DOWNLOAD_ID = "current-download-id";
-
 	private final DownloadManager downloadManager;
 
 	private final DictionaryResourceRegistryService registryService;
 
-	private final SharedPreferences sharedPreferences;
+	private final DownloadRegistry downloadRegistry;
 
 	@Inject
 	public DictionaryDownloader(final DownloadManager downloadManager, final DictionaryResourceRegistryService registryService,
-			@DownloadSharedPrefs final SharedPreferences sharedPreferences) {
+			final DownloadRegistry downloadRegistry) {
 		this.downloadManager = downloadManager;
 		this.registryService = registryService;
-		this.sharedPreferences = sharedPreferences;
+		this.downloadRegistry = downloadRegistry;
 	}
 
 	public void downloadDictionary() {
@@ -67,9 +59,7 @@ public class DictionaryDownloader {
 		final Request request = new DownloadManager.Request(Uri.parse(dictionaryResource.getUrl()));
 		request.setTitle("Juzidian Dictionary Database");
 		final long downloadId = this.downloadManager.enqueue(request);
-		final Editor editor = this.sharedPreferences.edit();
-		editor.putLong(CURRENT_DOWNLOAD_ID, downloadId);
-		editor.apply();
+		this.downloadRegistry.setCurrentDownloadId(downloadId);
 	}
 
 	private DictionaryResource getDictionaryResource() {
