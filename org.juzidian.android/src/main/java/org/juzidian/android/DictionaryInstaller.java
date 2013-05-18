@@ -23,45 +23,39 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
-import javax.inject.Inject;
-
 import org.juzidian.util.IoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import roboguice.receiver.RoboBroadcastReceiver;
-import android.app.DownloadManager;
-import android.content.Context;
-import android.content.Intent;
 import android.os.ParcelFileDescriptor;
 
 /**
  * BroadcastReceiver that installs a dictionary database that has been
  * downloaded by a {@link JuzidianDownloadManager}.
  */
-public final class DictionaryInstaller extends RoboBroadcastReceiver {
+public final class DictionaryInstaller extends JuzidianDownloadManagerBroadcastReceiver {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryInstaller.class);
 
 	public static final String DICTIONARY_DB_PATH = "/data/data/org.juzidian.android/juzidian-dictionary.db";
 
-	@Inject
-	private JuzidianDownloadManager downloadManager;
+	@Override
+	protected void handleDownloadSuccess() {
+		try {
+			this.installDictionary(this.downloadManager.getDownloadedFile());
+		} finally {
+			this.cleanUp();
+		}
+	}
 
 	@Override
-	public void handleReceive(final Context context, final Intent intent) {
-		final String action = intent.getAction();
-		if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
-			final long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-			if (downloadId == this.downloadManager.getDownloadId()) {
-				if (this.downloadManager.isDownloadSuccessful()) {
-					this.installDictionary(this.downloadManager.getDownloadedFile());
-				} else {
-					LOGGER.error("Download was unsuccessful");
-				}
-				this.downloadManager.clearDownload();
-			}
-		}
+	protected void handleDownloadFailure() {
+		LOGGER.error("Download was unsuccessful");
+		this.cleanUp();
+	}
+
+	private void cleanUp() {
+		this.downloadManager.clearDownload();
 	}
 
 	private void installDictionary(final ParcelFileDescriptor fileDescriptor) {

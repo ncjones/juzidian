@@ -8,6 +8,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roboguice.activity.RoboActivity;
+import android.app.DownloadManager;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.Menu;
 
@@ -17,6 +19,8 @@ public class MainActivity extends RoboActivity {
 
 	@Inject
 	private JuzidianDownloadManager downloadManager;
+
+	private DownloadHandler downloadHandler;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -40,12 +44,49 @@ public class MainActivity extends RoboActivity {
 		} else {
 			LOGGER.debug("dictionary download already in progress");
 		}
+		this.downloadHandler = new DownloadHandler();
+		this.registerReceiver(this.downloadHandler, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (this.downloadHandler != null) {
+			this.unregisterReceiver(this.downloadHandler);
+		}
+	}
+
+	private void onDownloadSuccess() {
+		this.restartActivity();
+	}
+
+	private void onDownloadFailure() {
+		this.restartActivity();
+	}
+
+	private void restartActivity() {
+		this.finish();
+		this.startActivity(this.getIntent());
 	}
 
 	@Override
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		this.getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
+	}
+
+	private class DownloadHandler extends JuzidianDownloadManagerBroadcastReceiver {
+
+		@Override
+		protected void handleDownloadSuccess() {
+			MainActivity.this.onDownloadSuccess();
+		}
+
+		@Override
+		protected void handleDownloadFailure() {
+			MainActivity.this.onDownloadFailure();
+		}
+
 	}
 
 }
