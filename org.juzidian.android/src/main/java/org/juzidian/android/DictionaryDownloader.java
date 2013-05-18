@@ -30,7 +30,6 @@ import org.slf4j.LoggerFactory;
 
 import android.app.DownloadManager;
 import android.app.DownloadManager.Request;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.net.Uri;
@@ -43,28 +42,23 @@ public class DictionaryDownloader {
 	private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryDownloader.class);
 
 	/**
-	 * The name of the shared preference resource containing status information
-	 * for the currently active dictionary download.
-	 */
-	public static final String DOWNLOAD_PREFS = "juzidian-download-info";
-
-	/**
 	 * The name of the preference property containing the currently active
 	 * dictionary download id.
 	 */
 	public static final String CURRENT_DOWNLOAD_ID = "current-download-id";
 
-	private final Context context;
-
 	private final DownloadManager downloadManager;
 
 	private final DictionaryResourceRegistryService registryService;
 
+	private final SharedPreferences sharedPreferences;
+
 	@Inject
-	public DictionaryDownloader(final Context context, final DownloadManager downloadManager, final DictionaryResourceRegistryService registryService) {
-		this.context = context;
+	public DictionaryDownloader(final DownloadManager downloadManager, final DictionaryResourceRegistryService registryService,
+			@DownloadSharedPrefs final SharedPreferences sharedPreferences) {
 		this.downloadManager = downloadManager;
 		this.registryService = registryService;
+		this.sharedPreferences = sharedPreferences;
 	}
 
 	public void downloadDictionary() {
@@ -73,8 +67,7 @@ public class DictionaryDownloader {
 		final Request request = new DownloadManager.Request(Uri.parse(dictionaryResource.getUrl()));
 		request.setTitle("Juzidian Dictionary Database");
 		final long downloadId = this.downloadManager.enqueue(request);
-		final SharedPreferences sharedPreferences = this.context.getSharedPreferences(DOWNLOAD_PREFS, Context.MODE_PRIVATE);
-		final Editor editor = sharedPreferences.edit();
+		final Editor editor = this.sharedPreferences.edit();
 		editor.putLong(CURRENT_DOWNLOAD_ID, downloadId);
 		editor.apply();
 	}

@@ -19,7 +19,6 @@
 package org.juzidian.android;
 
 import static org.juzidian.android.DictionaryDownloader.CURRENT_DOWNLOAD_ID;
-import static org.juzidian.android.DictionaryDownloader.DOWNLOAD_PREFS;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -54,13 +53,16 @@ public final class DictionaryInstaller extends RoboBroadcastReceiver {
 	@Inject
 	private DownloadManager downloadManager;
 
+	@Inject
+	@DownloadSharedPrefs
+	private SharedPreferences downloadPrefs;
+
 	@Override
 	public void handleReceive(final Context context, final Intent intent) {
 		final String action = intent.getAction();
 		if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
 			final long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-			final SharedPreferences sharedPreferences = context.getSharedPreferences(DOWNLOAD_PREFS, Context.MODE_PRIVATE);
-			final long juzidianDownloadId = sharedPreferences.getLong(CURRENT_DOWNLOAD_ID, 0);
+			final long juzidianDownloadId = this.downloadPrefs.getLong(CURRENT_DOWNLOAD_ID, 0);
 			if (downloadId == juzidianDownloadId) {
 				if (this.isDownloadSuccessful(this.downloadManager, downloadId)) {
 					this.installDictionary(this.downloadManager, downloadId);
@@ -68,14 +70,14 @@ public final class DictionaryInstaller extends RoboBroadcastReceiver {
 					LOGGER.debug("Removing failed dictionary download with id {}", downloadId);
 					this.downloadManager.remove(downloadId);
 				}
-				this.clearCurrentDownload(sharedPreferences);
+				this.clearCurrentDownload();
 			}
 		}
 	}
 
-	private void clearCurrentDownload(final SharedPreferences sharedPreferences) {
+	private void clearCurrentDownload() {
 		LOGGER.debug("Clearing current dictionary download id");
-		final Editor editor = sharedPreferences.edit();
+		final Editor editor = this.downloadPrefs.edit();
 		editor.remove(CURRENT_DOWNLOAD_ID);
 		editor.apply();
 	}

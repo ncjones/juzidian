@@ -2,11 +2,12 @@ package org.juzidian.android;
 
 import java.io.File;
 
+import javax.inject.Inject;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import roboguice.activity.RoboActivity;
-import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.Menu;
@@ -14,6 +15,10 @@ import android.view.Menu;
 public class MainActivity extends RoboActivity {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainActivity.class);
+
+	@Inject
+	@DownloadSharedPrefs
+	private SharedPreferences downloadPrefs;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -31,8 +36,7 @@ public class MainActivity extends RoboActivity {
 	}
 
 	private void initializeDatabase() {
-		final SharedPreferences sharedPreferences = this.getSharedPreferences(DictionaryDownloader.DOWNLOAD_PREFS, Context.MODE_PRIVATE);
-		final long juzidianDownloadId = sharedPreferences.getLong(DictionaryDownloader.CURRENT_DOWNLOAD_ID, 0);
+		final long juzidianDownloadId = this.downloadPrefs.getLong(DictionaryDownloader.CURRENT_DOWNLOAD_ID, 0);
 		if (juzidianDownloadId == 0) {
 			final DictionaryInitializerTask dictionaryDownloadTask = new DictionaryInitializerTask(this);
 			dictionaryDownloadTask.execute();
