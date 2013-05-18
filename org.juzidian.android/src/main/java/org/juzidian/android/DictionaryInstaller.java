@@ -33,12 +33,11 @@ import roboguice.receiver.RoboBroadcastReceiver;
 import android.app.DownloadManager;
 import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.ParcelFileDescriptor;
 
 /**
  * BroadcastReceiver that installs a dictionary database that has been
- * downloaded by a {@link DictionaryDownloader}.
+ * downloaded by a {@link JuzidianDownloadManager}.
  */
 public final class DictionaryInstaller extends RoboBroadcastReceiver {
 
@@ -47,46 +46,28 @@ public final class DictionaryInstaller extends RoboBroadcastReceiver {
 	public static final String DICTIONARY_DB_PATH = "/data/data/org.juzidian.android/juzidian-dictionary.db";
 
 	@Inject
-	private DownloadManager downloadManager;
-
-	@Inject
-	private DownloadRegistry downloadRegistry;
+	private JuzidianDownloadManager downloadManager;
 
 	@Override
 	public void handleReceive(final Context context, final Intent intent) {
 		final String action = intent.getAction();
 		if (DownloadManager.ACTION_DOWNLOAD_COMPLETE.equals(action)) {
 			final long downloadId = intent.getLongExtra(DownloadManager.EXTRA_DOWNLOAD_ID, 0);
-			final long juzidianDownloadId = this.downloadRegistry.getCurrentDownloadId();
-			if (downloadId == juzidianDownloadId) {
-				if (this.isDownloadSuccessful(this.downloadManager, downloadId)) {
-					this.installDictionary(this.downloadManager, downloadId);
+			if (downloadId == this.downloadManager.getDownloadId()) {
+				if (this.downloadManager.isDownloadSuccessful()) {
+					this.installDictionary(this.downloadManager.getDownloadedFile());
 				} else {
-					LOGGER.debug("Removing failed dictionary download with id {}", downloadId);
-					this.downloadManager.remove(downloadId);
+					LOGGER.error("Download was unsuccessful");
 				}
-				this.downloadRegistry.setCurrentDownloadId(null);
+				this.downloadManager.clearDownload();
 			}
 		}
 	}
 
-	private boolean isDownloadSuccessful(final DownloadManager downloadManager, final long downloadId) {
-		final DownloadManager.Query query = new DownloadManager.Query();
-		query.setFilterById(downloadId);
-		final Cursor cursor = downloadManager.query(query);
-		if (cursor.moveToFirst()) {
-			final int downloadStatus = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-			return DownloadManager.STATUS_SUCCESSFUL == downloadStatus;
-		}
-		return false;
-	}
-
-	private void installDictionary(final DownloadManager downloadManager, final long downloadId) {
-		LOGGER.debug("Installing dictionary database from download id {}", downloadId);
-		final ParcelFileDescriptor fileDescriptor;
+	private void installDictionary(final ParcelFileDescriptor fileDescriptor) {
+		LOGGER.debug("Installing dictionary database from downloaded file {}", fileDescriptor);
+		final InputStream rawInputStream = new ParcelFileDescriptor.AutoCloseInputStream(fileDescriptor);
 		try {
-			fileDescriptor = downloadManager.openDownloadedFile(downloadId);
-			final InputStream rawInputStream = new ParcelFileDescriptor.AutoCloseInputStream(fileDescriptor);
 			final GZIPInputStream gzipInputStream = new GZIPInputStream(rawInputStream);
 			IoUtil.copy(gzipInputStream, new FileOutputStream(DICTIONARY_DB_PATH));
 		} catch (final IOException e) {

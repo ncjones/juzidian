@@ -16,7 +16,7 @@ public class MainActivity extends RoboActivity {
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainActivity.class);
 
 	@Inject
-	private DownloadRegistry downloadRegistry;
+	private JuzidianDownloadManager downloadManager;
 
 	@Override
 	public void onCreate(final Bundle savedInstanceState) {
@@ -34,7 +34,7 @@ public class MainActivity extends RoboActivity {
 	}
 
 	private void initializeDatabase() {
-		if (this.downloadRegistry.getCurrentDownloadId() == null) {
+		if (!this.downloadManager.isDownloadInProgress()) {
 			final DictionaryInitializerTask dictionaryDownloadTask = new DictionaryInitializerTask(this);
 			dictionaryDownloadTask.execute();
 		} else {

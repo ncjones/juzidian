@@ -28,38 +28,28 @@ import org.juzidian.core.datastore.DbDictionaryDataStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import android.app.DownloadManager;
-import android.app.DownloadManager.Request;
-import android.net.Uri;
-
 /**
- * Triggers the download of a dictionary database file.
+ * Finds a compatible dictionary and then schedules its download.
  */
 public class DictionaryDownloader {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryDownloader.class);
 
-	private final DownloadManager downloadManager;
-
 	private final DictionaryResourceRegistryService registryService;
 
-	private final DownloadRegistry downloadRegistry;
+	private final JuzidianDownloadManager downloadManager;
 
 	@Inject
-	public DictionaryDownloader(final DownloadManager downloadManager, final DictionaryResourceRegistryService registryService,
-			final DownloadRegistry downloadRegistry) {
+	public DictionaryDownloader(final JuzidianDownloadManager downloadManager, final DictionaryResourceRegistryService registryService) {
 		this.downloadManager = downloadManager;
 		this.registryService = registryService;
-		this.downloadRegistry = downloadRegistry;
 	}
 
 	public void downloadDictionary() {
 		LOGGER.debug("Initializing download of dictionary database.");
 		final DictionaryResource dictionaryResource = this.getDictionaryResource();
-		final Request request = new DownloadManager.Request(Uri.parse(dictionaryResource.getUrl()));
-		request.setTitle("Juzidian Dictionary Database");
-		final long downloadId = this.downloadManager.enqueue(request);
-		this.downloadRegistry.setCurrentDownloadId(downloadId);
+		final String url = dictionaryResource.getUrl();
+		this.downloadManager.startDownload(url);
 	}
 
 	private DictionaryResource getDictionaryResource() {

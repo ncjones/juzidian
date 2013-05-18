@@ -28,7 +28,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 
 /**
- * A persistent registry for a currently active dictionary data download.
+ * A persistent registry for a currently active download.
  */
 @Singleton
 public class DownloadRegistry {
@@ -65,7 +65,7 @@ public class DownloadRegistry {
 	 *        to clear the download id.
 	 */
 	public void setCurrentDownloadId(final Long downloadId) {
-		LOGGER.debug("Setting current dictionary download id: {}", downloadId);
+		LOGGER.debug("Setting current download id: {}", downloadId);
 		final Editor editor = this.sharedPreferences.edit();
 		if (downloadId == null) {
 			editor.remove(CURRENT_DOWNLOAD_ID_KEY);
