@@ -18,27 +18,13 @@
  */
 package org.juzidian.android;
 
-import javax.inject.Inject;
-
-import roboguice.util.RoboAsyncTask;
-import android.content.Context;
-
 /**
- * Background task to initialize the dictionary database.
+ * Receives download notifcations from a {@link DictionaryDownloadService}.
  */
-public class DictionaryInitializerTask extends RoboAsyncTask<Void> {
+public interface DictionaryDownloadListener {
 
-	@Inject
-	private DictionaryDownloader dictionaryInitializer;
+	public void downloadSuccess();
 
-	public DictionaryInitializerTask(final Context context) {
-		super(context);
-	}
-
-	@Override
-	public Void call() throws Exception {
-		this.dictionaryInitializer.downloadDictionary();
-		return null;
-	}
+	public void downloadFailure();
 
 }

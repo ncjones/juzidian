@@ -139,9 +139,11 @@ public class JuzidianDownloadManager {
 	 */
 	public void clearDownload() {
 		final Long downloadId = this.getDownloadId();
-		LOGGER.debug("Removing download with id: {}", downloadId);
-		this.downloadManager.remove(downloadId);
-		this.downloadRegistry.setCurrentDownloadId(null);
+		if (downloadId != null) {
+			LOGGER.debug("Removing download with id: {}", downloadId);
+			this.downloadManager.remove(downloadId);
+			this.downloadRegistry.setCurrentDownloadId(null);
+		}
 	}
 
 }

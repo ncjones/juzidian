@@ -20,7 +20,7 @@ package org.juzidian.android;
 
 import static android.database.sqlite.SQLiteDatabase.NO_LOCALIZED_COLLATORS;
 import static android.database.sqlite.SQLiteDatabase.OPEN_READONLY;
-import static org.juzidian.android.DictionaryInstaller.DICTIONARY_DB_PATH;
+import static org.juzidian.android.DictionaryDownloadService.DICTIONARY_DB_PATH;
 
 import javax.inject.Provider;
 
