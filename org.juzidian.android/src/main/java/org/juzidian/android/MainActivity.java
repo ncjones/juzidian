@@ -48,12 +48,14 @@ public class MainActivity extends RoboActivity {
 	private void onDownloadServiceConnected(final DictionaryDownloadService downloadService) {
 		LOGGER.debug("download service connected");
 		this.downloadService = downloadService;
-		if (!downloadService.isDownloadInProgress()) {
-			downloadService.downloadDictionary();
-		} else {
-			LOGGER.debug("dictionary download already in progress");
+		synchronized (downloadService) {
+			if (!downloadService.isDownloadInProgress()) {
+				downloadService.downloadDictionary();
+			} else {
+				LOGGER.debug("dictionary download already in progress");
+			}
+			downloadService.addDownloadListener(this.downloadListener);
 		}
-		downloadService.addDownloadListener(this.downloadListener);
 	}
 
 	public void onDownloadServiceDisconnected() {

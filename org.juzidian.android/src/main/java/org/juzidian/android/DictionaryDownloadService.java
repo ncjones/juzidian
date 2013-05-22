@@ -53,6 +53,21 @@ import android.os.ParcelFileDescriptor;
  * There can only be one download in progress at a time.
  * <p>
  * This class is thread safe.
+ * <p>
+ * After a client binds to an already-running download service, the conditional
+ * registration of a notification listener should be enclosed in a synchronized
+ * block which locks on the download service. For example:
+ * 
+ * <pre>
+ * synchronized (downloadService) {
+ * 	if (downloadService.isDownloadInProgress()) {
+ * 		downloadService.addDownloadListener(listener);
+ * 	}
+ * }
+ * </pre>
+ * 
+ * This prevents download notifications being sent between the check for a
+ * running download and the registration of the listener.
  */
 public class DictionaryDownloadService extends RoboService {
 
@@ -174,7 +189,7 @@ public class DictionaryDownloadService extends RoboService {
 		new File(DICTIONARY_DB_PATH).delete();
 	}
 
-	private void notifySuccess() {
+	private synchronized void notifySuccess() {
 		synchronized (this.downloadListeners) {
 			for (final DictionaryDownloadListener listener : this.downloadListeners) {
 				listener.downloadSuccess();
@@ -182,7 +197,7 @@ public class DictionaryDownloadService extends RoboService {
 		}
 	}
 
-	private void notifyFailure() {
+	private synchronized void notifyFailure() {
 		synchronized (this.downloadListeners) {
 			for (final DictionaryDownloadListener listener : this.downloadListeners) {
 				listener.downloadFailure();
