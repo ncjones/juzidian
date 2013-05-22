@@ -31,10 +31,6 @@ import java.util.zip.GZIPInputStream;
 import javax.inject.Inject;
 
 import org.juzidian.core.dataload.DictionaryResource;
-import org.juzidian.core.dataload.DictionaryResourceRegistry;
-import org.juzidian.core.dataload.DictionaryResourceRegistryService;
-import org.juzidian.core.dataload.DictonaryResourceRegistryServiceException;
-import org.juzidian.core.datastore.DbDictionaryDataStore;
 import org.juzidian.util.IoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,9 +72,6 @@ public class DictionaryDownloadService extends RoboService {
 	public static final String DICTIONARY_DB_PATH = "/data/data/org.juzidian.android/juzidian-dictionary.db";
 
 	@Inject
-	private DictionaryResourceRegistryService registryService;
-
-	@Inject
 	private JuzidianDownloadManager downloadManager;
 
 	private final DownloadHandler downloadHandler = new DownloadHandler();
@@ -98,6 +91,16 @@ public class DictionaryDownloadService extends RoboService {
 	}
 
 	/**
+	 * Check if the dictionary database is initialized.
+	 * 
+	 * @return <code>true</code> if the dictionary database is already
+	 *         initialized.
+	 */
+	public boolean isDbInitialized() {
+		return new File(DictionaryDownloadService.DICTIONARY_DB_PATH).exists();
+	}
+
+	/**
 	 * Finds a compatible dictionary, schedules its download and, when the
 	 * download is complete, installs the dictionary.
 	 * <p>
@@ -107,35 +110,22 @@ public class DictionaryDownloadService extends RoboService {
 	 * 
 	 * @throws IllegalStateException if there is already a download in progress.
 	 */
-	public synchronized void downloadDictionary() {
+	public synchronized void downloadDictionary(final DictionaryResource dictionaryResource) {
 		if (this.downloadInProgress) {
-			throw new IllegalStateException("Download already in progress");
+			throw new IllegalStateException("Initialization already in progress");
 		}
 		this.downloadInProgress = true;
 		/*
 		 * Keep service running while a download is in progress.
 		 */
 		this.startService(new Intent(this, DictionaryDownloadService.class));
-		AsyncTask.execute(new RunnableDictionaryDownloader());
+		AsyncTask.execute(new RunnableDictionaryDownloader(dictionaryResource));
 	}
 
-	private void doDownload() {
+	private void doDownload(final DictionaryResource dictionaryResource) {
 		LOGGER.debug("Initializing download of dictionary database.");
-		try {
-			DictionaryResource dictionaryResource;
-			dictionaryResource = this.getDictionaryResource();
-			final String url = dictionaryResource.getUrl();
-			this.downloadManager.startDownload(url);
-			this.registerReceiver(DictionaryDownloadService.this.downloadHandler, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
-		} catch (final DictonaryResourceRegistryServiceException e) {
-			LOGGER.error("Download failed", e);
-			this.onDownloadFailure();
-		}
-	}
-
-	private DictionaryResource getDictionaryResource() throws DictonaryResourceRegistryServiceException {
-		final DictionaryResourceRegistry registry = this.registryService.getDictionaryResourceRegistry(DbDictionaryDataStore.DATA_FORMAT_VERSION);
-		return registry.getDictionaryResources().get(0);
+		this.downloadManager.startDownload(dictionaryResource.getUrl());
+		this.registerReceiver(DictionaryDownloadService.this.downloadHandler, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 	}
 
 	private void onDownloadSuccess() {
@@ -260,9 +250,15 @@ public class DictionaryDownloadService extends RoboService {
 
 	private final class RunnableDictionaryDownloader implements Runnable {
 
+		private final DictionaryResource dictionaryResource;
+
+		public RunnableDictionaryDownloader(final DictionaryResource dictionaryResource) {
+			this.dictionaryResource = dictionaryResource;
+		}
+
 		@Override
 		public void run() {
-			DictionaryDownloadService.this.doDownload();
+			DictionaryDownloadService.this.doDownload(this.dictionaryResource);
 		}
 	}
 

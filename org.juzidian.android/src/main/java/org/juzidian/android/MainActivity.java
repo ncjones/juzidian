@@ -1,7 +1,12 @@
 package org.juzidian.android;
 
-import java.io.File;
+import javax.inject.Inject;
 
+import org.juzidian.core.dataload.DictionaryResource;
+import org.juzidian.core.dataload.DictionaryResourceRegistry;
+import org.juzidian.core.dataload.DictionaryResourceRegistryService;
+import org.juzidian.core.dataload.DictonaryResourceRegistryServiceException;
+import org.juzidian.core.datastore.DbDictionaryDataStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +15,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
@@ -17,6 +23,9 @@ import android.view.Menu;
 public class MainActivity extends RoboActivity {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(MainActivity.class);
+
+	@Inject
+	private DictionaryResourceRegistryService registryService;
 
 	private DictionaryDownloadService downloadService;
 
@@ -28,21 +37,7 @@ public class MainActivity extends RoboActivity {
 
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
-		LOGGER.debug("creating main activity");
 		super.onCreate(savedInstanceState);
-		if (this.isDbInitialized()) {
-			this.setContentView(R.layout.activity_main);
-		} else {
-			this.initializeDatabase();
-			this.setContentView(R.layout.download_view);
-		}
-	}
-
-	private boolean isDbInitialized() {
-		return new File(DictionaryDownloadService.DICTIONARY_DB_PATH).exists();
-	}
-
-	private void initializeDatabase() {
 		LOGGER.debug("Binding to download service");
 		final Intent intent = new Intent(this, DictionaryDownloadService.class);
 		this.bindService(intent, this.downloadServiceConnection, Context.BIND_AUTO_CREATE);
@@ -51,17 +46,50 @@ public class MainActivity extends RoboActivity {
 	private void onDownloadServiceConnected(final DictionaryDownloadService downloadService) {
 		LOGGER.debug("download service connected");
 		this.downloadService = downloadService;
-		synchronized (downloadService) {
-			if (!downloadService.isDownloadInProgress()) {
-				downloadService.downloadDictionary();
-			} else {
-				LOGGER.debug("dictionary download already in progress");
-			}
-			downloadService.addDownloadListener(this.downloadListener);
+		if (downloadService.isDbInitialized()) {
+			this.setContentView(R.layout.activity_main);
+		} else {
+			this.initializeDatabase();
+			this.setContentView(R.layout.download_view);
 		}
 	}
 
+	private void initializeDatabase() {
+		synchronized (this.downloadService) {
+			if (!this.downloadService.isDownloadInProgress()) {
+				AsyncTask.execute(new RunnableDictionaryInitializer());
+			} else {
+				LOGGER.debug("dictionary download already in progress");
+			}
+			this.downloadService.addDownloadListener(this.downloadListener);
+		}
+	}
+
+	private class RunnableDictionaryInitializer implements Runnable {
+		@Override
+		public void run() {
+			MainActivity.this.startDownload();
+		}
+	}
+
+	private void startDownload() {
+		try {
+			final DictionaryResource dictionaryResource = this.getDictionaryResource();
+			this.downloadService.downloadDictionary(dictionaryResource);
+		} catch (final DictonaryResourceRegistryServiceException e) {
+			LOGGER.error("Download failed", e);
+			this.onDownloadFailure();
+		}
+	}
+
+	private DictionaryResource getDictionaryResource() throws DictonaryResourceRegistryServiceException {
+		final DictionaryResourceRegistry registry = this.registryService.getDictionaryResourceRegistry(DbDictionaryDataStore.DATA_FORMAT_VERSION);
+		final DictionaryResource dictionaryResource = registry.getDictionaryResources().get(0);
+		return dictionaryResource;
+	}
+
 	public void onDownloadServiceDisconnected() {
+		LOGGER.debug("download service disconnected");
 		this.downloadService = null;
 	}
 
