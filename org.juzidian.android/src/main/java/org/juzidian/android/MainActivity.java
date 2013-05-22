@@ -24,8 +24,11 @@ public class MainActivity extends RoboActivity {
 
 	private final DictionaryDownloadListener downloadListener = new DownloadListener();
 
+	private boolean started;
+
 	@Override
-	public void onCreate(final Bundle savedInstanceState) {
+	protected void onCreate(final Bundle savedInstanceState) {
+		LOGGER.debug("creating main activity");
 		super.onCreate(savedInstanceState);
 		if (this.isDbInitialized()) {
 			this.setContentView(R.layout.activity_main);
@@ -63,8 +66,23 @@ public class MainActivity extends RoboActivity {
 	}
 
 	@Override
+	protected void onStart() {
+		LOGGER.debug("starting main activity");
+		super.onStart();
+		this.started = true;
+	}
+
+	@Override
 	protected void onStop() {
+		LOGGER.debug("stopping main activity");
 		super.onStop();
+		this.started = false;
+	}
+
+	@Override
+	protected void onDestroy() {
+		LOGGER.debug("destroying main activity");
+		super.onDestroy();
 		if (this.downloadService != null) {
 			this.unbindService(this.downloadServiceConnection);
 			this.downloadService.removeDownloadListener(this.downloadListener);
@@ -72,16 +90,15 @@ public class MainActivity extends RoboActivity {
 	}
 
 	private void onDownloadSuccess() {
-		this.restartActivity();
+		this.finish();
+		if (this.started) {
+			/* if activity was stopped then don't unobtrusively restart */
+			this.startActivity(this.getIntent());
+		}
 	}
 
 	private void onDownloadFailure() {
 		this.finish();
-	}
-
-	private void restartActivity() {
-		this.finish();
-		this.startActivity(this.getIntent());
 	}
 
 	@Override
