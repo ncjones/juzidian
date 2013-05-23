@@ -27,11 +27,11 @@ public class MainActivity extends RoboActivity {
 	@Inject
 	private DictionaryResourceRegistryService registryService;
 
-	private DictionaryDownloadService downloadService;
+	private DictionaryInitService dictionaryInitService;
 
 	private final ServiceConnection downloadServiceConnection = new DownloadServiceConnection();
 
-	private final DictionaryDownloadListener downloadListener = new DownloadListener();
+	private final DictionaryInitListener downloadListener = new DownloadListener();
 
 	private boolean started;
 
@@ -39,15 +39,15 @@ public class MainActivity extends RoboActivity {
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		LOGGER.debug("Binding to download service");
-		final Intent intent = new Intent(this, DictionaryDownloadService.class);
+		final Intent intent = new Intent(this, DictionaryInitService.class);
 		this.bindService(intent, this.downloadServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 
-	private void onDownloadServiceConnected(final DictionaryDownloadService downloadService) {
+	private void onDownloadServiceConnected(final DictionaryInitService dictionaryInitService) {
 		LOGGER.debug("download service connected");
-		this.downloadService = downloadService;
-		synchronized (downloadService) {
-			if (downloadService.isDictionaryInitialized()) {
+		this.dictionaryInitService = dictionaryInitService;
+		synchronized (dictionaryInitService) {
+			if (dictionaryInitService.isDictionaryInitialized()) {
 				this.setContentView(R.layout.activity_main);
 			} else {
 				this.initializeDatabase();
@@ -57,12 +57,12 @@ public class MainActivity extends RoboActivity {
 	}
 
 	private void initializeDatabase() {
-		if (this.downloadService.isInitializationInProgress()) {
+		if (this.dictionaryInitService.isInitializationInProgress()) {
 			LOGGER.debug("dictionary download already in progress");
 		} else {
 			AsyncTask.execute(new RunnableDictionaryInitializer());
 		}
-		this.downloadService.addDownloadListener(this.downloadListener);
+		this.dictionaryInitService.addListener(this.downloadListener);
 	}
 
 	private class RunnableDictionaryInitializer implements Runnable {
@@ -75,7 +75,7 @@ public class MainActivity extends RoboActivity {
 	private void startDownload() {
 		try {
 			final DictionaryResource dictionaryResource = this.getDictionaryResource();
-			this.downloadService.downloadDictionary(dictionaryResource);
+			this.dictionaryInitService.downloadDictionary(dictionaryResource);
 		} catch (final DictonaryResourceRegistryServiceException e) {
 			LOGGER.error("Download failed", e);
 			this.onDownloadFailure();
@@ -90,7 +90,7 @@ public class MainActivity extends RoboActivity {
 
 	public void onDownloadServiceDisconnected() {
 		LOGGER.debug("download service disconnected");
-		this.downloadService = null;
+		this.dictionaryInitService = null;
 	}
 
 	@Override
@@ -111,9 +111,9 @@ public class MainActivity extends RoboActivity {
 	protected void onDestroy() {
 		LOGGER.debug("destroying main activity");
 		super.onDestroy();
-		if (this.downloadService != null) {
+		if (this.dictionaryInitService != null) {
 			this.unbindService(this.downloadServiceConnection);
-			this.downloadService.removeDownloadListener(this.downloadListener);
+			this.dictionaryInitService.removeListener(this.downloadListener);
 		}
 	}
 
@@ -135,15 +135,15 @@ public class MainActivity extends RoboActivity {
 		return true;
 	}
 
-	private class DownloadListener implements DictionaryDownloadListener {
+	private class DownloadListener implements DictionaryInitListener {
 
 		@Override
-		public void downloadSuccess() {
+		public void dictionaryInitSuccess() {
 			MainActivity.this.onDownloadSuccess();
 		}
 
 		@Override
-		public void downloadFailure() {
+		public void dictionaryInitFailure() {
 			MainActivity.this.onDownloadFailure();
 		}
 
@@ -153,8 +153,8 @@ public class MainActivity extends RoboActivity {
 
 		@Override
 		public void onServiceConnected(final ComponentName name, final IBinder binder) {
-			final DictionaryDownloadService downloadService = ((DictionaryDownloadService.Binder) binder).getService();
-			MainActivity.this.onDownloadServiceConnected(downloadService);
+			final DictionaryInitService dictionaryInitService = ((DictionaryInitService.Binder) binder).getService();
+			MainActivity.this.onDownloadServiceConnected(dictionaryInitService);
 		}
 
 		@Override

@@ -9,7 +9,7 @@ Enhancements:
 
 Bugfixes:
 
-* Fix interpretation of Pinyin input with abiguously joined syllables, such as
+* Fix interpretation of Pinyin input with ambiguously joined syllables, such as
   "hanguo", which were previously considered invalid.
 
 

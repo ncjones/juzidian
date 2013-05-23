@@ -19,12 +19,12 @@
 package org.juzidian.android;
 
 /**
- * Receives download notifcations from a {@link DictionaryDownloadService}.
+ * Receives download notifcations from a {@link DictionaryInitService}.
  */
-public interface DictionaryDownloadListener {
+public interface DictionaryInitListener {
 
-	public void downloadSuccess();
+	public void dictionaryInitSuccess();
 
-	public void downloadFailure();
+	public void dictionaryInitFailure();
 
 }

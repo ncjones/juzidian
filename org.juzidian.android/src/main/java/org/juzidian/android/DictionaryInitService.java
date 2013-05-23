@@ -65,9 +65,9 @@ import android.os.ParcelFileDescriptor;
  * This prevents download notifications being sent between the check for a
  * running download and the registration of the listener.
  */
-public class DictionaryDownloadService extends RoboService {
+public class DictionaryInitService extends RoboService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryDownloadService.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryInitService.class);
 
 	public static final String DICTIONARY_DB_PATH = "/data/data/org.juzidian.android/juzidian-dictionary.db";
 
@@ -76,7 +76,7 @@ public class DictionaryDownloadService extends RoboService {
 
 	private final DownloadHandler downloadHandler = new DownloadHandler();
 
-	private final Set<DictionaryDownloadListener> downloadListeners = synchronizedSet(new HashSet<DictionaryDownloadListener>());
+	private final Set<DictionaryInitListener> downloadListeners = synchronizedSet(new HashSet<DictionaryInitListener>());
 
 	/**
 	 * The current dictionary initialization status.
@@ -91,7 +91,7 @@ public class DictionaryDownloadService extends RoboService {
 	private DictionaryInitStatus oldStatus;
 
 	private boolean dbExists() {
-		return new File(DictionaryDownloadService.DICTIONARY_DB_PATH).exists();
+		return new File(DictionaryInitService.DICTIONARY_DB_PATH).exists();
 	}
 
 	/**
@@ -129,7 +129,7 @@ public class DictionaryDownloadService extends RoboService {
 	 * Schedules the download and installation of a dictionary.
 	 * <p>
 	 * The download will be run on a background thread. Any attached
-	 * {@link DictionaryDownloadListener} will be notified of significant
+	 * {@link DictionaryInitListener} will be notified of significant
 	 * events.
 	 * 
 	 * @throws IllegalStateException if there is already a download in progress.
@@ -145,7 +145,7 @@ public class DictionaryDownloadService extends RoboService {
 		/*
 		 * Keep service running while a download is in progress.
 		 */
-		this.startService(new Intent(this, DictionaryDownloadService.class));
+		this.startService(new Intent(this, DictionaryInitService.class));
 		this.status = DictionaryInitStatus.DOWNLOADING;
 		AsyncTask.execute(new RunnableDictionaryDownloader(dictionaryResource));
 	}
@@ -154,7 +154,7 @@ public class DictionaryDownloadService extends RoboService {
 		LOGGER.debug("Initializing download of dictionary database.");
 		try {
 			this.downloadManager.startDownload(dictionaryResource.getUrl());
-			this.registerReceiver(DictionaryDownloadService.this.downloadHandler, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+			this.registerReceiver(DictionaryInitService.this.downloadHandler, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
 		} catch (final Throwable e) {
 			LOGGER.error("Failed to schedule dictionary download", e);
 			this.onDownloadFailure();
@@ -220,16 +220,16 @@ public class DictionaryDownloadService extends RoboService {
 
 	private synchronized void notifySuccess() {
 		synchronized (this.downloadListeners) {
-			for (final DictionaryDownloadListener listener : this.downloadListeners) {
-				listener.downloadSuccess();
+			for (final DictionaryInitListener listener : this.downloadListeners) {
+				listener.dictionaryInitSuccess();
 			}
 		}
 	}
 
 	private synchronized void notifyFailure() {
 		synchronized (this.downloadListeners) {
-			for (final DictionaryDownloadListener listener : this.downloadListeners) {
-				listener.downloadFailure();
+			for (final DictionaryInitListener listener : this.downloadListeners) {
+				listener.dictionaryInitFailure();
 			}
 		}
 	}
@@ -268,22 +268,22 @@ public class DictionaryDownloadService extends RoboService {
 	}
 
 	/**
-	 * Add a {@link DictionaryDownloadListener} to receive download
+	 * Add a {@link DictionaryInitListener} to receive download
 	 * notifications of download events.
 	 * 
 	 * @param downloadListener the listener to receive notifications.
 	 */
-	public void addDownloadListener(final DictionaryDownloadListener downloadListener) {
+	public void addListener(final DictionaryInitListener downloadListener) {
 		this.downloadListeners.add(downloadListener);
 	}
 
 	/**
-	 * Remove a {@link DictionaryDownloadListener} so it no longer receives
+	 * Remove a {@link DictionaryInitListener} so it no longer receives
 	 * download events.
 	 * 
 	 * @param downloadListener the listener to no longer receive notifications.
 	 */
-	public void removeDownloadListener(final DictionaryDownloadListener downloadListener) {
+	public void removeListener(final DictionaryInitListener downloadListener) {
 		this.downloadListeners.remove(downloadListener);
 	}
 
@@ -297,7 +297,7 @@ public class DictionaryDownloadService extends RoboService {
 
 		@Override
 		public void run() {
-			DictionaryDownloadService.this.doDownload(this.dictionaryResource);
+			DictionaryInitService.this.doDownload(this.dictionaryResource);
 		}
 	}
 
@@ -305,15 +305,15 @@ public class DictionaryDownloadService extends RoboService {
 
 		@Override
 		public void run() {
-			DictionaryDownloadService.this.installDownloadedDictionary();
+			DictionaryInitService.this.installDownloadedDictionary();
 		}
 
 	}
 
 	public class Binder extends android.os.Binder {
 
-		public DictionaryDownloadService getService() {
-			return DictionaryDownloadService.this;
+		public DictionaryInitService getService() {
+			return DictionaryInitService.this;
 		}
 
 	}
@@ -322,12 +322,12 @@ public class DictionaryDownloadService extends RoboService {
 
 		@Override
 		protected void handleDownloadSuccess() {
-			DictionaryDownloadService.this.onDownloadSuccess();
+			DictionaryInitService.this.onDownloadSuccess();
 		}
 
 		@Override
 		protected void handleDownloadFailure() {
-			DictionaryDownloadService.this.onDownloadFailure();
+			DictionaryInitService.this.onDownloadFailure();
 		}
 
 	}
