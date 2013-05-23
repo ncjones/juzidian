@@ -39,7 +39,7 @@ public class MainActivity extends RoboActivity {
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		LOGGER.debug("Binding to download service");
-		final Intent intent = new Intent(this, DictionaryInitService.class);
+		final Intent intent = new Intent(this, DictionaryInitServiceComponent.class);
 		this.bindService(intent, this.downloadServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 
@@ -153,7 +153,7 @@ public class MainActivity extends RoboActivity {
 
 		@Override
 		public void onServiceConnected(final ComponentName name, final IBinder binder) {
-			final DictionaryInitService dictionaryInitService = ((DictionaryInitService.Binder) binder).getService();
+			final DictionaryInitService dictionaryInitService = ((DictionaryInitServiceComponent.Binder) binder).getService();
 			MainActivity.this.onDownloadServiceConnected(dictionaryInitService);
 		}
 
