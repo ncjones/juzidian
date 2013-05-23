@@ -23,10 +23,15 @@ import java.net.URL;
 
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * A service client for retrieving a remote {@link DictionaryResourceRegistry}.
  */
 public class DictionaryResourceRegistryService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryResourceRegistryService.class);
 
 	private final URL serviceEndPointUrl;
 
@@ -51,6 +56,7 @@ public class DictionaryResourceRegistryService {
 	public DictionaryResourceRegistry getDictionaryResourceRegistry(final int dataFormatVersion) throws DictonaryResourceRegistryServiceException {
 		try {
 			final URL url = new URL(this.serviceEndPointUrl, "v" + dataFormatVersion + "/registry.xml");
+			LOGGER.debug("Getting resource registry: {}", url);
 			return this.deserializer.deserialize(url.openStream());
 		} catch (final DictionaryResourceRegistryDeserializerException e) {
 			throw new DictonaryResourceRegistryServiceException(e);
