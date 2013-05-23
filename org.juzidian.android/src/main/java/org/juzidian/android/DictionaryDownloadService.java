@@ -56,7 +56,7 @@ import android.os.ParcelFileDescriptor;
  * 
  * <pre>
  * synchronized (downloadService) {
- * 	if (downloadService.isDownloadInProgress()) {
+ * 	if (downloadService.getStatus().isInProgress()) {
  * 		downloadService.addDownloadListener(listener);
  * 	}
  * }
@@ -78,31 +78,55 @@ public class DictionaryDownloadService extends RoboService {
 
 	private final Set<DictionaryDownloadListener> downloadListeners = synchronizedSet(new HashSet<DictionaryDownloadListener>());
 
-	private boolean downloadInProgress = false;
+	/**
+	 * The current dictionary initialization status.
+	 */
+	private volatile DictionaryInitStatus status = this.dbExists() ? DictionaryInitStatus.INITIALIZED : DictionaryInitStatus.UNINITIALIZED;
 
 	/**
-	 * Check if a download is currently in progress.
-	 * 
-	 * @return <code>true</code> if a download has been started and has not yet
-	 *         finished.
+	 * The initialization status before the current operation started.
+	 * <p>
+	 * This status should be rolled back to upon failure.
 	 */
-	public boolean isDownloadInProgress() {
-		return this.downloadInProgress;
-	}
+	private DictionaryInitStatus oldStatus;
 
-	/**
-	 * Check if the dictionary database is initialized.
-	 * 
-	 * @return <code>true</code> if the dictionary database is already
-	 *         initialized.
-	 */
-	public boolean isDbInitialized() {
+	private boolean dbExists() {
 		return new File(DictionaryDownloadService.DICTIONARY_DB_PATH).exists();
 	}
 
 	/**
-	 * Finds a compatible dictionary, schedules its download and, when the
-	 * download is complete, installs the dictionary.
+	 * Get the current initialization status of the dictionary database.
+	 * 
+	 * @return a {@link DictionaryInitStatus}.
+	 */
+	public DictionaryInitStatus getDictionaryInitStatus() {
+		return this.status;
+	}
+
+	/**
+	 * Check if the initialization status is
+	 * {@link DictionaryInitStatus#INITIALIZED}.
+	 * 
+	 * @return <code>true</code> if the dictionary database is initialized.
+	 * @see #getDictionaryInitStatus()
+	 */
+	public boolean isDictionaryInitialized() {
+		return DictionaryInitStatus.INITIALIZED.equals(this.status);
+	}
+
+	/**
+	 * Check if the initialization status is an "in progress" status.
+	 * 
+	 * @return <code>true</code> if the dictionary database is in the process of
+	 *         being initialized.
+	 * @see #getDictionaryInitStatus()
+	 */
+	public boolean isInitializationInProgress() {
+		return this.status.isInProgress();
+	}
+
+	/**
+	 * Schedules the download and installation of a dictionary.
 	 * <p>
 	 * The download will be run on a background thread. Any attached
 	 * {@link DictionaryDownloadListener} will be notified of significant
@@ -111,24 +135,34 @@ public class DictionaryDownloadService extends RoboService {
 	 * @throws IllegalStateException if there is already a download in progress.
 	 */
 	public synchronized void downloadDictionary(final DictionaryResource dictionaryResource) {
-		if (this.downloadInProgress) {
+		if (this.status.isInProgress()) {
 			throw new IllegalStateException("Initialization already in progress");
 		}
-		this.downloadInProgress = true;
+		if (dictionaryResource == null) {
+			throw new NullPointerException("dictionaryResource is null");
+		}
+		this.oldStatus = this.status;
 		/*
 		 * Keep service running while a download is in progress.
 		 */
 		this.startService(new Intent(this, DictionaryDownloadService.class));
+		this.status = DictionaryInitStatus.DOWNLOADING;
 		AsyncTask.execute(new RunnableDictionaryDownloader(dictionaryResource));
 	}
 
 	private void doDownload(final DictionaryResource dictionaryResource) {
 		LOGGER.debug("Initializing download of dictionary database.");
-		this.downloadManager.startDownload(dictionaryResource.getUrl());
-		this.registerReceiver(DictionaryDownloadService.this.downloadHandler, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+		try {
+			this.downloadManager.startDownload(dictionaryResource.getUrl());
+			this.registerReceiver(DictionaryDownloadService.this.downloadHandler, new IntentFilter(DownloadManager.ACTION_DOWNLOAD_COMPLETE));
+		} catch (final Throwable e) {
+			LOGGER.error("Failed to schedule dictionary download", e);
+			this.onDownloadFailure();
+		}
 	}
 
 	private void onDownloadSuccess() {
+		this.status = DictionaryInitStatus.INSTALLING;
 		AsyncTask.execute(new RunnableDictionaryInstaller());
 	}
 
@@ -136,7 +170,7 @@ public class DictionaryDownloadService extends RoboService {
 		try {
 			this.installDictionary(this.downloadManager.getDownloadedFile());
 			this.onInstallSuccess();
-		} catch (final IOException e) {
+		} catch (final Throwable e) {
 			LOGGER.error("Failed to install dictionary", e);
 			this.onInstallFailure();
 		}
@@ -151,6 +185,7 @@ public class DictionaryDownloadService extends RoboService {
 
 	private void onDownloadFailure() {
 		LOGGER.error("Download was unsuccessful");
+		this.status = this.oldStatus;
 		try {
 			this.notifyFailure();
 		} finally {
@@ -159,6 +194,7 @@ public class DictionaryDownloadService extends RoboService {
 	}
 
 	private void onInstallSuccess() {
+		this.status = DictionaryInitStatus.INITIALIZED;
 		try {
 			this.notifySuccess();
 		} finally {
@@ -167,8 +203,11 @@ public class DictionaryDownloadService extends RoboService {
 	}
 
 	private void onInstallFailure() {
+		this.status = this.oldStatus;
 		try {
-			this.removeDictionary();
+			if (DictionaryInitStatus.UNINITIALIZED.equals(this.status)) {
+				this.removeDictionary();
+			}
 			this.notifyFailure();
 		} finally {
 			this.cleanUp();
@@ -199,10 +238,10 @@ public class DictionaryDownloadService extends RoboService {
 		try {
 			this.unregisterDownloadReceiver();
 			this.downloadManager.clearDownload();
-		} catch (final Exception e) {
+		} catch (final Throwable e) {
 			LOGGER.warn("Uncaught exception while cleaning up download", e);
 		} finally {
-			this.downloadInProgress = false;
+			this.oldStatus = null;
 			this.stopSelf();
 		}
 	}

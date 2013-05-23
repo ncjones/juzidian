@@ -46,23 +46,23 @@ public class MainActivity extends RoboActivity {
 	private void onDownloadServiceConnected(final DictionaryDownloadService downloadService) {
 		LOGGER.debug("download service connected");
 		this.downloadService = downloadService;
-		if (downloadService.isDbInitialized()) {
-			this.setContentView(R.layout.activity_main);
-		} else {
-			this.initializeDatabase();
-			this.setContentView(R.layout.download_view);
+		synchronized (downloadService) {
+			if (downloadService.isDictionaryInitialized()) {
+				this.setContentView(R.layout.activity_main);
+			} else {
+				this.initializeDatabase();
+				this.setContentView(R.layout.download_view);
+			}
 		}
 	}
 
 	private void initializeDatabase() {
-		synchronized (this.downloadService) {
-			if (!this.downloadService.isDownloadInProgress()) {
-				AsyncTask.execute(new RunnableDictionaryInitializer());
-			} else {
-				LOGGER.debug("dictionary download already in progress");
-			}
-			this.downloadService.addDownloadListener(this.downloadListener);
+		if (this.downloadService.isInitializationInProgress()) {
+			LOGGER.debug("dictionary download already in progress");
+		} else {
+			AsyncTask.execute(new RunnableDictionaryInitializer());
 		}
+		this.downloadService.addDownloadListener(this.downloadListener);
 	}
 
 	private class RunnableDictionaryInitializer implements Runnable {
