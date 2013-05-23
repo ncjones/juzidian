@@ -34,6 +34,7 @@ public class JuzidianAndroidModule extends AbstractModule {
 		this.bind(ConnectionSource.class).toProvider(DictionaryConnectionSourceProvider.class);
 		this.bind(DownloadManager.class).toProvider(new SystemServiceProvider<DownloadManager>(Context.DOWNLOAD_SERVICE));
 		this.bind(SharedPreferences.class).annotatedWith(DownloadSharedPrefs.class).toProvider(new SharedPreferencesProvider("juzidian-download-info"));
+		this.bindConstant().annotatedWith(DictionaryDbPath.class).to("/data/data/org.juzidian.android/juzidian-dictionary.db");
 	}
 
 }

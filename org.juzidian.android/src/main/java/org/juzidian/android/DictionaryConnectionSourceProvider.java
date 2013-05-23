@@ -20,8 +20,8 @@ package org.juzidian.android;
 
 import static android.database.sqlite.SQLiteDatabase.NO_LOCALIZED_COLLATORS;
 import static android.database.sqlite.SQLiteDatabase.OPEN_READONLY;
-import static org.juzidian.android.DictionaryInitServiceComponent.DICTIONARY_DB_PATH;
 
+import javax.inject.Inject;
 import javax.inject.Provider;
 
 import android.database.sqlite.SQLiteDatabase;
@@ -31,9 +31,16 @@ import com.j256.ormlite.support.ConnectionSource;
 
 public class DictionaryConnectionSourceProvider implements Provider<ConnectionSource> {
 
+	private final String dictionaryDbPath;
+
+	@Inject
+	private DictionaryConnectionSourceProvider(@DictionaryDbPath final String dictionaryDbPath) {
+		this.dictionaryDbPath = dictionaryDbPath;
+	}
+
 	@Override
 	public ConnectionSource get() {
-		final SQLiteDatabase sqliteDb = SQLiteDatabase.openDatabase(DICTIONARY_DB_PATH, null, OPEN_READONLY | NO_LOCALIZED_COLLATORS);
+		final SQLiteDatabase sqliteDb = SQLiteDatabase.openDatabase(this.dictionaryDbPath, null, OPEN_READONLY | NO_LOCALIZED_COLLATORS);
 		final ConnectionSource connectionSource = new AndroidConnectionSource(sqliteDb);
 		return connectionSource;
 	}

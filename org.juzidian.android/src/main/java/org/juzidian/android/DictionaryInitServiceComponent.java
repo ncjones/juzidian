@@ -68,7 +68,9 @@ public class DictionaryInitServiceComponent extends RoboService implements Dicti
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryInitServiceComponent.class);
 
-	public static final String DICTIONARY_DB_PATH = "/data/data/org.juzidian.android/juzidian-dictionary.db";
+	@Inject
+	@DictionaryDbPath
+	public String dictionaryDbPath;
 
 	@Inject
 	private JuzidianDownloadManager downloadManager;
@@ -80,7 +82,7 @@ public class DictionaryInitServiceComponent extends RoboService implements Dicti
 	/**
 	 * The current dictionary initialization status.
 	 */
-	private volatile DictionaryInitStatus status = this.dbExists() ? DictionaryInitStatus.INITIALIZED : DictionaryInitStatus.UNINITIALIZED;
+	private volatile DictionaryInitStatus status;
 
 	/**
 	 * The initialization status before the current operation started.
@@ -89,8 +91,14 @@ public class DictionaryInitServiceComponent extends RoboService implements Dicti
 	 */
 	private DictionaryInitStatus oldStatus;
 
+	@Override
+	public void onCreate() {
+		super.onCreate();
+		this.status = this.dbExists() ? DictionaryInitStatus.INITIALIZED : DictionaryInitStatus.UNINITIALIZED;
+	}
+
 	private boolean dbExists() {
-		return new File(DictionaryInitServiceComponent.DICTIONARY_DB_PATH).exists();
+		return new File(this.dictionaryDbPath).exists();
 	}
 
 	public DictionaryInitStatus getDictionaryInitStatus() {
@@ -154,7 +162,7 @@ public class DictionaryInitServiceComponent extends RoboService implements Dicti
 		LOGGER.debug("Installing dictionary database from downloaded file");
 		final InputStream rawInputStream = new ParcelFileDescriptor.AutoCloseInputStream(fileDescriptor);
 		final GZIPInputStream gzipInputStream = new GZIPInputStream(rawInputStream);
-		IoUtil.copy(gzipInputStream, new FileOutputStream(DICTIONARY_DB_PATH));
+		IoUtil.copy(gzipInputStream, new FileOutputStream(this.dictionaryDbPath));
 	}
 
 	private void onDownloadFailure() {
@@ -189,7 +197,7 @@ public class DictionaryInitServiceComponent extends RoboService implements Dicti
 	}
 
 	private void removeDictionary() {
-		new File(DICTIONARY_DB_PATH).delete();
+		new File(this.dictionaryDbPath).delete();
 	}
 
 	private synchronized void notifySuccess() {
