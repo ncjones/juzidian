@@ -55,9 +55,9 @@ ext.artifactRegistryPath = "$buildDir/registry.xml"
 
 ext.dbFormat = "${DbDictionaryDataStore.DATA_FORMAT_VERSION}"
 
-ext.artifactDeployInfoPath = "$buildDir/artifactDeployInfo"
+ext.artifactPublishInfoPath = "$buildDir/artifactPublishInfo"
 
-ext.registryDeployInfoPath = "$buildDir/registryDeployInfo"
+ext.registryPublishInfoPath = "$buildDir/registryPublishInfo"
 
 task clean {
 	description "Deletes built artifacts."
@@ -146,12 +146,12 @@ task build {
 	dependsOn compressDatabase, generateArtifactRegistry
 }
 
-def dictionaryArtifactDeployers = [
+def dictionaryArtifactPublishers = [
 	'amazon': [
 		'configureInputs': { inputs ->
 			inputs.property 'awsAccessKey', localProperties['awsAccessKey']
 		},
-		'deploy': { localArtifactPath, targetArtifactName ->
+		'publish': { localArtifactPath, targetArtifactName ->
 			def accessKey = localProperties['awsAccessKey']
 			def secretKey  = localProperties['awsSecretKey']
 			def awsCredentials = new BasicAWSCredentials(accessKey, secretKey)
@@ -165,10 +165,10 @@ def dictionaryArtifactDeployers = [
 	],
 	'rsync': [
 		'configureInputs': { inputs ->
-			inputs.property 'deployHost', dictionaryArtifactPublishHost
-			inputs.property 'deployPath', dictionaryArtifactPublishPath
+			inputs.property 'publishHost', dictionaryArtifactPublishHost
+			inputs.property 'publishPath', dictionaryArtifactPublishPath
 		},
-		'deploy': { localArtifactPath, targetArtifactName ->
+		'publish': { localArtifactPath, targetArtifactName ->
 			def host = dictionaryArtifactPublishHost
 			def path = dictionaryArtifactPublishPath
 			def user = dictionaryArtifactPublishUser
@@ -184,15 +184,15 @@ def dictionaryArtifactDeployers = [
 task publishArtifact {
 	dependsOn compressDatabase
 	def publishType = dictionaryArtifactPublishType
-	def deployer = dictionaryArtifactDeployers[publishType]
-	deployer.configureInputs(inputs)
+	def publisher = dictionaryArtifactPublishers[publishType]
+	publisher.configureInputs(inputs)
 	inputs.file compressedDictionaryDbPath
-	outputs.file artifactDeployInfoPath
+	outputs.file artifactPublishInfoPath
 	doLast {
 		def distArtifactName = getDistArtifactName()
-		def deployInfo = deployer.deploy(compressedDictionaryDbPath, distArtifactName)
+		def publishInfo = publisher.publish(compressedDictionaryDbPath, distArtifactName)
 		/* create arbitrary output file for up-to-date check */
-		file(artifactDeployInfoPath) << deployInfo
+		file(artifactPublishInfoPath) << publishInfo
 	}
 }
 
@@ -201,15 +201,15 @@ task publishRegistry(type: Exec) {
 	def host = dictionaryRegistryPublishHost
 	def path = dictionaryRegistryPublishPath
 	def user = dictionaryRegistryPublishUser
-	inputs.property 'deployHost', host
-	inputs.property 'deployPath', path
+	inputs.property 'publishHost', host
+	inputs.property 'publishPath', path
 	inputs.file artifactRegistryPath
-	outputs.file registryDeployInfoPath
+	outputs.file registryPublishInfoPath
 	commandLine 'rsync'
 	args artifactRegistryPath, "$user@$host:$path/v${dbFormat}/"
 	doLast {
 		/* create arbitrary output file for up-to-date check */
-		file(registryDeployInfoPath) << "$user $host $path"
+		file(registryPublishInfoPath) << "$user $host $path"
 	}
 }
 
