@@ -1,0 +1,65 @@
+About
+=====
+
+The Data Build generates a Juzidian dictionary data file using the Juzidian Core
+APIs and a CEDict data file. It also publishes the compressed data to a network
+server (either Amazon S3 or a remote file system) and publishes a registry of
+available artifacts to a remote file system.
+
+
+Dependencies
+============
+
+The same as the Juzidian Core build requirements, plus:
+
+ * rsync (for data publishing only)
+
+
+Building
+========
+
+Note: Gradle commands should be invoked from the top-level project.
+
+ * Install Juzidian Core projects to the local maven repository:
+
+	$ gradle install
+
+ * Generate the dictionary database:
+
+	$ gradle -c settings-data.gradle build
+
+   Note: Database generation requires network access to download the CEDict data
+   file. A locally cached CEDict file can be used instead by overriding the
+   "cedictDataUrl" property in the build profile.
+
+
+Publishing Data
+===============
+
+Note: Gradle commands should be invoked from the top-level project.
+
+ * Add "awsAccessKey" and "awsSecretKey" properties to local.properties (only
+  required for "amazon" publish type).
+
+ * Publish Juzidian dictionary data to network servers:
+
+	$ gradle -c settings-data.gradle publish
+
+
+Alternative Servers
+===================
+
+Dictionary data can be hosted on alternative servers for more convenient testing
+of the Juzidian data download mechanism. This is achieved by specifying a build 
+profile which defines the alternative publish configuration. For example, to
+publish to the servers defined in the "dev" profile:
+
+	$ gradle -c settings-data.gradle -Pprofile=dev publish
+
+Note: The Juzidian APK will need to be rebuilt using the same profile in order
+to have it use the alternative dictionary registry server.
+
+Note: If the dictionary registry hostname is not resolvable from the Android
+device then the device's hosts file will need modifying. This requires root
+access and requires the system partition to be mounted writable.
+
