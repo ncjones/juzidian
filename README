@@ -66,11 +66,10 @@ Build Profiles
 
 Build profiles allow easy switching between different build configurations. Each
 build profile is defined in a Gradle script with a .profile extension. To build
-using a specific build profile, set the "profile" property either in
-local.properties or via a Gradle "-P" argument. If no profile is specified then
-the "default" profile is used.
+using a specific build profile, set the "profile" property via a Gradle "-P"
+argument. If no profile is specified then the "default" profile is used.
 
-For example, to build the Juzidian APK using "dev" profile, use:
+For example, to build the Juzidian APK using the "dev" profile, use:
 
 	$ gradle -Pprofile=dev build
 
