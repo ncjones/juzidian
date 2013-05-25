@@ -59,8 +59,11 @@ ext.artifactDeployInfoPath = "$buildDir/artifactDeployInfo"
 
 ext.registryDeployInfoPath = "$buildDir/registryDeployInfo"
 
-task clean << {
-	project.delete("$buildDir")
+task clean {
+	description "Deletes built artifacts."
+	doLast {
+		project.delete("$buildDir")
+	}
 }
 
 task createBuildDir {
@@ -139,6 +142,7 @@ def getDistArtifactName() {
 }
 
 task build {
+	description "Generates dictionary database and registry."
 	dependsOn compressDatabase, generateArtifactRegistry
 }
 
@@ -177,7 +181,7 @@ def dictionaryArtifactDeployers = [
 	]
 ]
 
-task deployArtifact {
+task publishArtifact {
 	dependsOn compressDatabase
 	def deployType = dictionaryArtifactDeployType
 	def deployer = dictionaryArtifactDeployers[deployType]
@@ -192,7 +196,7 @@ task deployArtifact {
 	}
 }
 
-task deployRegistry(type: Exec) {
+task publishRegistry(type: Exec) {
 	dependsOn generateArtifactRegistry
 	def host = dictionaryRegistryRemoteHost
 	def path = dictionaryRegistryRemotePath
@@ -209,8 +213,9 @@ task deployRegistry(type: Exec) {
 	}
 }
 
-task deploy {
-	dependsOn deployArtifact, deployRegistry
+task publish {
+	description "Publishes dictionary database and registry to network servers."
+	dependsOn publishArtifact, publishRegistry
 }
 
 class DataBuildModule extends AbstractModule {
