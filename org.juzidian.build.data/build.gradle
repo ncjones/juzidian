@@ -156,7 +156,7 @@ def dictionaryArtifactDeployers = [
 			def secretKey  = localProperties['awsSecretKey']
 			def awsCredentials = new BasicAWSCredentials(accessKey, secretKey)
 			def s3 = new AmazonS3Client(awsCredentials)
-			def putObjectRequest = new PutObjectRequest('juzidian-dictionaries', targetArtifactName, file(compressedDictionaryDbPath))
+			def putObjectRequest = new PutObjectRequest('juzidian-dictionaries', targetArtifactName, file(localArtifactPath))
 					.withCannedAcl(CannedAccessControlList.PublicRead)
             println "Uploading dictionary artifact to Amazon S3 as $targetArtifactName"
 			s3.putObject(putObjectRequest)
