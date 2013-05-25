@@ -120,7 +120,7 @@ task generateChecksum {
 
 task generateArtifactRegistry {
 	dependsOn generateChecksum
-	inputs.property 'artifactRepositoryUrlPrefix', artifactRepositoryUrlPrefix
+	inputs.property 'dictionaryArtifactUrlPrefix', dictionaryArtifactUrlPrefix
 	inputs.file compressedDictionaryDbPath
 	outputs.file artifactRegistryPath
 	doLast {
@@ -129,7 +129,7 @@ task generateArtifactRegistry {
 			dictionary(formatVersion: dbFormat) {
 				size(file(compressedDictionaryDbPath).size())
 				sha1(file(compressedDictionaryDbSha1Path).text.trim())
-				url("${artifactRepositoryUrlPrefix}${getDistArtifactName()}")
+				url("${dictionaryArtifactUrlPrefix}${getDistArtifactName()}")
 			}
 		}
 	}
@@ -165,13 +165,13 @@ def dictionaryArtifactDeployers = [
 	],
 	'rsync': [
 		'configureInputs': { inputs ->
-			inputs.property 'deployHost', dictionaryArtifactRemoteHost
-			inputs.property 'deployPath', dictionaryArtifactRemotePath
+			inputs.property 'deployHost', dictionaryArtifactPublishHost
+			inputs.property 'deployPath', dictionaryArtifactPublishPath
 		},
 		'deploy': { localArtifactPath, targetArtifactName ->
-			def host = dictionaryArtifactRemoteHost
-			def path = dictionaryArtifactRemotePath
-			def user = dictionaryArtifactRemoteUser
+			def host = dictionaryArtifactPublishHost
+			def path = dictionaryArtifactPublishPath
+			def user = dictionaryArtifactPublishUser
 			exec({
 				commandLine 'rsync'
 				args localArtifactPath, "$user@$host:$path/$targetArtifactName"
@@ -183,8 +183,8 @@ def dictionaryArtifactDeployers = [
 
 task publishArtifact {
 	dependsOn compressDatabase
-	def deployType = dictionaryArtifactDeployType
-	def deployer = dictionaryArtifactDeployers[deployType]
+	def publishType = dictionaryArtifactPublishType
+	def deployer = dictionaryArtifactDeployers[publishType]
 	deployer.configureInputs(inputs)
 	inputs.file compressedDictionaryDbPath
 	outputs.file artifactDeployInfoPath
@@ -198,9 +198,9 @@ task publishArtifact {
 
 task publishRegistry(type: Exec) {
 	dependsOn generateArtifactRegistry
-	def host = dictionaryRegistryRemoteHost
-	def path = dictionaryRegistryRemotePath
-	def user = dictionaryRegistryRemoteUser
+	def host = dictionaryRegistryPublishHost
+	def path = dictionaryRegistryPublishPath
+	def user = dictionaryRegistryPublishUser
 	inputs.property 'deployHost', host
 	inputs.property 'deployPath', path
 	inputs.file artifactRegistryPath

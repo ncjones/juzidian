@@ -1,14 +1,30 @@
+/*
+ * Juzidian development mode build profile
+ */
+
 def username = System.getProperty('user.name')
 def userhome = System.getProperty('user.home')
 def hostname = java.net.InetAddress.getLocalHost().getHostName()
+
+/* URL for downloading raw CEDict dictionary data */
 ext.cedictDataUrl = "file://${userhome}/Downloads/cedict_1_0_ts_utf-8_mdbg.txt.gz"
-ext.dictionaryArtifactDeployType = 'rsync'
-ext.artifactRepositoryUrlPrefix = "http://${hostname}:8000/"
-ext.dictionaryRegistryServiceUrl = "http://${hostname}:8000/"
-ext.dictionaryRegistryRemoteHost = 'localhost'
-ext.dictionaryRegistryRemotePath = '/usr/share/juzidian-dictionary-repo'
-ext.dictionaryRegistryRemoteUser = username
-ext.dictionaryArtifactRemoteHost = 'localhost'
-ext.dictionaryArtifactRemotePath = '/usr/share/juzidian-dictionary-repo'
-ext.dictionaryArtifactRemoteUser = username
+
+/* Protocol for publishing dictionary artifacts */
+ext.dictionaryArtifactPublishType = 'rsync'
+
+/* URL prefix for downloading published dictionary artifacts */
+ext.dictionaryArtifactUrlPrefix = "http://${hostname}:8000/"
+
+/* URL prefix for downloading dictionary registries */
+ext.dictionaryRegistryUrlPrefix = "http://${hostname}:8000/"
+
+/* Remote server details for publishing a dictionary registry */
+ext.dictionaryRegistryPublishHost = 'localhost'
+ext.dictionaryRegistryPublishPath = '/usr/share/juzidian-dictionary-repo'
+ext.dictionaryRegistryPublishUser = username
+
+/* Remote server details for publishing a compressed dictionary artifact */
+ext.dictionaryArtifactPublishHost = 'localhost'
+ext.dictionaryArtifactPublishPath = '/usr/share/juzidian-dictionary-repo'
+ext.dictionaryArtifactPublishUser = username
 

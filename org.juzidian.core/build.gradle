@@ -17,8 +17,8 @@ dependencies {
 }
 
 processResources.configure {
-	inputs.property 'dictionaryRegistryServiceUrl', dictionaryRegistryServiceUrl
-	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens:[dictionaryRegistryServiceUrl: dictionaryRegistryServiceUrl.toString()])
+	inputs.property 'dictionaryRegistryUrlPrefix', dictionaryRegistryUrlPrefix
+	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens:[dictionaryRegistryUrlPrefix: dictionaryRegistryUrlPrefix.toString()])
 }
 
 eclipse.classpath.file {
