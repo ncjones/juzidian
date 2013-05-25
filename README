@@ -52,7 +52,7 @@ Installing Data
 Dictionary data will be downloaded automatically when Juzidian starts up. To
 skip this download step the data can be manually built and pushed to the device.
 See org.juzidian.build.data/README for details about dictionary data generation
-and publishing. Once dictionary data has bee generated, copy it to a connected
+and publishing. Once dictionary data has been generated, copy it to a connected
 Android device with:
 
 	$ adb push org.juzidian.build.data/build/juzidian_dictionary.db \
