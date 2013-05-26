@@ -18,13 +18,17 @@
  */
 package org.juzidian.pinyin;
 
-import java.util.Arrays;
-import java.util.List;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
+import static org.juzidian.pinyin.Tone.FIRST;
+import static org.juzidian.pinyin.Tone.THIRD;
 
-import org.junit.Assert;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 
+@SuppressWarnings("unchecked")
 public class PinyinParserTest {
 
 	private PinyinParser pinyinParser;
@@ -65,33 +69,23 @@ public class PinyinParserTest {
 	}
 
 	@Test
-	public void parseShouldNotContainAdditionalSyllables() {
-		Assert.assertEquals(1, this.pinyinParser.parse("hao").size());
-	}
-
-	@Test
 	public void parseShouldHandleLetters() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("hao");
-		Assert.assertEquals("hao", parsedSyllables.get(0).getLetters());
+		assertThat(this.pinyinParser.parse("hao"), contains(pinyin("hao")));
 	}
 
 	@Test
 	public void parseShouldIgnoreLeadingSpace() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("  hao");
-		Assert.assertEquals("hao", parsedSyllables.get(0).getLetters());
+		assertThat(this.pinyinParser.parse("  hao"), contains(pinyin("hao")));
 	}
 
 	@Test
 	public void parseShouldIgnoreTrailingSpace() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("hao  ");
-		Assert.assertEquals("hao", parsedSyllables.get(0).getLetters());
+		assertThat(this.pinyinParser.parse("hao  "), contains(pinyin("hao")));
 	}
 
 	@Test
 	public void parseShouldHandleTone() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("hao3");
-		final PinyinSyllable expectedSyllable = new PinyinSyllable("hao", Tone.THIRD);
-		Assert.assertEquals(Arrays.asList(expectedSyllable), parsedSyllables);
+		assertThat(this.pinyinParser.parse("hao3"), contains(pinyin("hao", THIRD)));
 	}
 
 	@Test(expected = PinyinParseException.class)
@@ -101,78 +95,65 @@ public class PinyinParserTest {
 
 	@Test
 	public void parseShouldPreferLessSyllablesForAmbiguousInput() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("xian");
-		Assert.assertEquals("xian", parsedSyllables.get(0).getLetters());
+		assertThat(this.pinyinParser.parse("xian"), contains(pinyin("xian")));
 	}
 
 	@Test
 	public void parseShouldSplitSyllablesOnSpace() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("xi an");
-		final PinyinSyllable xi = new PinyinSyllable("xi");
-		final PinyinSyllable an = new PinyinSyllable("an");
-		Assert.assertEquals(Arrays.asList(xi, an), parsedSyllables);
+		assertThat(this.pinyinParser.parse("xi an"), contains(pinyin("xi"), pinyin("an")));
 	}
 
 	@Test
 	public void parseShouldSplitSyllablesOnMultipleSpaces() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("xi  an");
-		final PinyinSyllable xi = new PinyinSyllable("xi");
-		final PinyinSyllable an = new PinyinSyllable("an");
-		Assert.assertEquals(Arrays.asList(xi, an), parsedSyllables);
+		assertThat(this.pinyinParser.parse("xi  an"), contains(pinyin("xi"), pinyin("an")));
 	}
 
 	@Test
 	public void parseShouldSplitSyllablesWithTonesOnSpaces() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("xi1 an1");
-		final PinyinSyllable xi = new PinyinSyllable("xi", Tone.FIRST);
-		final PinyinSyllable an = new PinyinSyllable("an", Tone.FIRST);
-		Assert.assertEquals(Arrays.asList(xi, an), parsedSyllables);
+		assertThat(this.pinyinParser.parse("xi1 an1"), contains(pinyin("xi", FIRST), pinyin("an", FIRST)));
 	}
 
 	@Test
 	public void parseShouldSplitSyllablesOnApostrophe() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("xi'an");
-		final PinyinSyllable xi = new PinyinSyllable("xi");
-		final PinyinSyllable an = new PinyinSyllable("an");
-		Assert.assertEquals(Arrays.asList(xi, an), parsedSyllables);
+		assertThat(this.pinyinParser.parse("xi'an"), contains(pinyin("xi"), pinyin("an")));
 	}
 
 	@Test
 	public void parseShouldHandleMultipleSyllables() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("nihao");
-		final PinyinSyllable ni = new PinyinSyllable("ni");
-		final PinyinSyllable hao = new PinyinSyllable("hao");
-		Assert.assertEquals(Arrays.asList(ni, hao), parsedSyllables);
+		assertThat(this.pinyinParser.parse("nihao"), contains(pinyin("ni"), pinyin("hao")));
 	}
 
 	@Test
 	public void parseShouldHandleMultipleSyllablesWithTones() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("ni3hao3");
-		final PinyinSyllable ni = new PinyinSyllable("ni", Tone.THIRD);
-		final PinyinSyllable hao = new PinyinSyllable("hao", Tone.THIRD);
-		Assert.assertEquals(Arrays.asList(ni, hao), parsedSyllables);
+		assertThat(this.pinyinParser.parse("ni3hao3"), contains(pinyin("ni", THIRD), pinyin("hao", THIRD)));
 	}
 
 	@Test
 	public void parseShouldConvertLettersToLowerCase() {
-		final List<PinyinSyllable> parsedSyllables = this.pinyinParser.parse("HAO3");
-		final PinyinSyllable expectedSyllable = new PinyinSyllable("hao", Tone.THIRD);
-		Assert.assertEquals(Arrays.asList(expectedSyllable), parsedSyllables);
+		assertThat(this.pinyinParser.parse("HAO3"), contains(pinyin("hao", THIRD)));
 	}
 
 	@Test
 	public void isValidShouldBeFalseForInvalidInput() {
-		Assert.assertFalse(this.pinyinParser.isValid("hello"));
+		assertThat(this.pinyinParser.isValid("hello"), is(false));
 	}
 
 	@Test
 	public void isValidShouldBeTrueForValidInput() {
-		Assert.assertTrue(this.pinyinParser.isValid("ni3hao3"));
+		assertThat(this.pinyinParser.isValid("ni3hao3"), is(true));
 	}
 
 	@Test
 	public void isValidShouldBeTrueForValidUpperCaseInput() {
-		Assert.assertTrue(this.pinyinParser.isValid("NI3HAO3"));
+		assertThat(this.pinyinParser.isValid("NI3HAO3"), is(true));
+	}
+
+	private static Matcher<PinyinSyllable> pinyin(final String letters, final Tone tone) {
+		return new PinyinSyllableMatcher(new PinyinSyllable(letters, tone));
+	}
+
+	private static Matcher<PinyinSyllable> pinyin(final String letters) {
+		return new PinyinSyllableMatcher(new PinyinSyllable(letters));
 	}
 
 }
