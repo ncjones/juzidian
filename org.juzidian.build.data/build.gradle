@@ -171,7 +171,7 @@ def dictionaryArtifactPublishers = [
 		'publish': { localArtifactPath, targetArtifactName ->
 			def host = dictionaryArtifactPublishHost
 			def path = dictionaryArtifactPublishPath
-			def user = dictionaryArtifactPublishUser
+			def user = promptRsyncUsername(host)
 			exec({
 				commandLine 'rsync'
 				args localArtifactPath, "$user@$host:$path/$targetArtifactName"
@@ -196,26 +196,38 @@ task publishArtifact {
 	}
 }
 
-task publishRegistry(type: Exec) {
+task publishRegistry {
 	dependsOn generateArtifactRegistry
 	def host = dictionaryRegistryPublishHost
 	def path = dictionaryRegistryPublishPath
-	def user = dictionaryRegistryPublishUser
 	inputs.property 'publishHost', host
 	inputs.property 'publishPath', path
 	inputs.file artifactRegistryPath
 	outputs.file registryPublishInfoPath
-	commandLine 'rsync'
-	args artifactRegistryPath, "$user@$host:$path/v${dbFormat}/"
 	doLast {
+		def user = promptRsyncUsername(host)
+		exec({
+			commandLine 'rsync'
+			args artifactRegistryPath, "$user@$host:$path/v${dbFormat}/"
+		})
 		/* create arbitrary output file for up-to-date check */
-		file(registryPublishInfoPath) << "$user $host $path"
+		file(registryPublishInfoPath) << "$host $path"
 	}
 }
 
 task publish {
 	description "Publishes dictionary database and registry to network servers."
 	dependsOn publishArtifact, publishRegistry
+}
+
+def promptRsyncUsername(host) {
+	return prompt("rsync.username.$host", "Username for rsync to $host:")
+}
+
+def prompt(key, message) {
+	def promptPropertyName = "prompt.$key"
+	ant.input(message: message, addproperty: promptPropertyName)
+	return ant.properties[promptPropertyName]
 }
 
 class DataBuildModule extends AbstractModule {

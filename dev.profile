@@ -2,7 +2,6 @@
  * Juzidian development mode build profile
  */
 
-def username = System.getProperty('user.name')
 def userhome = System.getProperty('user.home')
 def hostname = java.net.InetAddress.getLocalHost().getHostName()
 
@@ -21,10 +20,8 @@ ext.dictionaryRegistryUrlPrefix = "http://${hostname}:8000/"
 /* Remote server details for publishing a dictionary registry */
 ext.dictionaryRegistryPublishHost = 'localhost'
 ext.dictionaryRegistryPublishPath = '/usr/share/juzidian-dictionary-repo'
-ext.dictionaryRegistryPublishUser = username
 
 /* Remote server details for publishing a compressed dictionary artifact */
 ext.dictionaryArtifactPublishHost = 'localhost'
 ext.dictionaryArtifactPublishPath = '/usr/share/juzidian-dictionary-repo'
-ext.dictionaryArtifactPublishUser = username
 

@@ -17,5 +17,4 @@ ext.dictionaryRegistryUrlPrefix = 'http://juzidian.org/dictionaries/'
 /* Remote server details for publishing a dictionary registry */
 ext.dictionaryRegistryPublishHost = 'web.sourceforge.net'
 ext.dictionaryRegistryPublishPath = '/home/project-web/juzidian/htdocs/dictionaries'
-ext.dictionaryRegistryPublishUser = localProperties['sfUserName']
 
