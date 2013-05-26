@@ -171,6 +171,7 @@ def dictionaryArtifactPublishers = [
 		'publish': { localArtifactPath, targetArtifactName ->
 			def host = dictionaryArtifactPublishHost
 			def path = dictionaryArtifactPublishPath
+			println "Uploading dictionary artifact to $host:$path as $targetArtifactName"
 			def user = promptRsyncUsername(host)
 			exec({
 				commandLine 'rsync'
@@ -199,16 +200,17 @@ task publishArtifact {
 task publishRegistry {
 	dependsOn generateArtifactRegistry
 	def host = dictionaryRegistryPublishHost
-	def path = dictionaryRegistryPublishPath
+	def path = "$dictionaryRegistryPublishPath/v${dbFormat}/"
 	inputs.property 'publishHost', host
 	inputs.property 'publishPath', path
 	inputs.file artifactRegistryPath
 	outputs.file registryPublishInfoPath
 	doLast {
+			println "Uploading dictionary registry to $host:$path"
 		def user = promptRsyncUsername(host)
 		exec({
 			commandLine 'rsync'
-			args artifactRegistryPath, "$user@$host:$path/v${dbFormat}/"
+			args artifactRegistryPath, "$user@$host:$path"
 		})
 		/* create arbitrary output file for up-to-date check */
 		file(registryPublishInfoPath) << "$host $path"
