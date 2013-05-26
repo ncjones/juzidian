@@ -1,3 +1,15 @@
+Version 0.7.0
+-------------
+
+Enhancements:
+
+* Automatically download dictionary data on first start up.
+
+Bugfixes:
+
+* Allow apostrophe character in search input.
+
+
 Version 0.6.0
 -------------
 
