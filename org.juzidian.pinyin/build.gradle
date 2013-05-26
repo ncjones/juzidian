@@ -20,6 +20,9 @@ sourceSets {
 		java {
 			srcDirs "$genSrcDir"
 		}
+		resources {
+			exclude 'pinyin.jj'
+		}
 	}
 }
 
