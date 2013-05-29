@@ -26,9 +26,10 @@ import java.util.Map;
  * pronunciation and tone.
  * <p>
  * The pronunciation component will usually be a valid Hanyu Pinyin syllable but
- * this is not enforced; a syllable may also represent the pronunciation of a
- * character that is not pure Chinese such as in "Ｕ盘" (USB flash drive) where
- * the first "pinyin syllable" will be "U" with no tone.
+ * this is not enforced; a syllable may also represent a partial syllable from
+ * user input or may represent the pronunciation of a character that is not pure
+ * Chinese such as in "Ｕ盘" (USB flash drive) where the first "pinyin syllable"
+ * will be "U" with no tone.
  * <p>
  * If the pronunciation component is valid Pinyin then the tone mark will be
  * placed correctly in syllable's display value.

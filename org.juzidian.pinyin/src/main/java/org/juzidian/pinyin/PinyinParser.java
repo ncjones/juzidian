@@ -19,20 +19,21 @@
 package org.juzidian.pinyin;
 
 import java.io.StringReader;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Parses an input string to create a sequence of {@link PinyinSyllable}s.
  * <p>
- * The input string should contain a list of complete Pinyin syllables. Tones
- * are optional and can be indicated using tone numbers (1, 2, 3, 4 or 5)
- * immediately after the syllable to which they apply.
+ * The input string should contain a sequence of Pinyin syllables. The last
+ * syllable in the sequence may be a partial syllable. Tones are optional and
+ * can be indicated using tone numbers (1, 2, 3, 4 or 5) immediately after the
+ * syllable to which they apply.
  * <p>
- * Syllables may be separated by spaces but they can usually be parsed
- * unambiguously without spaces. In the case of ambiguous syllables the longer
- * syllable is preferred, eg. "xian" is interpreted as a single syllable. Either
- * whitespace or an apostrophe can be used to disambiguate such syllables, eg.
- * "xi'an".
+ * Adjacent syllables without tone numbers can sometimes have multiple
+ * interpretations. In such cases the longer syllable is preferred, eg. "xian"
+ * is interpreted as a single syllable. Either whitespace or an apostrophe can
+ * be used to explicitly delineate adjacent syllables, eg. "xi'an".
  */
 public class PinyinParser {
 
@@ -58,11 +59,38 @@ public class PinyinParser {
 	 * @see #isValid(String)
 	 */
 	public List<PinyinSyllable> parse(final String text) {
+		final String cleanText = text.toLowerCase().trim();
 		try {
-			return new PinyinParseInstance(new StringReader(text.toLowerCase())).parseInput();
-		} catch (final Throwable e) {
-			throw new PinyinParseException("Invalid pinyin input: " + text, e);
+			return new PinyinParseInstance(new StringReader(cleanText)).parseInput();
+		} catch (final ParseException e) {
+			return this.parsePartial(cleanText, e.currentToken);
+		} catch (final TokenMgrError e) {
+			throw new PinyinParseException("Invalid pinyin input: " + cleanText, e);
 		}
+	}
+
+	private List<PinyinSyllable> parsePartial(final String text, final Token currentToken) {
+		if (currentToken.kind == PinyinParseInstanceConstants.EOF) {
+			throw new PinyinParseException("Invalid pinyin input: " + text);
+		}
+		if (!this.isLastToken(text, currentToken)) {
+			throw new PinyinParseException("Invalid pinyin input: " + text);
+		}
+		if (!PinyinHelper.getPartialSyllables().contains(currentToken.image)) {
+			throw new PinyinParseException("Invalid pinyin input: " + text);
+		}
+		final List<PinyinSyllable> precedingSyllables;
+		if (text.equals(currentToken.image)) {
+			precedingSyllables = new ArrayList<PinyinSyllable>();
+		} else {
+			precedingSyllables = this.parse(text.substring(0, currentToken.beginColumn - 1));
+		}
+		precedingSyllables.add(new PinyinSyllable(currentToken.image));
+		return precedingSyllables;
+	}
+
+	private boolean isLastToken(final String text, final Token currentToken) {
+		return text.length() == currentToken.beginColumn + currentToken.image.length() - 1;
 	}
 
 }

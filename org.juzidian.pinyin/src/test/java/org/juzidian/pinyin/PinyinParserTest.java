@@ -64,8 +64,63 @@ public class PinyinParserTest {
 	}
 
 	@Test(expected = PinyinParseException.class)
-	public void parseShouldRejectIncompleteWord() {
-		this.pinyinParser.parse("guangzh");
+	public void parseShouldRejectEmptyString() {
+		this.pinyinParser.parse("");
+	}
+
+	@Test(expected = PinyinParseException.class)
+	public void parseShouldRejectWhitespaceString() {
+		this.pinyinParser.parse(" ");
+	}
+
+	@Test
+	public void parseShouldHandleIncompleteSyllable() {
+		assertThat(this.pinyinParser.parse("zh"), contains(pinyin("zh")));
+	}
+
+	@Test
+	public void parseShouldHandleIncompleteSyllableWithTrailingWhitespace() {
+		assertThat(this.pinyinParser.parse("zh "), contains(pinyin("zh")));
+	}
+
+	@Test
+	public void parseShouldHandleIncompleteSyllableWithLeadingWhitespace() {
+		assertThat(this.pinyinParser.parse(" zh"), contains(pinyin("zh")));
+	}
+
+	@Test
+	public void parseShouldHandleIncompleteSyllableAtPhraseEndAndPhraseStart() {
+		assertThat(this.pinyinParser.parse("zhouzh"), contains(pinyin("zhou"), pinyin("zh")));
+	}
+
+	@Test(expected = PinyinParseException.class)
+	public void parseShouldRejectIncompleteSyllableTwiceAtPhraseEnd() {
+		this.pinyinParser.parse("guangzhzh");
+	}
+
+	@Test
+	public void parseShouldHandleIncompleteSyllableAtPhraseEnd() {
+		assertThat(this.pinyinParser.parse("guangzh"), contains(pinyin("guang"), pinyin("zh")));
+	}
+
+	@Test
+	public void parseShouldHandleIncompleteSyllableAtPhraseEndWithTrailingWhitespace() {
+		assertThat(this.pinyinParser.parse("guangzh "), contains(pinyin("guang"), pinyin("zh")));
+	}
+
+	@Test(expected = PinyinParseException.class)
+	public void parseShouldRejectIncompleteSyllableMidPhrase() {
+		this.pinyinParser.parse("guangzhshi");
+	}
+
+	@Test
+	public void parseShouldHandleIncompleteSyllableContainingStandalone() {
+		assertThat(this.pinyinParser.parse("hon"), contains(pinyin("hon")));
+	}
+
+	@Test
+	public void parseShouldHandleIncompleteSyllableAtPhraseEndContainingStandalone() {
+		assertThat(this.pinyinParser.parse("cai"), contains(pinyin("cai"), pinyin("hon")));
 	}
 
 	@Test

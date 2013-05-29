@@ -18,14 +18,20 @@
  */
 package org.juzidian.pinyin;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.SortedSet;
 import java.util.TreeSet;
 
 class PinyinHelper {
 
 	private static final Collection<String> ALL_PINYIN_SYLLABLES;
+
+	private static final Collection<String> PARTIAL_SYLLABLES;
+
 	static {
 		final String[] pinyinArray = {
 				"a", "ai", "an", "ang", "ao", "e", "ei", "en", "er", "o", "ou",
@@ -72,6 +78,7 @@ class PinyinHelper {
 				"nüe", "lüe",
 		};
 		ALL_PINYIN_SYLLABLES = Collections.unmodifiableSortedSet(new TreeSet<String>(Arrays.asList(pinyinArray)));
+		PARTIAL_SYLLABLES = Collections.unmodifiableSortedSet(createPartialSyllables(ALL_PINYIN_SYLLABLES));
 	}
 
 	private PinyinHelper() {
@@ -80,6 +87,38 @@ class PinyinHelper {
 
 	public static Collection<String> getValidSyllables() {
 		return ALL_PINYIN_SYLLABLES;
+	}
+
+	/**
+	 * Get all partial Pinyin syllables.
+	 * <p>
+	 * A partial Pinyin syllable is a string which is not a valid Pinyin
+	 * syllable but for which there is at least one valid Pinyin syllable that
+	 * starts with it.
+	 * 
+	 * @return a Collection of all partial Pinyin syllables.
+	 */
+	public static Collection<String> getPartialSyllables() {
+		return PARTIAL_SYLLABLES;
+	}
+
+	private static SortedSet<String> createPartialSyllables(final Collection<String> validSyllables) {
+		final SortedSet<String> partialSyllables = new TreeSet<String>();
+		for (final String syllable : validSyllables) {
+			partialSyllables.addAll(getPartials(syllable));
+		}
+		return partialSyllables;
+	}
+
+	private static Collection<String> getPartials(final String syllable) {
+		final List<String> partials = new ArrayList<String>();
+		for (int i = syllable.length(); i > 0; i--) {
+			final String partial = syllable.substring(0, i);
+			if (!PinyinHelper.getValidSyllables().contains(partial)) {
+				partials.add(partial);
+			}
+		}
+		return partials;
 	}
 
 }

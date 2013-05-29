@@ -20,7 +20,6 @@
 options {
 	STATIC = false;
 	SUPPORT_CLASS_VISIBILITY_PUBLIC = false;
-	KEEP_LINE_COLUMN = false;
 	CACHE_TOKENS = true;
 }
 
