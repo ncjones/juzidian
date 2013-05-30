@@ -77,24 +77,18 @@ public class PinyinParser {
 		if (currentToken.kind == PinyinParseInstanceConstants.EOF) {
 			throw new PartialPinyinParseException(text);
 		}
-		if (!this.isLastToken(text, currentToken)) {
-			throw new PartialPinyinParseException(text);
-		}
-		if (!PinyinHelper.getPartialSyllables().contains(currentToken.image)) {
+		final String textRemainder = text.substring(currentToken.beginColumn - 1);
+		if (!PinyinHelper.getPartialSyllables().contains(textRemainder)) {
 			throw new PartialPinyinParseException(text);
 		}
 		final List<PinyinSyllable> precedingSyllables;
-		if (text.equals(currentToken.image)) {
+		if (text.equals(textRemainder)) {
 			precedingSyllables = new ArrayList<PinyinSyllable>();
 		} else {
 			precedingSyllables = this.parse(text.substring(0, currentToken.beginColumn - 1));
 		}
-		precedingSyllables.add(new PinyinSyllable(currentToken.image));
+		precedingSyllables.add(new PinyinSyllable(textRemainder));
 		return precedingSyllables;
-	}
-
-	private boolean isLastToken(final String text, final Token currentToken) {
-		return text.length() == currentToken.beginColumn + currentToken.image.length() - 1;
 	}
 
 	private static class PartialPinyinParseException extends Exception {

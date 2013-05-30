@@ -120,7 +120,7 @@ public class PinyinParserTest {
 
 	@Test
 	public void parseShouldHandleIncompleteSyllableAtPhraseEndContainingStandalone() {
-		assertThat(this.pinyinParser.parse("cai"), contains(pinyin("cai"), pinyin("hon")));
+		assertThat(this.pinyinParser.parse("caihon"), contains(pinyin("cai"), pinyin("hon")));
 	}
 
 	@Test
