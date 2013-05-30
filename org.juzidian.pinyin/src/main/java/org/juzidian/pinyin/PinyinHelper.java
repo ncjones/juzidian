@@ -93,8 +93,8 @@ class PinyinHelper {
 	 * Get all partial Pinyin syllables.
 	 * <p>
 	 * A partial Pinyin syllable is a string which is not a valid Pinyin
-	 * syllable but for which there is at least one valid Pinyin syllable that
-	 * starts with it.
+	 * syllable, nor a combination of valid Pinyin Syllables, but for which
+	 * there is at least one valid Pinyin syllable that it is the start of.
 	 * 
 	 * @return a Collection of all partial Pinyin syllables.
 	 */
@@ -112,13 +112,29 @@ class PinyinHelper {
 
 	private static Collection<String> getPartials(final String syllable) {
 		final List<String> partials = new ArrayList<String>();
-		for (int i = syllable.length(); i > 0; i--) {
-			final String partial = syllable.substring(0, i);
-			if (!PinyinHelper.getValidSyllables().contains(partial)) {
-				partials.add(partial);
+		for (int i = syllable.length() - 1; i > 0; i--) {
+			final String syllablePart = syllable.substring(0, i);
+			if (isPartial(syllablePart)) {
+				partials.add(syllablePart);
 			}
 		}
 		return partials;
+	}
+
+	private static boolean isPartial(final String syllablePart) {
+		if (isValidSyllable(syllablePart)) {
+			return false;
+		}
+		if (syllablePart.length() == 1) {
+			return true;
+		}
+		final String partialEnd = syllablePart.substring(syllablePart.length() - 1);
+		final String partialStart = syllablePart.substring(0, syllablePart.length() - 1);
+		return !(isValidSyllable(partialEnd) && isValidSyllable(partialStart));
+	}
+
+	private static boolean isValidSyllable(final String syllablePart) {
+		return PinyinHelper.getValidSyllables().contains(syllablePart);
 	}
 
 }
