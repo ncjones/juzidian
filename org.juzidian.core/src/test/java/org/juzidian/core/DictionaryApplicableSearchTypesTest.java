@@ -81,7 +81,7 @@ public class DictionaryApplicableSearchTypesTest {
 				{ "nihao3", PINYIN_AND_REVERSE },
 				{ "ni2hao3", PINYIN_AND_REVERSE },
 				{ "ni2 hao3", PINYIN_AND_REVERSE },
-				// { "ni h", PINYIN_AND_REVERSE },
+				{ "ni h", PINYIN_AND_REVERSE },
 				{ "ni hao", PINYIN_AND_REVERSE },
 				// { "nǐhǎo", PINYIN_AND_REVERSE },
 				{ "lv", PINYIN_AND_REVERSE },
