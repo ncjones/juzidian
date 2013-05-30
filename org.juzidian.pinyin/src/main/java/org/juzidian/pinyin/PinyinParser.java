@@ -63,21 +63,25 @@ public class PinyinParser {
 		try {
 			return new PinyinParseInstance(new StringReader(cleanText)).parseInput();
 		} catch (final ParseException e) {
-			return this.parsePartial(cleanText, e.currentToken);
+			try {
+				return this.parsePartial(cleanText, e.currentToken);
+			} catch (final PartialPinyinParseException e2) {
+				throw new PinyinParseException("Invalid pinyin input: " + text, e);
+			}
 		} catch (final TokenMgrError e) {
-			throw new PinyinParseException("Invalid pinyin input: " + cleanText, e);
+			throw new PinyinParseException("Invalid pinyin input: " + text, e);
 		}
 	}
 
-	private List<PinyinSyllable> parsePartial(final String text, final Token currentToken) {
+	private List<PinyinSyllable> parsePartial(final String text, final Token currentToken) throws PartialPinyinParseException {
 		if (currentToken.kind == PinyinParseInstanceConstants.EOF) {
-			throw new PinyinParseException("Invalid pinyin input: " + text);
+			throw new PartialPinyinParseException(text);
 		}
 		if (!this.isLastToken(text, currentToken)) {
-			throw new PinyinParseException("Invalid pinyin input: " + text);
+			throw new PartialPinyinParseException(text);
 		}
 		if (!PinyinHelper.getPartialSyllables().contains(currentToken.image)) {
-			throw new PinyinParseException("Invalid pinyin input: " + text);
+			throw new PartialPinyinParseException(text);
 		}
 		final List<PinyinSyllable> precedingSyllables;
 		if (text.equals(currentToken.image)) {
@@ -91,6 +95,16 @@ public class PinyinParser {
 
 	private boolean isLastToken(final String text, final Token currentToken) {
 		return text.length() == currentToken.beginColumn + currentToken.image.length() - 1;
+	}
+
+	private static class PartialPinyinParseException extends Exception {
+
+		private static final long serialVersionUID = 1L;
+
+		private PartialPinyinParseException(final String message) {
+			super("Invalid partial pinyin input: " + message);
+		}
+
 	}
 
 }
