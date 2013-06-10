@@ -18,7 +18,7 @@ dependencies {
 project.ext.androidTargetPlatform = 'android-16'
 
 android {
-	target = "${androidTargetPlatform}"
+	compileSdkVersion = "${androidTargetPlatform}"
 	defaultConfig {
 		versionCode = "${juzidianReleaseSequenceNumber}"
 		versionName = "${juzidianVersion}"
@@ -34,7 +34,7 @@ eclipse {
 			withXml {
 				def node = it.asNode()
 				node.appendNode('classpathentry', [kind: 'src', path: 'src/main/java'])
-				node.appendNode('classpathentry', [kind: 'src', path: 'build/source/debug'])
+				node.appendNode('classpathentry', [kind: 'src', path: 'build/source/r/debug'])
 				node.appendNode('classpathentry', [kind: 'lib', path: "${androidSdkDir}/platforms/${androidTargetPlatform}/android.jar"])
 			}
 		}
