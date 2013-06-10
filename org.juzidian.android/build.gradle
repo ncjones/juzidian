@@ -1,4 +1,8 @@
-apply plugin: 'android'
+import org.juzidian.build.imggen.AndroidImageResourceGenerator
+import org.juzidian.build.imggen.IconDescriptor
+import org.juzidian.build.imggen.InputTypeToggleIcon
+
+ apply plugin: 'android'
 
 ext.androidSdkDir = localProperties['sdk.dir']
 
@@ -25,6 +29,24 @@ android {
 		minSdkVersion = 9
 		targetSdkVersion = 15
 	}
+}
+
+def generateImages(resDir) {
+	def iconImageGenerator = new AndroidImageResourceGenerator(resDir)
+	def icons = [
+			new IconDescriptor("search_type_icon_reverse", new InputTypeToggleIcon("En")),
+			new IconDescriptor("search_type_icon_pinyin", new InputTypeToggleIcon("拼"))
+	]
+	iconImageGenerator.generateIconImages(icons)
+}
+
+android.buildVariants.each {
+	def generateImagesTaskName = "generateImages${it.name}"
+	def resDir = file("build/res/all/${it.baseName}")
+	task(generateImagesTaskName) << {
+		generateImages(resDir)
+	}
+	it.processResources.dependsOn generateImagesTaskName
 }
 
 eclipse {
