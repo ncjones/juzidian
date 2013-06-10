@@ -1,6 +1,8 @@
 */build/
 */bin/
 */gen/
+buildSrc/*/build/
+buildSrc/*/bin/
 *~
 .*
 local.properties

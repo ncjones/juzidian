@@ -80,6 +80,7 @@ IDE Setup
 To setup Eclipse projects with correct natures and class paths, run
 
 	$ gradle eclipse
+	$ gradle -p buildSrc eclipse
 
 and then import all projects into Eclipse from the project root directory.
 

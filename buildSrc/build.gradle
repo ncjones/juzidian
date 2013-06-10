@@ -1,0 +1,8 @@
+configurations {
+	runtime
+}
+
+rootProject.dependencies {
+  runtime project(':org.juzidian.build.imggen')
+}
+
