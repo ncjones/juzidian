@@ -26,8 +26,8 @@ android {
 	defaultConfig {
 		versionCode = "${juzidianReleaseSequenceNumber}"
 		versionName = "${juzidianVersion}"
-		minSdkVersion = 9
-		targetSdkVersion = 15
+		minSdkVersion = 11
+		targetSdkVersion = 17
 	}
 }
 
