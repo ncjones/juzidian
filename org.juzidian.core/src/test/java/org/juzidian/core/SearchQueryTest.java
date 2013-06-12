@@ -18,8 +18,13 @@
  */
 package org.juzidian.core;
 
+import static org.hamcrest.Matchers.is;
+import static org.junit.Assert.assertThat;
 import static org.juzidian.core.SearchType.REVERSE;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 
 public class SearchQueryTest {
@@ -46,6 +51,46 @@ public class SearchQueryTest {
 	@Test(expected = IllegalArgumentException.class)
 	public void constructorShouldRejectNegativePageIndex() {
 		new SearchQuery(REVERSE, "foo", 15, -1);
+	}
+
+	@Test
+	public void nextPageShouldProduceQueryWithPageIndexIncremented() {
+		final SearchQuery searchQuery = new SearchQuery(REVERSE, "foo", 15, 0);
+		final SearchQuery nextPageQuery = searchQuery.nextPage();
+		assertThat(nextPageQuery, query(REVERSE, "foo", 15, 1));
+	}
+
+	private static Matcher<SearchQuery> query(final SearchType type, final String text, final int pageSize, final int pageIndex) {
+		return new TypeSafeMatcher<SearchQuery>() {
+
+			@Override
+			public void describeTo(final Description description) {
+				this.describe(description, type, text, pageSize, pageIndex);
+			}
+
+			private void describe(final Description description, final SearchType type, final String text, final int pageSize, final int pageIndex) {
+				description.appendText("Query[")
+				.appendText("type=").appendValue(type)
+				.appendText(", text=").appendValue(text)
+				.appendText(", pageSize=").appendValue(pageSize)
+				.appendText(", pageIndex=").appendValue(pageIndex)
+				.appendText("]");
+			}
+
+			@Override
+			protected void describeMismatchSafely(final SearchQuery item, final Description mismatchDescription) {
+				mismatchDescription.appendText("was ");
+				this.describe(mismatchDescription, item.getSearchType(), item.getSearchText(), item.getPageSize(), item.getPageIndex());
+			}
+
+			@Override
+			protected boolean matchesSafely(final SearchQuery item) {
+				return is(type).matches(item.getSearchType())
+						&& is(text).matches(item.getSearchText())
+						&& is(pageSize).matches(item.getPageSize())
+						&& is(pageIndex).matches(pageIndex);
+			}
+		};
 	}
 
 }

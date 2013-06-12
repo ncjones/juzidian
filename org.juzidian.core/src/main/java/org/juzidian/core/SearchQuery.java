@@ -84,6 +84,16 @@ public class SearchQuery {
 		return this.pageIndex;
 	}
 
+	/**
+	 * Get the search query for the next page after this search query.
+	 * 
+	 * @return a {@link SearchQuery} identical to this one but with the page
+	 *         index incremented.
+	 */
+	public SearchQuery nextPage() {
+		return new SearchQuery(this.searchType, this.searchText, this.pageSize, this.pageIndex + 1);
+	}
+
 	@Override
 	public String toString() {
 		return "SearchQuery [searchType=" + this.searchType + ", searchText=" + this.searchText + ", pageSize=" + this.pageSize
