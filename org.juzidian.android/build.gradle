@@ -40,13 +40,16 @@ def generateImages(resDir) {
 	iconImageGenerator.generateIconImages(icons)
 }
 
-android.buildVariants.each {
-	def generateImagesTaskName = "generateImages${it.name}"
-	def resDir = file("build/res/all/${it.baseName}")
-	task(generateImagesTaskName) << {
-		generateImages(resDir)
+android.buildVariants.each { buildVariant ->
+	def generateImagesTaskName = "generateImages${buildVariant.name}"
+	def resDir = file("build/res/all/${buildVariant.baseName}")
+	task(generateImagesTaskName) {
+		dependsOn buildVariant.mergeResources
+		doLast {
+			generateImages(resDir)
+		}
 	}
-	it.processResources.dependsOn generateImagesTaskName
+	buildVariant.processResources.dependsOn generateImagesTaskName
 }
 
 eclipse {
