@@ -25,6 +25,13 @@ import org.juzidian.core.SearchType;
  */
 public interface SearchTriggerListener {
 
+	/**
+	 * A search has been triggered.
+	 * 
+	 * @param searchType the type of search triggered. May be {@code null} for
+	 *        an empty search.
+	 * @param searchText the text to search for.
+	 */
 	void searchTriggered(SearchType searchType, String searchText);
 
 }

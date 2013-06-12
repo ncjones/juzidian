@@ -32,10 +32,8 @@ import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
 /**
@@ -48,12 +46,15 @@ public class SearchBar extends RelativeLayout {
 	@Inject
 	private Dictionary dictionary;
 
+	private SearchTypeSelection searchTypeSelection;
+
 	public SearchBar(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		LayoutInflater.from(context).inflate(R.layout.search_bar, this, true);
 		RoboGuice.injectMembers(context, this);
 		this.getSearchInput().addTextChangedListener(new SearchTextChangeListener());
-		this.getSearchButton().setOnClickListener(new SearchButtonClickListener());
+		this.getSearchTypeButton().setOnClickListener(new SearchTypeButtonClickListener());
+		this.setSearchTypeSelection(SearchTypeSelection.PINYIN);
 	}
 
 	public void setSearchTriggerListener(final SearchTriggerListener searchTriggerListener) {
@@ -65,57 +66,69 @@ public class SearchBar extends RelativeLayout {
 		return searchInput.getText().toString();
 	}
 
-	public SearchType getSearchType() {
-		final int checkedRadioButtonId = this.getSearchTypeRadioGroup().getCheckedRadioButtonId();
-		if (checkedRadioButtonId == -1) {
-			return null;
-		}
-		return this.getSearchTypeForRadioId(checkedRadioButtonId);
-	}
-
-	private RadioGroup getSearchTypeRadioGroup() {
-		return (RadioGroup) this.findViewById(R.id.searchTypeRadioGroup);
-	}
-
 	private EditText getSearchInput() {
 		return (EditText) this.findViewById(R.id.searchInput);
 	}
 
-	private Button getSearchButton() {
-		return (Button) this.findViewById(R.id.searchButton);
+	private ImageView getSearchTypeButton() {
+		return (ImageView) this.findViewById(R.id.searchTypeButton);
 	}
 
-	private SearchType getSearchTypeForRadioId(final int searchTypeRadioButtonId) {
-		switch (searchTypeRadioButtonId) {
-		case R.id.pinyinSearchTypeRadio:
-			return SearchType.PINYIN;
-		case R.id.reverseSearchTypeRadio:
-			return SearchType.REVERSE;
-		case R.id.hanziSearchTypeRadio:
-			return SearchType.HANZI;
+	private void searchTriggered(final SearchType searchType, final String searchText) {
+		this.searchTriggerListener.searchTriggered(searchType, searchText);
+	}
+
+	private void setSearchTypeSelection(final SearchTypeSelection searchTypeSelection) {
+		this.searchTypeSelection = searchTypeSelection;
+		final ImageView searchTypeButton = this.getSearchTypeButton();
+		searchTypeButton.setImageResource(searchTypeSelection.getDrawableId());
+	}
+
+	private void toggleSearchTypeSelection() {
+		final SearchTypeSelection nextSelection = this.searchTypeSelection.nextSelection();
+		this.setSearchTypeSelection(nextSelection);
+		this.searchTriggered(nextSelection.getSearchType(), this.getSearchText());
+	}
+
+	private void showSearchTypeButton() {
+		this.getSearchTypeButton().setVisibility(View.VISIBLE);
+	}
+
+	private void hideSearchTypeButton() {
+		this.getSearchTypeButton().setVisibility(View.GONE);
+	}
+
+	private Set<SearchType> getApplicableSearchTypes(final String searchText) {
+		return SearchBar.this.dictionary.getApplicableSearchTypes(searchText);
+	}
+
+	private void textChanged() {
+		final String searchText = this.getSearchText();
+		final Set<SearchType> applicableSearchTypes = this.getApplicableSearchTypes(searchText);
+		SearchType searchType = null;
+		switch (applicableSearchTypes.size()) {
+		case 0:
+			this.hideSearchTypeButton();
+			break;
+		case 1:
+			this.hideSearchTypeButton();
+			searchType = applicableSearchTypes.iterator().next();
+			break;
+		case 2:
+			this.showSearchTypeButton();
+			searchType = this.searchTypeSelection.getSearchType();
+			break;
+		default:
+			throw new IllegalStateException("Unexpected applicable search types size: " + applicableSearchTypes);
 		}
-		throw new IllegalArgumentException("Invalid search type radio button id: " + searchTypeRadioButtonId);
-	}
-
-	private void searchTriggered() {
-		this.searchTriggerListener.searchTriggered(this.getSearchType(), this.getSearchText());
+		this.searchTriggered(searchType, searchText);
 	}
 
 	private class SearchTextChangeListener implements TextWatcher {
 
 		@Override
 		public void afterTextChanged(final Editable searchInputText) {
-			final String searchText = SearchBar.this.getSearchInput().getEditableText().toString();
-			final Set<SearchType> applicableSearchTypes = SearchBar.this.dictionary.getApplicableSearchTypes(searchText);
-			final RadioGroup searchTypeRadioGroup = SearchBar.this.getSearchTypeRadioGroup();
-			for (int i = 0; i < searchTypeRadioGroup.getChildCount(); i++) {
-				final RadioButton searchTypeRadioButton = (RadioButton) searchTypeRadioGroup.getChildAt(i);
-				final SearchType searchType = SearchBar.this.getSearchTypeForRadioId(searchTypeRadioButton.getId());
-				final boolean isSearchTypeApplicable = applicableSearchTypes.contains(searchType);
-				searchTypeRadioButton.setEnabled(isSearchTypeApplicable);
-				searchTypeRadioButton.setChecked(isSearchTypeApplicable);
-			}
-			SearchBar.this.getSearchButton().setEnabled(!applicableSearchTypes.isEmpty());
+			SearchBar.this.textChanged();
 		}
 
 		@Override
@@ -128,11 +141,40 @@ public class SearchBar extends RelativeLayout {
 
 	}
 
-	private class SearchButtonClickListener implements OnClickListener {
+	private class SearchTypeButtonClickListener implements OnClickListener {
 
 		@Override
 		public void onClick(final View arg0) {
-			SearchBar.this.searchTriggered();
+			SearchBar.this.toggleSearchTypeSelection();
+		}
+
+	}
+
+	private static enum SearchTypeSelection {
+
+		PINYIN(SearchType.PINYIN, R.drawable.search_type_icon_pinyin),
+
+		REVERSE(SearchType.REVERSE, R.drawable.search_type_icon_reverse);
+
+		private final SearchType searchType;
+
+		private final int drawableId;
+
+		private SearchTypeSelection(final SearchType searchType, final int drawableId) {
+			this.searchType = searchType;
+			this.drawableId = drawableId;
+		}
+
+		public SearchType getSearchType() {
+			return this.searchType;
+		}
+
+		public int getDrawableId() {
+			return this.drawableId;
+		}
+
+		public SearchTypeSelection nextSelection() {
+			return values()[(this.ordinal() + 1) % values().length];
 		}
 
 	}
