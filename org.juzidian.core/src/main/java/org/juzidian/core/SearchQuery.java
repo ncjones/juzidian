@@ -70,10 +70,16 @@ public class SearchQuery {
 		return this.searchText;
 	}
 
+	/**
+	 * @return the page size requested.
+	 */
 	public int getPageSize() {
 		return this.pageSize;
 	}
 
+	/**
+	 * @return the page index requested.
+	 */
 	public int getPageIndex() {
 		return this.pageIndex;
 	}

@@ -34,8 +34,12 @@ public class SearchResultsTest {
 		final List<DictionaryEntry> entries = new ArrayList<DictionaryEntry>();
 		entries.add(this.createMockEntry());
 		entries.add(this.createMockEntry());
-		final SearchResults searchResults = new SearchResults(3, 0, entries);
+		final SearchResults searchResults = new SearchResults(query(3, 0), entries);
 		assertThat(searchResults.isLastPage(), is(true));
+	}
+
+	private static SearchQuery query(final int pageSize, final int pageIndex) {
+		return new SearchQuery(SearchType.PINYIN, "fu", pageSize, pageIndex);
 	}
 
 	@Test
@@ -43,7 +47,7 @@ public class SearchResultsTest {
 		final List<DictionaryEntry> entries = new ArrayList<DictionaryEntry>();
 		entries.add(this.createMockEntry());
 		entries.add(this.createMockEntry());
-		final SearchResults searchResults = new SearchResults(2, 0, entries);
+		final SearchResults searchResults = new SearchResults(query(2, 0), entries);
 		assertThat(searchResults.isLastPage(), is(false));
 	}
 

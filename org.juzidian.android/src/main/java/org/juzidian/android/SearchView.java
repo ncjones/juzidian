@@ -78,7 +78,7 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 		final SearchBar searchBar = this.getSearchBar();
 		if (this.currentSearchResults != null) {
 			final SearchQuery searchQuery = new SearchQuery(searchBar.getSearchType(), searchBar.getSearchText(), PAGE_SIZE,
-					this.currentSearchResults.getPageIndex() + 1);
+					this.currentSearchResults.getSearchQuery().getPageIndex() + 1);
 			this.doSearch(searchQuery);
 		}
 	}

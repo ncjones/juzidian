@@ -26,16 +26,20 @@ import java.util.List;
  */
 public class SearchResults {
 
-	private final int pageSize;
-
-	private final int pageIndex;
+	private final SearchQuery searchQuery;
 
 	private final List<DictionaryEntry> entries;
 
-	SearchResults(final int pageSize, final int pageIndex, final List<DictionaryEntry> entries) {
-		this.pageSize = pageSize;
-		this.pageIndex = pageIndex;
+	SearchResults(final SearchQuery searchQuery, final List<DictionaryEntry> entries) {
+		this.searchQuery = searchQuery;
 		this.entries = entries;
+	}
+
+	/**
+	 * @return the query which the search results belong to.
+	 */
+	public SearchQuery getSearchQuery() {
+		return this.searchQuery;
 	}
 
 	/**
@@ -47,25 +51,11 @@ public class SearchResults {
 	}
 
 	/**
-	 * @return the page size requested in the search query.
-	 */
-	public int getPageSize() {
-		return this.pageSize;
-	}
-
-	/**
-	 * @return the page index requested in the search query.
-	 */
-	public int getPageIndex() {
-		return this.pageIndex;
-	}
-
-	/**
 	 * @return <code>true</code> if there are no more results expected for
 	 *         subsequent pages for the same search criteria.
 	 */
 	public boolean isLastPage() {
-		return this.entries.size() < this.pageSize;
+		return this.entries.size() < this.searchQuery.getPageSize();
 	}
 
 }
