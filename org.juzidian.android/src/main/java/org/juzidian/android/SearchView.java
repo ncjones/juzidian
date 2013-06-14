@@ -43,6 +43,8 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 
 	private SearchResults currentSearchResults;
 
+	private SearchQuery currentQuery;
+
 	public SearchView(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
 		LayoutInflater.from(context).inflate(R.layout.search_view, this, true);
@@ -52,6 +54,7 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 	}
 
 	private void doSearch(final SearchQuery searchQuery) {
+		this.currentQuery = searchQuery;
 		this.getSearchResultsView().showLoadingIndicator(true);
 		final DictionarySearchTask dictionarySearchTask = new DictionarySearchTask(this.dictionary, this);
 		dictionarySearchTask.execute(searchQuery);
@@ -85,6 +88,9 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 
 	@Override
 	public void searchComplete(final SearchResults searchResults) {
+		if (!searchResults.getSearchQuery().equals(this.currentQuery)) {
+			return;
+		}
 		this.currentSearchResults = searchResults;
 		final SearchResultsView searchResultsView = this.getSearchResultsView();
 		if (searchResults.isLastPage()) {
