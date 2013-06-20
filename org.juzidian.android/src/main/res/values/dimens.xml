@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <dimen name="about_item_spacing">16dp</dimen>
+    <dimen name="about_text_size_large">24sp</dimen>
+    <dimen name="about_text_size_normal">14sp</dimen>
+    <dimen name="about_text_size_small">12sp</dimen>
+
+</resources>

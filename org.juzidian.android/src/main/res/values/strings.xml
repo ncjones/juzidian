@@ -6,5 +6,10 @@
     <string name="title_activity_main">Juzidian</string>
     <string name="search_hint">Search Chinese Words</string>
     <string name="search_type_button_description">Toggle search type</string>
+    <string name="about_activity_title">About Juzidian</string>
+    <string name="about_logo_description">Juzidian Logo</string>
+    <string name="about_app_description">Chinese/English dictionary</string>
+    <string name="about_version">Version: %s</string>
+    <string name="about_build_id">Build Id: %s</string>
 
 </resources>
