@@ -40,8 +40,19 @@ def generateImages(resDir) {
 	iconImageGenerator.generateIconImages(icons)
 }
 
+def generateBuildInfoFile(resDir) {
+	def rawDir = file("${resDir}/raw")
+	rawDir.mkdirs()
+	def buildInfoFile = file("${rawDir}/build_info")
+	buildInfoFile.withWriter('UTF-8') {
+		it.writeLine "timestamp=${buildInfo.buildDate.time}"
+		it.writeLine "headCommit=${buildInfo.headCommit}"
+	}
+}
+
 android.buildVariants.each { buildVariant ->
 	def generateImagesTaskName = "generateImages${buildVariant.name}"
+	def generateBuildInfoFileTaskName = "generateBuildInfoFile${buildVariant.name}"
 	def resDir = file("build/res/all/${buildVariant.baseName}")
 	task(generateImagesTaskName) {
 		dependsOn buildVariant.mergeResources
@@ -49,7 +60,13 @@ android.buildVariants.each { buildVariant ->
 			generateImages(resDir)
 		}
 	}
-	buildVariant.processResources.dependsOn generateImagesTaskName
+	task(generateBuildInfoFileTaskName) {
+		dependsOn buildVariant.mergeResources
+		doLast {
+			generateBuildInfoFile(resDir)
+		}
+	}
+	buildVariant.processResources.dependsOn generateImagesTaskName, generateBuildInfoFileTaskName
 }
 
 eclipse {

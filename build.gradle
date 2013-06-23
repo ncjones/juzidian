@@ -37,6 +37,22 @@ subprojects {
 
 }
 
+def getGitHeadCommit() {
+	def out = new ByteArrayOutputStream();
+	exec({
+		executable 'git'
+		args 'rev-parse', 'HEAD'
+		standardOutput = out
+		ignoreExitValue = true
+	})
+	return out.toString()
+}
+
+ext.buildInfo = [
+	buildDate: new Date(),
+	headCommit: getGitHeadCommit()
+]
+
 ext.libraries = [
 	roboguice: dependencies.create('org.roboguice:roboguice:2.0') {
 		exclude module: 'aopalliance'

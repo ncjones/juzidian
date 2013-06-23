@@ -17,12 +17,13 @@ Features
  * Search for definitions by Pinyin, Hanzi or English
 
 
-Dependencies
-============
+Build Dependencies
+==================
 
  * Java 1.6
  * Gradle 1.3
  * Android SDK (Platform API 16, Platform-Tools Rev 16)
+ * Git (rev-parse)
 
 
 Building

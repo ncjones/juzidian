@@ -18,6 +18,8 @@
  */
 package org.juzidian.android;
 
+import java.util.Properties;
+
 import roboguice.inject.SharedPreferencesProvider;
 import roboguice.inject.SystemServiceProvider;
 import android.app.DownloadManager;
@@ -35,6 +37,7 @@ public class JuzidianAndroidModule extends AbstractModule {
 		this.bind(DownloadManager.class).toProvider(new SystemServiceProvider<DownloadManager>(Context.DOWNLOAD_SERVICE));
 		this.bind(SharedPreferences.class).annotatedWith(DownloadSharedPrefs.class).toProvider(new SharedPreferencesProvider("juzidian-download-info"));
 		this.bindConstant().annotatedWith(DictionaryDbPath.class).to("/data/data/org.juzidian.android/juzidian-dictionary.db");
+		this.bind(Properties.class).toProvider(BuildInfoPropertiesProvider.class);
 	}
 
 }
