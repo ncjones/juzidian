@@ -19,6 +19,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.view.Menu;
+import android.view.MenuItem;
 
 public class MainActivity extends RoboActivity {
 
@@ -133,6 +134,19 @@ public class MainActivity extends RoboActivity {
 	public boolean onCreateOptionsMenu(final Menu menu) {
 		this.getMenuInflater().inflate(R.menu.activity_main, menu);
 		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(final MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_about:
+			this.showAbout();
+		}
+		return super.onOptionsItemSelected(item);
+	}
+
+	private void showAbout() {
+		this.startActivity(new Intent(this, AboutActivity.class));
 	}
 
 	private class DownloadListener implements DictionaryInitListener {
