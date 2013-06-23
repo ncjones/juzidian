@@ -32,7 +32,7 @@ public class AboutActivity extends RoboActivity {
 		this.setContentView(R.layout.activity_about);
 		this.appVersionTextView.setText(this.getString(R.string.about_version, this.getVersionName()));
 		this.buildDateTextView.setText(this.getString(R.string.about_build_date, this.getBuildDate()));
-		this.headCommitTextView.setText(this.getString(R.string.about_head_commit, this.getHeadCommit()));
+		this.headCommitTextView.setText(this.getString(R.string.about_source_id, this.getSourceId()));
 	}
 
 	private String getVersionName() {
@@ -48,7 +48,7 @@ public class AboutActivity extends RoboActivity {
 		return timestamp;
 	}
 
-	private String getHeadCommit() {
+	private String getSourceId() {
 		return this.buildInfo.getHeadCommit().substring(0, 10);
 	}
 
