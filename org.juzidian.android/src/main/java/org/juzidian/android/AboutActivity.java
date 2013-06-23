@@ -17,8 +17,11 @@ public class AboutActivity extends RoboActivity {
 	@InjectView(R.id.appVersion)
 	private TextView appVersionTextView;
 
-	@InjectView(R.id.buildId)
-	private TextView buildIdTextView;
+	@InjectView(R.id.buildDate)
+	private TextView buildDateTextView;
+
+	@InjectView(R.id.headCommit)
+	private TextView headCommitTextView;
 
 	@Inject
 	private BuildInfo buildInfo;
@@ -28,7 +31,8 @@ public class AboutActivity extends RoboActivity {
 		super.onCreate(savedInstanceState);
 		this.setContentView(R.layout.activity_about);
 		this.appVersionTextView.setText(this.getString(R.string.about_version, this.getVersionName()));
-		this.buildIdTextView.setText(this.getString(R.string.about_build_id, this.getBuildId()));
+		this.buildDateTextView.setText(this.getString(R.string.about_build_date, this.getBuildDate()));
+		this.headCommitTextView.setText(this.getString(R.string.about_head_commit, this.getHeadCommit()));
 	}
 
 	private String getVersionName() {
@@ -39,10 +43,13 @@ public class AboutActivity extends RoboActivity {
 		}
 	}
 
-	private String getBuildId() {
+	private String getBuildDate() {
 		final String timestamp = DateFormat.getDateFormat(this).format(this.buildInfo.getBuildDate());
-		final String commit = this.buildInfo.getHeadCommit().substring(0, 10);
-		return commit.substring(0, 10) + "-" + timestamp;
+		return timestamp;
+	}
+
+	private String getHeadCommit() {
+		return this.buildInfo.getHeadCommit().substring(0, 10);
 	}
 
 }

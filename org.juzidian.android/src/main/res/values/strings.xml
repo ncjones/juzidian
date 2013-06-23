@@ -10,6 +10,7 @@
     <string name="about_logo_description">Juzidian Logo</string>
     <string name="about_app_description">Chinese/English dictionary</string>
     <string name="about_version">Version: %s</string>
-    <string name="about_build_id">Build Id: %s</string>
+    <string name="about_build_date">Build Date: %s</string>
+    <string name="about_head_commit">Head Commit: %s</string>
 
 </resources>

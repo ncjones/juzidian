@@ -29,7 +29,15 @@
         android:textSize="@dimen/about_text_size_small" />
 
     <TextView
-        android:id="@+id/buildId"
+        android:id="@+id/buildDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="@dimen/about_item_spacing"
+        android:textSize="@dimen/about_text_size_small" />
+
+    <TextView
+        android:id="@+id/headCommit"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
