@@ -1,70 +1,75 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="@dimen/about_item_spacing" >
+    android:layout_height="wrap_content" >
 
-    <TextView
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/about_item_spacing"
-        android:text="@string/app_name"
-        android:textIsSelectable="true"
-        android:textSize="@dimen/about_text_size_large" />
+        android:orientation="vertical"
+        android:padding="@dimen/about_item_spacing" >
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/about_item_spacing"
-        android:text="@string/about_app_description"
-        android:textIsSelectable="true"
-        android:textSize="@dimen/about_text_size_normal" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/about_item_spacing"
+            android:text="@string/app_name"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/about_text_size_large" />
 
-    <TextView
-        android:id="@+id/appVersion"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/about_item_spacing"
-        android:textIsSelectable="true"
-        android:textSize="@dimen/about_text_size_normal" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/about_item_spacing"
+            android:text="@string/about_app_description"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/about_text_size_normal" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/about_item_spacing"
-        android:text="Copyright Nathan Jones 2013"
-        android:textIsSelectable="true"
-        android:textSize="@dimen/about_text_size_normal" />
+        <TextView
+            android:id="@+id/appVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/about_item_spacing"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/about_text_size_normal" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/about_item_spacing"
-        android:autoLink="web"
-        android:text="http://www.juzidian.org/"
-        android:textIsSelectable="true"
-        android:textSize="@dimen/about_text_size_normal" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/about_item_spacing"
+            android:text="Copyright Nathan Jones 2013"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/about_text_size_normal" />
 
-    <TextView
-        android:id="@+id/buildDate"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginTop="@dimen/about_item_spacing"
-        android:textIsSelectable="true"
-        android:textSize="@dimen/about_text_size_small" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/about_item_spacing"
+            android:autoLink="web"
+            android:text="http://www.juzidian.org/"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/about_text_size_normal" />
 
-    <TextView
-        android:id="@+id/headCommit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:textIsSelectable="true"
-        android:textSize="@dimen/about_text_size_small" />
+        <TextView
+            android:id="@+id/buildDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/about_item_spacing"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/about_text_size_small" />
 
-</LinearLayout>
+        <TextView
+            android:id="@+id/headCommit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/about_text_size_small" />
+    </LinearLayout>
+
+</ScrollView>
