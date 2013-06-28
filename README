@@ -22,7 +22,7 @@ Build Dependencies
 
  * Java 1.6
  * Gradle 1.3
- * Android SDK (Platform API 16, Platform-Tools Rev 16)
+ * Android SDK (Platform API 16, Platform-tools 16.0.2)
  * Git (rev-parse)
 
 
