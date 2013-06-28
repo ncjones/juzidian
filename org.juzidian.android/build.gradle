@@ -24,8 +24,8 @@ project.ext.androidTargetPlatform = 'android-16'
 android {
 	compileSdkVersion = "${androidTargetPlatform}"
 	defaultConfig {
-		versionCode = "${juzidianReleaseSequenceNumber}"
-		versionName = "${juzidianVersion}"
+		versionCode = juzidianReleaseSequenceNumber.toInteger()
+		versionName = juzidianVersion
 		minSdkVersion = 11
 		targetSdkVersion = 17
 	}
