@@ -15,6 +15,7 @@
     
     <application
         android:name=".JuzidianApplication"
+        android:icon="@drawable/juzidian_launcher_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:allowBackup="true">
