@@ -54,6 +54,7 @@ public class SearchBar extends RelativeLayout {
 		RoboGuice.injectMembers(context, this);
 		this.getSearchInput().addTextChangedListener(new SearchTextChangeListener());
 		this.getSearchTypeButton().setOnClickListener(new SearchTypeButtonClickListener());
+		this.getClearSearchButton().setOnClickListener(new ClearSearchButtonClickListener());
 		this.setSearchTypeSelection(SearchTypeSelection.PINYIN);
 	}
 
@@ -74,6 +75,10 @@ public class SearchBar extends RelativeLayout {
 		return (ImageView) this.findViewById(R.id.searchTypeButton);
 	}
 
+	private ImageView getClearSearchButton() {
+		return (ImageView) this.findViewById(R.id.clearSearchButton);
+	}
+
 	private void searchTriggered(final SearchType searchType, final String searchText) {
 		this.searchTriggerListener.searchTriggered(searchType, searchText);
 	}
@@ -90,12 +95,32 @@ public class SearchBar extends RelativeLayout {
 		this.searchTriggered(nextSelection.getSearchType(), this.getSearchText());
 	}
 
+	public void clearInput() {
+		this.getSearchInput().setText("");
+	}
+
 	private void showSearchTypeButton() {
-		this.getSearchTypeButton().setVisibility(View.VISIBLE);
+		this.showView(this.getSearchTypeButton());
 	}
 
 	private void hideSearchTypeButton() {
-		this.getSearchTypeButton().setVisibility(View.GONE);
+		this.hideView(this.getSearchTypeButton());
+	}
+
+	private void showClearSearchButton() {
+		this.showView(this.getClearSearchButton());
+	}
+
+	private void hideClearSearchButton() {
+		this.hideView(this.getClearSearchButton());
+	}
+
+	private void showView(final View view) {
+		view.setVisibility(View.VISIBLE);
+	}
+
+	private void hideView(final View view) {
+		view.setVisibility(View.GONE);
 	}
 
 	private Set<SearchType> getApplicableSearchTypes(final String searchText) {
@@ -104,6 +129,11 @@ public class SearchBar extends RelativeLayout {
 
 	private void textChanged() {
 		final String searchText = this.getSearchText();
+		if (searchText.isEmpty()) {
+			this.hideClearSearchButton();
+		} else {
+			this.showClearSearchButton();
+		}
 		final Set<SearchType> applicableSearchTypes = this.getApplicableSearchTypes(searchText);
 		SearchType searchType = null;
 		switch (applicableSearchTypes.size()) {
@@ -146,6 +176,15 @@ public class SearchBar extends RelativeLayout {
 		@Override
 		public void onClick(final View arg0) {
 			SearchBar.this.toggleSearchTypeSelection();
+		}
+
+	}
+
+	private class ClearSearchButtonClickListener implements OnClickListener {
+
+		@Override
+		public void onClick(final View arg0) {
+			SearchBar.this.clearInput();
 		}
 
 	}

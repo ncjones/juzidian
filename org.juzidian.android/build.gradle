@@ -1,4 +1,5 @@
 import org.juzidian.build.imggen.AndroidImageResourceGenerator
+import org.juzidian.build.imggen.CrossIcon
 import org.juzidian.build.imggen.IconDescriptor
 import org.juzidian.build.imggen.InputTypeToggleIcon
 import org.juzidian.build.imggen.JuzidianLauncherIcon
@@ -37,6 +38,7 @@ def generateImages(resDir) {
 	def icons = [
 			new IconDescriptor("search_type_icon_reverse", new InputTypeToggleIcon("En")),
 			new IconDescriptor("search_type_icon_pinyin", new InputTypeToggleIcon("拼")),
+			new IconDescriptor("clear_input_icon", new CrossIcon()),
 			new IconDescriptor("juzidian_launcher_icon", new JuzidianLauncherIcon())
 	]
 	iconImageGenerator.generateIconImages(icons)

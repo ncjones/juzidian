@@ -34,6 +34,18 @@
             android:paddingLeft="16dip"
             android:paddingRight="16dip"
         	android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/clearSearchButton"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:background="?android:attr/selectableItemBackground"
+            android:contentDescription="@string/clear_search_button_description"
+            android:focusable="true"
+            android:paddingLeft="16dip"
+            android:paddingRight="16dip"
+            android:src="@drawable/clear_input_icon"
+            android:visibility="gone" />
         
     </LinearLayout>
 
