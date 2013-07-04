@@ -31,7 +31,6 @@
             android:background="?android:attr/selectableItemBackground"
             android:contentDescription="@string/search_type_button_description"
             android:focusable="true"
-            android:onClick="buttonClicked"
             android:paddingLeft="16dip"
             android:paddingRight="16dip"
         	android:visibility="gone"/>
