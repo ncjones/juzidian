@@ -24,6 +24,8 @@ import org.juzidian.core.Dictionary;
 import org.juzidian.core.SearchQuery;
 import org.juzidian.core.SearchResults;
 import org.juzidian.core.SearchType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import roboguice.RoboGuice;
 import android.content.Context;
@@ -35,6 +37,8 @@ import android.widget.RelativeLayout;
  * Dictionary search view which contains a {@link SearchBar} and a ListView.
  */
 public class SearchView extends RelativeLayout implements DictionarySearchTaskListener, SearchTriggerListener, PageRequestListener {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(SearchView.class);
 
 	private static final int PAGE_SIZE = 25;
 
@@ -70,6 +74,7 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 
 	@Override
 	public void searchTriggered(final SearchType searchType, final String searchText) {
+		LOGGER.debug("Search triggered: {} - {}", searchType, searchText);
 		this.currentSearchResults = null;
 		final SearchResultsView searchResultsView = this.getSearchResultsView();
 		searchResultsView.clearSearchResults();
@@ -84,10 +89,15 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 
 	@Override
 	public void pageRequested() {
+		LOGGER.debug("Page requested");
 		if (this.currentSearchResults != null) {
 			final SearchQuery searchQuery = this.currentSearchResults.getSearchQuery().nextPage();
 			this.doSearch(searchQuery);
 		}
+	}
+
+	public SearchQuery getCurrentQuery() {
+		return this.currentQuery;
 	}
 
 	@Override

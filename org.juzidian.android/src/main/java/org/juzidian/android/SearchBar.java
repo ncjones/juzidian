@@ -24,6 +24,8 @@ import javax.inject.Inject;
 
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.SearchType;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import roboguice.RoboGuice;
 import android.content.Context;
@@ -40,6 +42,8 @@ import android.widget.RelativeLayout;
  * Search bar UI component.
  */
 public class SearchBar extends RelativeLayout {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(SearchBar.class);
 
 	private SearchTriggerListener searchTriggerListener;
 
@@ -65,6 +69,17 @@ public class SearchBar extends RelativeLayout {
 	public String getSearchText() {
 		final EditText searchInput = this.getSearchInput();
 		return searchInput.getText().toString();
+	}
+
+	public void setSearchText(final String searchText) {
+		this.getSearchInput().setText(searchText);
+	}
+
+	public void setPreferredSearchType(final SearchType searchType) {
+		final SearchTypeSelection searchTypeSelection = SearchTypeSelection.forSearchType(searchType);
+		if (searchTypeSelection != null) {
+			this.setSearchTypeSelection(searchTypeSelection);
+		}
 	}
 
 	private EditText getSearchInput() {
@@ -129,6 +144,7 @@ public class SearchBar extends RelativeLayout {
 
 	private void textChanged() {
 		final String searchText = this.getSearchText();
+		LOGGER.debug("text changed: {}", searchText);
 		if (searchText.isEmpty()) {
 			this.hideClearSearchButton();
 		} else {
@@ -202,6 +218,15 @@ public class SearchBar extends RelativeLayout {
 		private SearchTypeSelection(final SearchType searchType, final int drawableId) {
 			this.searchType = searchType;
 			this.drawableId = drawableId;
+		}
+
+		public static SearchTypeSelection forSearchType(final SearchType searchType) {
+			for (final SearchTypeSelection searchTypeSelection : values()) {
+				if (searchTypeSelection.getSearchType().equals(searchType)) {
+					return searchTypeSelection;
+				}
+			}
+			return null;
 		}
 
 		public SearchType getSearchType() {
