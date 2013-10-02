@@ -24,6 +24,7 @@ Build Dependencies
  * Gradle 1.3
  * Android SDK (Platform API 16, Platform-tools 16.0.2)
  * Git (rev-parse)
+ * WenQuanYi Zen Hei font
 
 
 Building
