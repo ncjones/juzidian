@@ -53,14 +53,14 @@ public class JuzidianCli {
 			System.out.println("Search query must be specified.");
 			return;
 		}
-		final SearchType searchType = SearchType.valueOf(args[1]);
+		final SearchType searchType = SearchType.valueOf(args[0]);
 		INJECTOR.getInstance(DictionaryDbInitializer.class).initializeDb();
 		final Dictionary dictionary = INJECTOR.getInstance(Dictionary.class);
 		final Runtime runtime = Runtime.getRuntime();
 		final long totalMemory = runtime.totalMemory();
 		final long freeMemory = runtime.freeMemory();
 		LOGGER.debug(MessageFormat.format("Memory used: {0}KB", (totalMemory - freeMemory) / 1024));
-		final String queryString = args[2];
+		final String queryString = args[1];
 		final List<DictionaryEntry> foundCharacters = findAllWords(dictionary, queryString, searchType);
 		printSearchResults(foundCharacters);
 	}
