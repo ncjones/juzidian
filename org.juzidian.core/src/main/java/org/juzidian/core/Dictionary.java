@@ -90,6 +90,20 @@ public class Dictionary {
 	}
 
 	/**
+	 * Asynchronously find all Chinese words that match the search criteria and
+	 * pagination bounds.
+	 * <p>
+	 * The query will be schedule for future execution and can be cancelled via
+	 * the returned {@link SearchResultsFuture}.
+	 * 
+	 * @param query the {@link SearchQuery} to find entries for.
+	 * @return a {@link SearchResultsFuture}.
+	 */
+	public SearchResultsFuture findAsync(final SearchQuery query) {
+		return null;
+	}
+
+	/**
 	 * Find all Chinese words that begin with the given Chinese character query
 	 * string.
 	 * 
