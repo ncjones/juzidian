@@ -188,7 +188,7 @@ public class DbDictionaryDataStoreTest {
 
 	@Test
 	public void findChineseShouldQueryWithoutCancellationSignalWhenCancellerIsNull() throws Exception {
-		dbDictionaryDataStore.findDefinitions("好", 25, 0, null);
+		dbDictionaryDataStore.findChinese("好", 25, 0, null);
 		verify(this.dictionaryEntryDao).query(anyDictionaryEntryPreparedQuery());
 	}
 
