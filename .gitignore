@@ -7,3 +7,7 @@ buildSrc/*/bin/
 .*
 local.properties
 *.profile
+/ormlite-android
+/ormlite-core
+/ormlite-jdbc
+

@@ -25,10 +25,23 @@ Build Dependencies
  * Android SDK (Platform API 16, Platform-tools 16.0.2)
  * Git (rev-parse)
  * WenQuanYi Zen Hei font
+ * Maven 3.1
 
 
 Building
 ========
+
+ * Obtain Ormlite fork:
+
+	$ git clone https://github.com/ncjones/ormlite-core.git;\
+	git clone https://github.com/ncjones/ormlite-jdbc.git;\
+	git clone https://github.com/ncjones/ormlite-android.git
+	
+ * Install Ormlite fork to local mvn repository:
+
+	$ mvn -f ormlite-core clean install;\
+	mvn -f ormlite-jdbc clean install;\
+	mvn -f ormlite-android clean install
 
  * Create a file called 'local.properties' and set the 'sdk.dir' property to the
    location of your Android SDK installation directory, eg:
