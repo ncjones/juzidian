@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import org.juzidian.core.Dictionary;
 import org.juzidian.core.SearchQuery;
 import org.juzidian.core.SearchResults;
+import org.juzidian.core.SearchResultsFuture;
 import org.juzidian.core.SearchType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +46,11 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 	@Inject
 	private Dictionary dictionary;
 
-	private SearchResults currentSearchResults;
-
 	private SearchQuery currentQuery;
+
+	private SearchResultsFuture currentSearchResultsFuture;
+
+	private SearchResults currentSearchResults;
 
 	public SearchView(final Context context, final AttributeSet attrs) {
 		super(context, attrs);
@@ -60,8 +63,12 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 	private void doSearch(final SearchQuery searchQuery) {
 		this.currentQuery = searchQuery;
 		this.getSearchResultsView().showLoadingIndicator(true);
-		final DictionarySearchTask dictionarySearchTask = new DictionarySearchTask(this.dictionary, this);
-		dictionarySearchTask.execute(searchQuery);
+		if (currentSearchResultsFuture != null) {
+			currentSearchResultsFuture.cancel();
+		}
+		currentSearchResultsFuture = dictionary.findAsync(searchQuery);
+		final DictionarySearchTask dictionarySearchTask = new DictionarySearchTask(this);
+		dictionarySearchTask.execute(currentSearchResultsFuture);
 	}
 
 	private SearchBar getSearchBar() {
@@ -102,7 +109,7 @@ public class SearchView extends RelativeLayout implements DictionarySearchTaskLi
 
 	@Override
 	public void searchComplete(final SearchResults searchResults) {
-		if (!searchResults.getSearchQuery().equals(this.currentQuery)) {
+		if (searchResults == null || !searchResults.getSearchQuery().equals(this.currentQuery)) {
 			return;
 		}
 		this.currentSearchResults = searchResults;

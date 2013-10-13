@@ -19,6 +19,10 @@
 package org.juzidian.android;
 
 import java.util.Properties;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.juzidian.core.inject.AsyncQueryExecutor;
 
 import roboguice.inject.SharedPreferencesProvider;
 import roboguice.inject.SystemServiceProvider;
@@ -38,6 +42,7 @@ public class JuzidianAndroidModule extends AbstractModule {
 		this.bind(SharedPreferences.class).annotatedWith(DownloadSharedPrefs.class).toProvider(new SharedPreferencesProvider("juzidian-download-info"));
 		this.bindConstant().annotatedWith(DictionaryDbPath.class).to("/data/data/org.juzidian.android/juzidian-dictionary.db");
 		this.bind(Properties.class).toProvider(BuildInfoPropertiesProvider.class);
+		this.bind(ExecutorService.class).annotatedWith(AsyncQueryExecutor.class).toInstance(Executors.newSingleThreadExecutor());
 	}
 
 }

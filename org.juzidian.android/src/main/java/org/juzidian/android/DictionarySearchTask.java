@@ -18,30 +18,31 @@
  */
 package org.juzidian.android;
 
-import org.juzidian.core.Dictionary;
-import org.juzidian.core.SearchQuery;
+import org.juzidian.core.SearchCancelledException;
 import org.juzidian.core.SearchResults;
+import org.juzidian.core.SearchResultsFuture;
 
 import android.os.AsyncTask;
 
 /**
- * Task to perform asynchronous searches on a dictionary.
+ * Task to asynchronously get results from a {@link SearchResultsFuture}.
  */
-public class DictionarySearchTask extends AsyncTask<SearchQuery, Void, SearchResults> {
-
-	private final Dictionary dictionary;
+public class DictionarySearchTask extends AsyncTask<SearchResultsFuture, Void, SearchResults> {
 
 	private final DictionarySearchTaskListener listener;
 
-	public DictionarySearchTask(final Dictionary dictionary, final DictionarySearchTaskListener listener) {
-		this.dictionary = dictionary;
+	public DictionarySearchTask(final DictionarySearchTaskListener listener) {
 		this.listener = listener;
 	}
 
 	@Override
-	protected SearchResults doInBackground(final SearchQuery... searchQueries) {
-		final SearchQuery searchQuery = searchQueries[0];
-		return this.dictionary.find(searchQuery);
+	protected SearchResults doInBackground(final SearchResultsFuture... searchResultsFutures) {
+		final SearchResultsFuture searchResultsFuture = searchResultsFutures[0];
+		try {
+			return searchResultsFuture.getResults();
+		} catch (SearchCancelledException e) {
+			return null;
+		}
 	}
 
 	@Override
