@@ -31,11 +31,10 @@ Build Dependencies
 Building
 ========
 
- * Obtain Ormlite fork:
+ * Initialise submodules for Ormlite fork:
 
-	$ git clone https://github.com/ncjones/ormlite-core.git;\
-	git clone https://github.com/ncjones/ormlite-jdbc.git;\
-	git clone https://github.com/ncjones/ormlite-android.git
+	$ git submodule init;\
+	git submodule update
 	
  * Install Ormlite fork to local mvn repository:
 

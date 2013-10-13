@@ -1,0 +1,9 @@
+[submodule "ormlite-core"]
+	path = ormlite-core
+	url = https://github.com/ncjones/ormlite-core.git
+[submodule "ormlite-android"]
+	path = ormlite-android
+	url = https://github.com/ncjones/ormlite-android.git
+[submodule "ormlite-jdbc"]
+	path = ormlite-jdbc
+	url = https://github.com/ncjones/ormlite-jdbc.git
