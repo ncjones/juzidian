@@ -14,7 +14,8 @@ GPL Version 3
 Features
 ========
 
- * Search for definitions by Pinyin, Hanzi or English
+ * Find definitions by Pinyin, Hanzi or English
+ * Incremental search as you type
 
 
 Build Dependencies
