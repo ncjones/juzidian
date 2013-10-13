@@ -25,6 +25,9 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Future;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -62,10 +65,13 @@ public class Dictionary {
 
 	private final PinyinParser pinyinParser;
 
+	private final ExecutorService executor;
+
 	@Inject
-	public Dictionary(final DictionaryDataStore dataStore, final PinyinParser pinyinParser) {
+	public Dictionary(final DictionaryDataStore dataStore, final PinyinParser pinyinParser, final ExecutorService executor) {
 		this.dataStore = dataStore;
 		this.pinyinParser = pinyinParser;
+		this.executor = executor;
 	}
 
 	/**
@@ -80,9 +86,13 @@ public class Dictionary {
 	 */
 	public SearchResults find(final SearchQuery query) {
 		LOGGER.debug("Find entries: {}", query);
+		return find(query, null);
+	}
+
+	private SearchResults find(final SearchQuery query, final SearchCanceller canceller) {
 		final long start = System.nanoTime();
 		final List<DictionaryEntry> searchResults = query.getSearchType().doSearch(this, query.getSearchText(), query.getPageSize(),
-				query.getPageSize() * query.getPageIndex());
+				query.getPageSize() * query.getPageIndex(), canceller);
 		final long end = System.nanoTime();
 		LOGGER.info("Found {} words matching '{}' in {} seconds.", new Object[] { searchResults.size(), query.getSearchText(),
 				((end - start) / 1000 / 1000 / 1000f) });
@@ -100,52 +110,33 @@ public class Dictionary {
 	 * @return a {@link SearchResultsFuture}.
 	 */
 	public SearchResultsFuture findAsync(final SearchQuery query) {
-		return null;
+		LOGGER.debug("Find entries async: {}", query);
+		final SearchCanceller canceller = new SearchCanceller();
+		Future<SearchResults> future = executor.submit(new Callable<SearchResults>() {
+
+			@Override
+			public SearchResults call() throws Exception {
+				return Dictionary.this.find(query, canceller);
+			}
+		});
+		return new SearchResultsFuture(future, canceller);
 	}
 
-	/**
-	 * Find all Chinese words that begin with the given Chinese character query
-	 * string.
-	 * 
-	 * @param queryString Chinese characters (simplified or traditional) to
-	 *        search for.
-	 * @param limit the maximum number of results to find.
-	 * @param offset the result index to start searching from.
-	 * @return a list of {@link DictionaryEntry}.
-	 */
-	List<DictionaryEntry> findChinese(final String queryString, final long limit, final long offset) {
+	List<DictionaryEntry> findChinese(final String queryString, final long limit, final long offset, final SearchCanceller canceller) {
 		LOGGER.debug("Find chinese: " + queryString);
-		return this.dataStore.findChinese(queryString, limit, offset);
+		return this.dataStore.findChinese(queryString, limit, offset, canceller);
 	}
 
-	/**
-	 * Find all Chinese words whose sound begins with the given Pinyin
-	 * romanisation query string.
-	 * 
-	 * @param queryString Pinyin syllables to search for.
-	 * @param limit the maximum number of results to find.
-	 * @param offset the result index to start searching from.
-	 * @return a list of {@link DictionaryEntry}.
-	 */
-	List<DictionaryEntry> findPinyin(final String queryString, final long limit, final long offset) {
+	List<DictionaryEntry> findPinyin(final String queryString, final long limit, final long offset, final SearchCanceller canceller) {
 		LOGGER.debug("Find pinyin: " + queryString);
 		final String filteredQueryString = this.filterPinyinQuery(queryString);
 		final List<PinyinSyllable> pinyinSyllables = this.pinyinParser.parse(filteredQueryString);
-		return this.dataStore.findPinyin(pinyinSyllables, limit, offset);
+		return this.dataStore.findPinyin(pinyinSyllables, limit, offset, canceller);
 	}
 
-	/**
-	 * Find all Chinese words with definitions that contain the given English
-	 * word query string.
-	 * 
-	 * @param queryString English words or partial words.
-	 * @param limit the maximum number of results to find.
-	 * @param offset the result index to start searching from.
-	 * @return a list of {@link DictionaryEntry}.
-	 */
-	List<DictionaryEntry> findDefinitions(final String queryString, final long limit, final long offset) {
+	List<DictionaryEntry> findDefinitions(final String queryString, final long limit, final long offset, final SearchCanceller canceller) {
 		LOGGER.debug("Find definitions: " + queryString);
-		return this.dataStore.findDefinitions(queryString, limit, offset);
+		return this.dataStore.findDefinitions(queryString, limit, offset, canceller);
 	}
 
 	private String filterPinyinQuery(final String queryString) {

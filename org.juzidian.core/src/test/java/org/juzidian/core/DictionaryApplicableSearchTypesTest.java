@@ -109,7 +109,7 @@ public class DictionaryApplicableSearchTypesTest {
 	@Test
 	public void test() {
 		final DictionaryDataStore dataStore = Mockito.mock(DictionaryDataStore.class);
-		final Dictionary dictionary = new Dictionary(dataStore, new PinyinParser());
+		final Dictionary dictionary = new Dictionary(dataStore, new PinyinParser(), new CurrentThreadExecutor());
 		final Set<SearchType> searchTypes = dictionary.getApplicableSearchTypes(this.inputText);
 		Assert.assertEquals(this.inputText, this.expectedTypes, searchTypes);
 	}

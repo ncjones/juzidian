@@ -31,8 +31,8 @@ public enum SearchType {
 	 */
 	HANZI {
 		@Override
-		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query, final long limit, final long offset) {
-			return dictionary.findChinese(query, limit, offset);
+		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query, final long limit, final long offset, final SearchCanceller canceller) {
+			return dictionary.findChinese(query, limit, offset, canceller);
 		}
 	},
 
@@ -41,8 +41,8 @@ public enum SearchType {
 	 */
 	PINYIN {
 		@Override
-		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query, final long limit, final long offset) {
-			return dictionary.findPinyin(query, limit, offset);
+		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query, final long limit, final long offset, final SearchCanceller canceller) {
+			return dictionary.findPinyin(query, limit, offset, canceller);
 		}
 	},
 
@@ -51,8 +51,8 @@ public enum SearchType {
 	 */
 	REVERSE {
 		@Override
-		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query, final long limit, final long offset) {
-			return dictionary.findDefinitions(query, limit, offset);
+		public List<DictionaryEntry> doSearch(final Dictionary dictionary, final String query, final long limit, final long offset, final SearchCanceller canceller) {
+			return dictionary.findDefinitions(query, limit, offset, canceller);
 		}
 	};
 
@@ -65,6 +65,6 @@ public enum SearchType {
 	 * @param offset the result index to start searching from.
 	 * @return the dictionary's search result.
 	 */
-	abstract List<DictionaryEntry> doSearch(Dictionary dictionary, String query, long limit, long offset);
+	abstract List<DictionaryEntry> doSearch(Dictionary dictionary, String query, long limit, long offset, final SearchCanceller canceller);
 
 }

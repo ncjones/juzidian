@@ -30,6 +30,7 @@ import javax.inject.Inject;
 
 import org.juzidian.core.DictionaryDataStore;
 import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.SearchCanceller;
 import org.juzidian.pinyin.PinyinSyllable;
 import org.juzidian.pinyin.Tone;
 import org.slf4j.Logger;
@@ -227,7 +228,8 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	}
 
 	@Override
-	public List<DictionaryEntry> findPinyin(final List<PinyinSyllable> pinyin, final long limit, final long offset) {
+	public List<DictionaryEntry> findPinyin(final List<PinyinSyllable> pinyin, final long limit, final long offset,
+			final SearchCanceller canceller) {
 		if (limit < 0) {
 			throw new IllegalArgumentException("Invalid limit: " + limit);
 		}
@@ -270,7 +272,8 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	}
 
 	@Override
-	public List<DictionaryEntry> findChinese(final String chineseCharacters, final long limit, final long offset) {
+	public List<DictionaryEntry> findChinese(final String chineseCharacters, final long limit, final long offset,
+			final SearchCanceller canceller) {
 		if (limit < 0) {
 			throw new IllegalArgumentException("Invalid limit: " + limit);
 		}
@@ -297,7 +300,8 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 	}
 
 	@Override
-	public List<DictionaryEntry> findDefinitions(final String englishWords, final long limit, final long offset) {
+	public List<DictionaryEntry> findDefinitions(final String englishWords, final long limit, final long offset,
+			final SearchCanceller canceller) {
 		if (limit < 0) {
 			throw new IllegalArgumentException("Invalid limit: " + limit);
 		}

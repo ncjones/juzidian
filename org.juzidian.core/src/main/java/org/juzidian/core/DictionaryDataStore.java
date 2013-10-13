@@ -43,10 +43,11 @@ public interface DictionaryDataStore {
 	 * @param pinyin a sequence of {@link PinyinSyllable}.
 	 * @param limit the maximum number of entries to return.
 	 * @param offset the number of search results to skip.
+	 * @param canceller a {@link SearchCanceller} (may be {@code null}).
 	 * @return a list of {@link DictionaryEntry}.
 	 * @throws IllegalArgumentException if limit or offset are negative.
 	 */
-	List<DictionaryEntry> findPinyin(List<PinyinSyllable> pinyin, long limit, long offset);
+	List<DictionaryEntry> findPinyin(List<PinyinSyllable> pinyin, long limit, long offset, SearchCanceller canceller);
 
 	/**
 	 * Find dictionary entries in the data store that begin with the given
@@ -55,10 +56,11 @@ public interface DictionaryDataStore {
 	 * @param chineseCharacters Chinese character text to find.
 	 * @param limit the maximum number of entries to return.
 	 * @param offset the number of search results to skip.
+	 * @param canceller a {@link SearchCanceller} (may be {@code null}).
 	 * @return a list of {@link DictionaryEntry}.
 	 * @throws IllegalArgumentException if limit or offset are negative.
 	 */
-	List<DictionaryEntry> findChinese(String chineseCharacters, long limit, long offset);
+	List<DictionaryEntry> findChinese(String chineseCharacters, long limit, long offset, SearchCanceller canceller);
 
 	/**
 	 * Find dictionary entries in the data store that contain the given English
@@ -67,9 +69,10 @@ public interface DictionaryDataStore {
 	 * @param englishWords English definition text to find.
 	 * @param limit the maximum number of entries to return.
 	 * @param offset the number of search results to skip.
+	 * @param canceller a {@link SearchCanceller} (may be {@code null}).
 	 * @return a list of {@link DictionaryEntry}.
 	 * @throws IllegalArgumentException if limit or offset are negative.
 	 */
-	List<DictionaryEntry> findDefinitions(String englishWords, long limit, long offset);
+	List<DictionaryEntry> findDefinitions(String englishWords, long limit, long offset, SearchCanceller canceller);
 
 }

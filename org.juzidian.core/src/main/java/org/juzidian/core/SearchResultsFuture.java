@@ -18,10 +18,25 @@
  */
 package org.juzidian.core;
 
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
 /**
  * A cancellable, pending {@link SearchResults}.
  */
 public class SearchResultsFuture {
+
+	private final Future<SearchResults> results;
+
+	private final SearchCanceller canceller;
+
+	public SearchResultsFuture(final Future<SearchResults> results, final SearchCanceller canceller) {
+		this.results = results;
+		this.canceller = canceller;
+	}
 
 	/**
 	 * Get the {@link SearchResults} for this future.
@@ -33,14 +48,53 @@ public class SearchResultsFuture {
 	 *         this operation is in progress.
 	 */
 	public SearchResults getResults() throws SearchCancelledException {
-		return null;
+		try {
+			return results.get();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
+		} catch (ExecutionException e) {
+			Throwable cause = e.getCause();
+			if (cause instanceof SearchCancelledException) {
+				throw (SearchCancelledException) cause;
+			}
+			throw new RuntimeException("Failed to get search results", e);
+		}
 	}
 
 	/**
 	 * Cancel the search.
 	 */
 	public void cancel() {
+		canceller.cancel();
+	}
 
+	public static void main(String[] args) throws Throwable {
+		ExecutorService executor = Executors.newSingleThreadExecutor();
+		Future<String> future = executor.submit(new Callable<String>() {
+
+			@Override
+			public String call() throws Exception {
+				throw new SearchCancelledException();
+			}
+		});
+		try {
+			future.get();
+		} catch (InterruptedException e) {
+			Thread.currentThread().interrupt();
+			throw new RuntimeException(e);
+		} catch (ExecutionException e) {
+			throw extractException(e);
+		}
+		executor.shutdown();
+	}
+
+	private static Throwable extractException(ExecutionException e) {
+		Throwable cause = e.getCause();
+		if (cause instanceof SearchCancelledException) {
+			return cause;
+		}
+		return cause;
 	}
 
 }
