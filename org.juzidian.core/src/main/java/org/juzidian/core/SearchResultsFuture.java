@@ -18,10 +18,7 @@
  */
 package org.juzidian.core;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 /**
@@ -67,34 +64,6 @@ public class SearchResultsFuture {
 	 */
 	public void cancel() {
 		canceller.cancel();
-	}
-
-	public static void main(String[] args) throws Throwable {
-		ExecutorService executor = Executors.newSingleThreadExecutor();
-		Future<String> future = executor.submit(new Callable<String>() {
-
-			@Override
-			public String call() throws Exception {
-				throw new SearchCancelledException();
-			}
-		});
-		try {
-			future.get();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			throw new RuntimeException(e);
-		} catch (ExecutionException e) {
-			throw extractException(e);
-		}
-		executor.shutdown();
-	}
-
-	private static Throwable extractException(ExecutionException e) {
-		Throwable cause = e.getCause();
-		if (cause instanceof SearchCancelledException) {
-			return cause;
-		}
-		return cause;
 	}
 
 }
