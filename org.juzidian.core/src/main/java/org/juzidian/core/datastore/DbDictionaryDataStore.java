@@ -41,6 +41,7 @@ import com.j256.ormlite.field.SqlType;
 import com.j256.ormlite.misc.TransactionManager;
 import com.j256.ormlite.stmt.PreparedQuery;
 import com.j256.ormlite.stmt.SelectArg;
+import com.j256.ormlite.support.CancellationSignaller;
 import com.j256.ormlite.support.ConnectionSource;
 
 public class DbDictionaryDataStore implements DictionaryDataStore {
@@ -249,7 +250,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 					.offset(offset)
 					.where().like(DbDictionaryEntry.COLUMN_PINYIN, new SelectArg(pinyinQueryString + "%"))
 					.prepare();
-			return this.transformEntries(this.dictionaryEntryDao.query(query));
+			return this.transformEntries(doQuery(query, canceller));
 		} catch (final SQLException e) {
 			throw new DictionaryDataStoreException("Failed to execute query", e);
 		}
@@ -293,7 +294,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 					.offset(offset)
 					.where().like(DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED, new SelectArg("%" + chineseCharacters + "%"))
 					.prepare();
-			return this.transformEntries(this.dictionaryEntryDao.query(query));
+			return this.transformEntries(doQuery(query, canceller));
 		} catch (final SQLException e) {
 			throw new DictionaryDataStoreException("Failed to execute query", e);
 		}
@@ -327,10 +328,29 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 					.offset(offset)
 					.where().like(DbDictionaryEntry.COLUMN_ENGLISH, new SelectArg("%" + englishWords + "%"))
 					.prepare();
-			return this.transformEntries(this.dictionaryEntryDao.query(query));
+			return this.transformEntries(doQuery(query, canceller));
 		} catch (final SQLException e) {
 			throw new DictionaryDataStoreException("Failed to execute query", e);
 		}
+	}
+
+	private List<DbDictionaryEntry> doQuery(final PreparedQuery<DbDictionaryEntry> query, final SearchCanceller canceller)
+			throws SQLException {
+		if (canceller != null) {
+			return this.dictionaryEntryDao.query(query, createOrmliteSignaller(canceller));
+		}
+		return this.dictionaryEntryDao.query(query);
+	}
+
+	private static CancellationSignaller createOrmliteSignaller(final SearchCanceller canceller) {
+		final CancellationSignaller cancellationSignaller = new CancellationSignaller();
+		canceller.register(new SearchCanceller.Listener() {
+			@Override
+			public void onCancel() {
+				cancellationSignaller.signal();
+			}
+		});
+		return cancellationSignaller;
 	}
 
 }
