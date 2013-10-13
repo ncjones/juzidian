@@ -32,6 +32,7 @@ import java.util.concurrent.Future;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
+import org.juzidian.core.inject.AsyncQueryExecutor;
 import org.juzidian.pinyin.PinyinParser;
 import org.juzidian.pinyin.PinyinSyllable;
 import org.slf4j.Logger;
@@ -68,7 +69,8 @@ public class Dictionary {
 	private final ExecutorService executor;
 
 	@Inject
-	public Dictionary(final DictionaryDataStore dataStore, final PinyinParser pinyinParser, final ExecutorService executor) {
+	public Dictionary(final DictionaryDataStore dataStore, final PinyinParser pinyinParser,
+			@AsyncQueryExecutor final ExecutorService executor) {
 		this.dataStore = dataStore;
 		this.pinyinParser = pinyinParser;
 		this.executor = executor;
