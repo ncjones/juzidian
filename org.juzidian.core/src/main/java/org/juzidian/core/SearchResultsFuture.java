@@ -52,8 +52,8 @@ public class SearchResultsFuture {
 			throw new RuntimeException(e);
 		} catch (ExecutionException e) {
 			Throwable cause = e.getCause();
-			if (cause instanceof SearchCancelledException) {
-				throw (SearchCancelledException) cause;
+			if (cause instanceof DictionaryDataStoreQueryCancelledException) {
+				throw new SearchCancelledException(e);
 			}
 			throw new RuntimeException("Failed to get search results", e);
 		}

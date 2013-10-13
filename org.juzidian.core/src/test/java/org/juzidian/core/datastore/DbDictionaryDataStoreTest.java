@@ -29,11 +29,14 @@ import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.juzidian.core.DictionaryDataStoreException;
+import org.juzidian.core.DictionaryDataStoreQueryCancelledException;
 import org.juzidian.core.SearchCanceller;
 import org.juzidian.core.SearchCanceller.Listener;
 import org.juzidian.pinyin.PinyinSyllable;
@@ -120,6 +123,25 @@ public class DbDictionaryDataStoreTest {
 		verify(this.dictionaryEntryDao).query(anyDictionaryEntryPreparedQuery());
 	}
 
+	@Test(expected = DictionaryDataStoreException.class)
+	public void findPinyinShouldThrowExceptionWhenQueryCreationFails() throws Exception {
+		when(dictionaryEntryDao.queryBuilder().offset(anyLong())).thenThrow(new SQLException());
+		dbDictionaryDataStore.findPinyin(pinyinSyllables("bang"), 25, 0, new SearchCanceller());
+	}
+
+	@Test(expected = DictionaryDataStoreException.class)
+	public void findPinyinShouldThrowExceptionWhenQueryFails() throws Exception {
+		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(new SQLException());
+		dbDictionaryDataStore.findPinyin(pinyinSyllables("bang"), 25, 0, new SearchCanceller());
+	}
+
+	@Test(expected = DictionaryDataStoreQueryCancelledException.class)
+	public void findPinyinShouldThrowExceptionWhenQueryCancelled() throws Exception {
+		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(
+				new SQLException("ORMLITE: query cancelled"));
+		dbDictionaryDataStore.findPinyin(pinyinSyllables("bang"), 25, 0, new SearchCanceller());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void findDefinitionsShouldRejectNegativeLimit() {
 		this.dbDictionaryDataStore.findDefinitions("good", -1, 0, null);
@@ -156,6 +178,25 @@ public class DbDictionaryDataStoreTest {
 		verify(this.dictionaryEntryDao).query(anyDictionaryEntryPreparedQuery());
 	}
 
+	@Test(expected = DictionaryDataStoreException.class)
+	public void findDefinitionsShouldThrowExceptionWhenQueryCreationFails() throws Exception {
+		when(dictionaryEntryDao.queryBuilder().offset(anyLong())).thenThrow(new SQLException());
+		dbDictionaryDataStore.findDefinitions("hello", 25, 0, new SearchCanceller());
+	}
+
+	@Test(expected = DictionaryDataStoreException.class)
+	public void findDefinitionsShouldThrowExceptionWhenQueryFails() throws Exception {
+		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(new SQLException());
+		dbDictionaryDataStore.findDefinitions("hello", 25, 0, new SearchCanceller());
+	}
+
+	@Test(expected = DictionaryDataStoreQueryCancelledException.class)
+	public void findDefinitionsShouldThrowExceptionWhenQueryCancelled() throws Exception {
+		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(
+				new SQLException("ORMLITE: query cancelled"));
+		dbDictionaryDataStore.findDefinitions("hello", 25, 0, new SearchCanceller());
+	}
+
 	@Test(expected = IllegalArgumentException.class)
 	public void findChineseShouldRejectNegativeLimit() {
 		this.dbDictionaryDataStore.findChinese("好", -1, 0, null);
@@ -190,6 +231,25 @@ public class DbDictionaryDataStoreTest {
 	public void findChineseShouldQueryWithoutCancellationSignalWhenCancellerIsNull() throws Exception {
 		dbDictionaryDataStore.findChinese("好", 25, 0, null);
 		verify(this.dictionaryEntryDao).query(anyDictionaryEntryPreparedQuery());
+	}
+
+	@Test(expected = DictionaryDataStoreException.class)
+	public void findChineseShouldThrowExceptionWhenQueryCreationFails() throws Exception {
+		when(dictionaryEntryDao.queryBuilder().offset(anyLong())).thenThrow(new SQLException());
+		dbDictionaryDataStore.findChinese("好", 25, 0, new SearchCanceller());
+	}
+
+	@Test(expected = DictionaryDataStoreException.class)
+	public void findChineseShouldThrowExceptionWhenQueryFails() throws Exception {
+		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(new SQLException());
+		dbDictionaryDataStore.findChinese("好", 25, 0, new SearchCanceller());
+	}
+
+	@Test(expected = DictionaryDataStoreQueryCancelledException.class)
+	public void findChineseShouldThrowExceptionWhenQueryCancelled() throws Exception {
+		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(
+				new SQLException("ORMLITE: query cancelled"));
+		dbDictionaryDataStore.findChinese("好", 25, 0, new SearchCanceller());
 	}
 
 	@Test

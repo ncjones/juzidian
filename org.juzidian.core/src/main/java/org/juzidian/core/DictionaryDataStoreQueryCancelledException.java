@@ -18,15 +18,12 @@
  */
 package org.juzidian.core;
 
-/**
- * Indicates a query was cancelled before it completed.
- */
-public class SearchCancelledException extends Exception {
+public class DictionaryDataStoreQueryCancelledException extends DictionaryDataStoreException {
 
 	private static final long serialVersionUID = 1L;
 
-	public SearchCancelledException(final Throwable cause) {
-		super(cause);
+	public DictionaryDataStoreQueryCancelledException(String message, Throwable throwable) {
+		super(message, throwable);
 	}
 
 }

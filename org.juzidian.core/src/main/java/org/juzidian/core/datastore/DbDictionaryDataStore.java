@@ -29,6 +29,8 @@ import java.util.concurrent.Callable;
 import javax.inject.Inject;
 
 import org.juzidian.core.DictionaryDataStore;
+import org.juzidian.core.DictionaryDataStoreException;
+import org.juzidian.core.DictionaryDataStoreQueryCancelledException;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.SearchCanceller;
 import org.juzidian.pinyin.PinyinSyllable;
@@ -238,9 +240,10 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 			throw new IllegalArgumentException("Invalid offset: " + offset);
 		}
 		LOGGER.debug("Finding pinyin: " + pinyin);
+		final String pinyinQueryString = this.formatPinyinQuery(pinyin);
+		final PreparedQuery<DbDictionaryEntry> query;
 		try {
-			final String pinyinQueryString = this.formatPinyinQuery(pinyin);
-			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
+			query = this.dictionaryEntryDao.queryBuilder()
 					.orderByRaw("case when like (?, " + DbDictionaryEntry.COLUMN_PINYIN + ") " +
 								"then 1 else 0 end desc, " +
 							"length(" + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + "), " +
@@ -250,10 +253,10 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 					.offset(offset)
 					.where().like(DbDictionaryEntry.COLUMN_PINYIN, new SelectArg(pinyinQueryString + "%"))
 					.prepare();
-			return this.transformEntries(doQuery(query, canceller));
 		} catch (final SQLException e) {
-			throw new DictionaryDataStoreException("Failed to execute query", e);
+			throw new DictionaryDataStoreException("Failed to create query", e);
 		}
+		return this.transformEntries(doQuery(query, canceller, pinyinQueryString));
 	}
 
 	private List<DictionaryEntry> transformEntries(final List<DbDictionaryEntry> dbEntries) {
@@ -282,8 +285,9 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 			throw new IllegalArgumentException("Invalid offset: " + offset);
 		}
 		LOGGER.debug("Finding Chinese characters: " + chineseCharacters);
+		final PreparedQuery<DbDictionaryEntry> query;
 		try {
-			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
+			query = this.dictionaryEntryDao.queryBuilder()
 					.orderByRaw("case " +
 							"when like (?, " + DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED + ") then 0 " +
 							"else 1 end, " +
@@ -294,10 +298,10 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 					.offset(offset)
 					.where().like(DbDictionaryEntry.COLUMN_HANZI_SIMPLIFIED, new SelectArg("%" + chineseCharacters + "%"))
 					.prepare();
-			return this.transformEntries(doQuery(query, canceller));
 		} catch (final SQLException e) {
-			throw new DictionaryDataStoreException("Failed to execute query", e);
+			throw new DictionaryDataStoreException("Failed to prepare query", e);
 		}
+		return this.transformEntries(doQuery(query, canceller, chineseCharacters));
 	}
 
 	@Override
@@ -310,8 +314,9 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 			throw new IllegalArgumentException("Invalid offset: " + offset);
 		}
 		LOGGER.debug("Finding definitions: " + englishWords);
+		final PreparedQuery<DbDictionaryEntry> query;
 		try {
-			final PreparedQuery<DbDictionaryEntry> query = this.dictionaryEntryDao.queryBuilder()
+			query = this.dictionaryEntryDao.queryBuilder()
 					.orderByRaw("case " +
 								"when like (?, " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 0 " +
 								"when like (?, " + DbDictionaryEntry.COLUMN_ENGLISH + ") then 1 " +
@@ -328,18 +333,24 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 					.offset(offset)
 					.where().like(DbDictionaryEntry.COLUMN_ENGLISH, new SelectArg("%" + englishWords + "%"))
 					.prepare();
-			return this.transformEntries(doQuery(query, canceller));
 		} catch (final SQLException e) {
-			throw new DictionaryDataStoreException("Failed to execute query", e);
+			throw new DictionaryDataStoreException("Failed to create query", e);
 		}
+		return this.transformEntries(doQuery(query, canceller, englishWords));
 	}
 
-	private List<DbDictionaryEntry> doQuery(final PreparedQuery<DbDictionaryEntry> query, final SearchCanceller canceller)
-			throws SQLException {
-		if (canceller != null) {
-			return this.dictionaryEntryDao.query(query, createOrmliteSignaller(canceller));
+	private List<DbDictionaryEntry> doQuery(final PreparedQuery<DbDictionaryEntry> query, final SearchCanceller canceller, final String queryInput) {
+		try {
+			if (canceller != null) {
+				return this.dictionaryEntryDao.query(query, createOrmliteSignaller(canceller));
+			}
+			return this.dictionaryEntryDao.query(query);
+		} catch (final SQLException e) {
+			if ("ORMLITE: query cancelled".equals(e.getMessage())) {
+				throw new DictionaryDataStoreQueryCancelledException("Query cancelled: " + queryInput, e);
+			}
+			throw new DictionaryDataStoreException("Failed to execute query", e);
 		}
-		return this.dictionaryEntryDao.query(query);
 	}
 
 	private static CancellationSignaller createOrmliteSignaller(final SearchCanceller canceller) {

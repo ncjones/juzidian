@@ -74,7 +74,7 @@ public class SearchResultsFutureTest {
 
 	@Test(expected = SearchCancelledException.class)
 	public void getResultsShouldThrowSearchCancelledExceptionWhenTaskCancelled() throws Exception {
-		when(mockResultsFuture.get()).thenThrow(new ExecutionException(new SearchCancelledException()));
+		when(mockResultsFuture.get()).thenThrow(new ExecutionException(new DictionaryDataStoreQueryCancelledException("", null)));
 		searchResultsFuture.getResults();
 	}
 
