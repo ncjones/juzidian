@@ -4,7 +4,7 @@ import org.juzidian.build.imggen.IconDescriptor
 import org.juzidian.build.imggen.InputTypeToggleIcon
 import org.juzidian.build.imggen.JuzidianLauncherIcon
 
- apply plugin: 'android'
+apply plugin: 'android'
 
 ext.androidSdkDir = localProperties['sdk.dir']
 
@@ -30,6 +30,7 @@ android {
 		versionName = juzidianVersion
 		minSdkVersion = 11
 		targetSdkVersion = 17
+		buildToolsVersion "17.0"
 	}
 }
 
@@ -54,23 +55,23 @@ def generateBuildInfoFile(resDir) {
 	}
 }
 
-android.buildVariants.each { buildVariant ->
-	def generateImagesTaskName = "generateImages${buildVariant.name}"
-	def generateBuildInfoFileTaskName = "generateBuildInfoFile${buildVariant.name}"
-	def resDir = file("build/res/all/${buildVariant.baseName}")
+android.applicationVariants.all { appVariant ->
+	def generateImagesTaskName = "generateImages${appVariant.name}"
+	def generateBuildInfoFileTaskName = "generateBuildInfoFile${appVariant.name}"
+	def resDir = file("build/res/all/${appVariant.baseName}")
 	task(generateImagesTaskName) {
-		dependsOn buildVariant.mergeResources
+		dependsOn appVariant.mergeResources
 		doLast {
 			generateImages(resDir)
 		}
 	}
 	task(generateBuildInfoFileTaskName) {
-		dependsOn buildVariant.mergeResources
+		dependsOn appVariant.mergeResources
 		doLast {
 			generateBuildInfoFile(resDir)
 		}
 	}
-	buildVariant.processResources.dependsOn generateImagesTaskName, generateBuildInfoFileTaskName
+	appVariant.processResources.dependsOn generateImagesTaskName, generateBuildInfoFileTaskName
 }
 
 eclipse {
