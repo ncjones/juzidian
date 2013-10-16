@@ -96,7 +96,7 @@ To setup Eclipse projects with correct natures and class paths, run
 
 	$ gradle eclipse;\
 	gradle -p buildSrc eclipse;\
-	gradle -c settings-data.gradle eclipse
+	gradle -c datagen-settings.gradle eclipse
 
 and then import all projects into Eclipse from the project root directory.
 
