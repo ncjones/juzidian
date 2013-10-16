@@ -24,7 +24,9 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.juzidian.core.inject.AsyncQueryExecutor;
+import org.juzidian.core.inject.DictionaryModule;
 import org.juzidian.core.inject.ModuleConfigurationException;
+import org.juzidian.dataload.inject.DataloadModule;
 
 import com.google.inject.AbstractModule;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
@@ -36,6 +38,8 @@ public class JuzidianCliModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
+		install(new DictionaryModule());
+		install(new DataloadModule());
 		this.bind(ConnectionSource.class).toInstance(this.createConnectionSource());
 		this.bind(File.class).annotatedWith(DictionaryDbPath.class).toInstance(DICTIONARY_DB_FILE);
 		this.bind(ExecutorService.class).annotatedWith(AsyncQueryExecutor.class).toInstance(Executors.newSingleThreadExecutor());

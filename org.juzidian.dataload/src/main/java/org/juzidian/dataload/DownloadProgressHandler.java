@@ -16,21 +16,20 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
-
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
-import javax.inject.Qualifier;
+package org.juzidian.dataload;
 
 /**
- * A binding annotation for the dictionary registry service end-point URL.
+ * Handles download progress events.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ ElementType.PARAMETER })
-@Qualifier
-public @interface DictionaryServiceUrl {
+public interface DownloadProgressHandler {
+
+	/**
+	 * Notify the handler of current download progress.
+	 *
+	 * @param contentLength the expected number of bytes when download is
+	 *        complete.
+	 * @param bytesReceived the number of bytes downloaded so far.
+	 */
+	void handleProgress(int contentLength, int bytesReceived);
 
 }

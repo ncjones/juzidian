@@ -1,6 +1,6 @@
 /*
  * Copyright Nathan Jones 2013
- *
+ * 
  * This file is part of Juzidian.
  *
  * Juzidian is free software: you can redistribute it and/or modify
@@ -16,26 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.dataload;
 
 /**
- * A description of remotely hosted dictionary database resource.
+ * Indicates a {@link DictionaryResourceDownloader} operation failed.
  */
-public interface DictionaryResource {
+public class DictionaryResourceDownloaderException extends Exception {
 
-	/**
-	 * @return the URL for downloading the remote dictionary resource.
-	 */
-	String getUrl();
+	private static final long serialVersionUID = 1L;
 
-	/**
-	 * @return the size of the dictionary resource in bytes.
-	 */
-	int getSize();
+	public DictionaryResourceDownloaderException(final String message) {
+		super(message);
+	}
 
-	/**
-	 * @return the SHA-1 hash of the dictionary resource.
-	 */
-	String getSha1();
+	public DictionaryResourceDownloaderException(final Throwable cause) {
+		super(cause);
+	}
 
 }

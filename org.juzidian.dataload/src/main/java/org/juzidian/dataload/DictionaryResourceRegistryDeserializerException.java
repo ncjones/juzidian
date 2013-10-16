@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.dataload;
 
 /**
  * Indicates an error in a {@link DictionaryResourceRegistryDeserializer}.

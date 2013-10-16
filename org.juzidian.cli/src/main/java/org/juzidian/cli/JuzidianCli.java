@@ -26,7 +26,6 @@ import org.juzidian.core.Dictionary;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.SearchQuery;
 import org.juzidian.core.SearchType;
-import org.juzidian.core.inject.DictionaryModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +41,7 @@ public class JuzidianCli {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(JuzidianCli.class);
 
-	private static Injector INJECTOR = Guice.createInjector(new DictionaryModule(), new JuzidianCliModule());
+	private static Injector INJECTOR = Guice.createInjector(new JuzidianCliModule());
 
 	public static void main(final String[] args) throws Exception {
 		if (args.length < 1) {

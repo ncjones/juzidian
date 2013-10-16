@@ -1,0 +1,29 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+sourceCompatibility = '1.6'
+
+dependencies {
+	compile project(':org.juzidian.util')
+	compile libraries.guice
+	compile libraries.slf4j_api
+	testCompile libraries.junit
+	testCompile libraries.hamcrest_library
+	testCompile libraries.mockito_core
+	testCompile libraries.url_scheme_registry
+}
+
+processResources.configure {
+	inputs.property 'dictionaryRegistryUrlPrefix', dictionaryRegistryUrlPrefix
+	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens:[dictionaryRegistryUrlPrefix: dictionaryRegistryUrlPrefix.toString()])
+}
+
+eclipse.classpath.file {
+	whenMerged { classpath ->
+		classpath.entries.removeAll { entry -> entry.path == 'src/main/resources' }
+	}
+	withXml { provider ->
+		def node = provider.asNode()
+		node.appendNode('classpathentry', [kind: 'src', path: 'build/resources/main'])
+	}
+}

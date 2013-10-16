@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.dataload;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -30,6 +30,9 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.juzidian.dataload.DictionaryResource;
+import org.juzidian.dataload.DictionaryResourceRegistry;
+import org.juzidian.dataload.DictionaryResourceRegistryDeserializer;
 
 public class DictionaryResourceRegistryDeserializerTest {
 

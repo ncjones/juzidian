@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.dataload;
 
 import static org.mockito.Matchers.eq;
 
@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.junit.Test;
+import org.juzidian.dataload.DownloadProgressHandler;
+import org.juzidian.dataload.ProgressMonitoringInputStream;
 import org.mockito.Mockito;
 
 public class ProgressMonitoringInputStreamTest {

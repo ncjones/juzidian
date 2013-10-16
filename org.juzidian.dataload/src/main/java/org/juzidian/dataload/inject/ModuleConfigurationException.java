@@ -1,6 +1,6 @@
 /*
  * Copyright Nathan Jones 2013
- * 
+ *
  * This file is part of Juzidian.
  *
  * Juzidian is free software: you can redistribute it and/or modify
@@ -16,39 +16,21 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.dataload.inject;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLConnection;
+/**
+ * Indicates a {@link DataloadModule} failed to be configured.
+ */
+public class ModuleConfigurationException extends RuntimeException {
 
-public class MockUrlConnection extends URLConnection {
+	private static final long serialVersionUID = 1L;
 
-	private final byte[] content;
-
-	public MockUrlConnection(final byte[] content) {
-		super(null);
-		this.content = content;
+	public ModuleConfigurationException(final Throwable cause) {
+		super(cause);
 	}
 
-	public MockUrlConnection(final String content) {
-		this(content.getBytes());
-	}
-
-	@Override
-	public void connect() throws IOException {
-
-	}
-
-	@Override
-	public int getContentLength() {
-		return this.content.length;
-	}
-
-	@Override
-	public InputStream getInputStream() throws IOException {
-		return new ByteArrayInputStream(this.content);
+	public ModuleConfigurationException(final String message) {
+		super(message);
 	}
 
 }

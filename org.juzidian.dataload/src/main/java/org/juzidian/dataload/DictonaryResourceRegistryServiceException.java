@@ -16,41 +16,17 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.dataload;
 
-class DictionaryResourceImpl implements DictionaryResource {
+/**
+ * Indicates a {@link DictionaryResourceRegistryService} operation failed.
+ */
+public class DictonaryResourceRegistryServiceException extends Exception {
 
-	private String url;
+	private static final long serialVersionUID = 1L;
 
-	private int size;
-
-	private String sha1;
-
-	@Override
-	public String getUrl() {
-		return this.url;
-	}
-
-	public void setUrl(final String url) {
-		this.url = url;
-	}
-
-	@Override
-	public int getSize() {
-		return this.size;
-	}
-
-	public void setSize(final int size) {
-		this.size = size;
-	}
-
-	@Override
-	public String getSha1() {
-		return this.sha1;
-	}
-
-	public void setSha1(final String sha1) {
-		this.sha1 = sha1;
+	public DictonaryResourceRegistryServiceException(final Throwable cause) {
+		super(cause);
 	}
 
 }

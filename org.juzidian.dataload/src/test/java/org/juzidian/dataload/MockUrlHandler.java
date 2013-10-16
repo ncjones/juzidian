@@ -16,23 +16,27 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.inject;
+package org.juzidian.dataload;
 
-import javax.inject.Provider;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
+import java.io.IOException;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLStreamHandler;
 
-public class SaxParserProvider implements Provider<SAXParser> {
+import org.skife.url.UrlSchemeRegistry;
 
-	private final SAXParserFactory parserFactory = SAXParserFactory.newInstance();
+public class MockUrlHandler extends URLStreamHandler {
+
+	static {
+		UrlSchemeRegistry.register("mock", MockUrlHandler.class);
+	}
+
+	public static MockUrlHandler delegate;
 
 	@Override
-	public SAXParser get() {
-		try {
-			return this.parserFactory.newSAXParser();
-		} catch (final Exception e) {
-			throw new ModuleConfigurationException(e);
-		}
+	public URLConnection openConnection(final URL url) throws IOException {
+		return MockUrlHandler.delegate.openConnection(url);
 	}
 
 }
+

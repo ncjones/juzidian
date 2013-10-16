@@ -19,6 +19,7 @@
 package org.juzidian.android;
 
 import org.juzidian.core.inject.DictionaryModule;
+import org.juzidian.dataload.inject.DataloadModule;
 
 import roboguice.RoboGuice;
 import android.app.Application;
@@ -34,6 +35,7 @@ public class JuzidianApplication extends Application {
 		RoboGuice.setBaseApplicationInjector(this, RoboGuice.DEFAULT_STAGE,
 				RoboGuice.newDefaultRoboModule(this),
 				new DictionaryModule(),
+				new DataloadModule(),
 				new JuzidianAndroidModule());
 	}
 

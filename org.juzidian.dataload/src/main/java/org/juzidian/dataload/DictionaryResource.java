@@ -16,17 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.dataload;
 
 /**
- * Indicates a {@link DictionaryResourceRegistryService} operation failed.
+ * A description of remotely hosted dictionary database resource.
  */
-public class DictonaryResourceRegistryServiceException extends Exception {
+public interface DictionaryResource {
 
-	private static final long serialVersionUID = 1L;
+	/**
+	 * @return the URL for downloading the remote dictionary resource.
+	 */
+	String getUrl();
 
-	public DictonaryResourceRegistryServiceException(final Throwable cause) {
-		super(cause);
-	}
+	/**
+	 * @return the size of the dictionary resource in bytes.
+	 */
+	int getSize();
+
+	/**
+	 * @return the SHA-1 hash of the dictionary resource.
+	 */
+	String getSha1();
 
 }

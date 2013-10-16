@@ -16,25 +16,28 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.cli;
+package org.juzidian.dataload;
 
-import org.juzidian.dataload.DownloadProgressHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
-final class DownloadProgressLogger implements DownloadProgressHandler {
+/**
+ * A registry of available {@link DictionaryResource}s.
+ */
+public class DictionaryResourceRegistry {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DownloadProgressLogger.class);
+	private final List<DictionaryResource> dictionaryResources;
 
-	int previous100KB = 0;
+	public DictionaryResourceRegistry(final List<DictionaryResource> dictionaryResources) {
+		this.dictionaryResources = new ArrayList<DictionaryResource>(dictionaryResources);
+	}
 
-	@Override
-	public void handleProgress(final int contentLength, final int bytesReceived) {
-		final int current100KB = bytesReceived / 102400;
-		if (current100KB > this.previous100KB) {
-			this.previous100KB = current100KB;
-			LOGGER.info(String.format("Downloaded %dKB / %dKB", bytesReceived / 1024, contentLength / 1024));
-		}
+	/**
+	 * @return the available dictionary resources.
+	 */
+	public List<DictionaryResource> getDictionaryResources() {
+		return Collections.unmodifiableList(this.dictionaryResources);
 	}
 
 }

@@ -16,27 +16,41 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.dataload;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.URLStreamHandler;
+class DictionaryResourceImpl implements DictionaryResource {
 
-import org.skife.url.UrlSchemeRegistry;
+	private String url;
 
-public class MockUrlHandler extends URLStreamHandler {
+	private int size;
 
-	static {
-		UrlSchemeRegistry.register("mock", MockUrlHandler.class);
-	}
-
-	public static MockUrlHandler delegate;
+	private String sha1;
 
 	@Override
-	public URLConnection openConnection(final URL url) throws IOException {
-		return MockUrlHandler.delegate.openConnection(url);
+	public String getUrl() {
+		return this.url;
+	}
+
+	public void setUrl(final String url) {
+		this.url = url;
+	}
+
+	@Override
+	public int getSize() {
+		return this.size;
+	}
+
+	public void setSize(final int size) {
+		this.size = size;
+	}
+
+	@Override
+	public String getSha1() {
+		return this.sha1;
+	}
+
+	public void setSha1(final String sha1) {
+		this.sha1 = sha1;
 	}
 
 }
-

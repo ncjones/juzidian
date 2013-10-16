@@ -24,12 +24,12 @@ import java.io.FileOutputStream;
 
 import javax.inject.Inject;
 
-import org.juzidian.core.dataload.DictionaryResource;
-import org.juzidian.core.dataload.DictionaryResourceDownloader;
-import org.juzidian.core.dataload.DictionaryResourceRegistry;
-import org.juzidian.core.dataload.DictionaryResourceRegistryService;
-import org.juzidian.core.dataload.DictonaryResourceRegistryServiceException;
 import org.juzidian.core.datastore.DbDictionaryDataStore;
+import org.juzidian.dataload.DictionaryResource;
+import org.juzidian.dataload.DictionaryResourceDownloader;
+import org.juzidian.dataload.DictionaryResourceRegistry;
+import org.juzidian.dataload.DictionaryResourceRegistryService;
+import org.juzidian.dataload.DictonaryResourceRegistryServiceException;
 import org.juzidian.util.IoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

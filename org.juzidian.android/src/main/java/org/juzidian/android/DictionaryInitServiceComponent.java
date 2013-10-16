@@ -30,7 +30,7 @@ import java.util.zip.GZIPInputStream;
 
 import javax.inject.Inject;
 
-import org.juzidian.core.dataload.DictionaryResource;
+import org.juzidian.dataload.DictionaryResource;
 import org.juzidian.util.IoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

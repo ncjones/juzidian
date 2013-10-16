@@ -10,7 +10,10 @@ ext.androidSdkDir = localProperties['sdk.dir']
 
 dependencies {
 	compile (project(':org.juzidian.core')) {
-		/* slf4j-api conflicts with slf4j-android. */
+		exclude group: 'org.slf4j', module: 'slf4j-api'
+		exclude group: 'com.google.inject', module: 'guice'
+	}
+	compile (project(':org.juzidian.dataload')) {
 		exclude group: 'org.slf4j', module: 'slf4j-api'
 		exclude group: 'com.google.inject', module: 'guice'
 	}

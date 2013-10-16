@@ -16,21 +16,39 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.dataload;
 
-/**
- * Indicates a {@link DictionaryResourceDownloader} operation failed.
- */
-public class DictionaryResourceDownloaderException extends Exception {
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLConnection;
 
-	private static final long serialVersionUID = 1L;
+public class MockUrlConnection extends URLConnection {
 
-	public DictionaryResourceDownloaderException(final String message) {
-		super(message);
+	private final byte[] content;
+
+	public MockUrlConnection(final byte[] content) {
+		super(null);
+		this.content = content;
 	}
 
-	public DictionaryResourceDownloaderException(final Throwable cause) {
-		super(cause);
+	public MockUrlConnection(final String content) {
+		this(content.getBytes());
+	}
+
+	@Override
+	public void connect() throws IOException {
+
+	}
+
+	@Override
+	public int getContentLength() {
+		return this.content.length;
+	}
+
+	@Override
+	public InputStream getInputStream() throws IOException {
+		return new ByteArrayInputStream(this.content);
 	}
 
 }

@@ -6,7 +6,6 @@ sourceCompatibility = '1.6'
 dependencies {
 	compile project(':org.juzidian.pinyin')
 	compile project(':org.juzidian.cedict')
-	compile project(':org.juzidian.util')
 	compile libraries.guice
 	compile libraries.ormlite_core
 	compile libraries.slf4j_api
@@ -15,20 +14,4 @@ dependencies {
 	testCompile libraries.mockito_core
 	testCompile libraries.ormlite_jdbc
 	testCompile libraries.sqlite_jdbc
-	testCompile libraries.url_scheme_registry
-}
-
-processResources.configure {
-	inputs.property 'dictionaryRegistryUrlPrefix', dictionaryRegistryUrlPrefix
-	filter(org.apache.tools.ant.filters.ReplaceTokens, tokens:[dictionaryRegistryUrlPrefix: dictionaryRegistryUrlPrefix.toString()])
-}
-
-eclipse.classpath.file {
-	whenMerged { classpath ->
-		classpath.entries.removeAll { entry -> entry.path == 'src/main/resources' }
-	}
-	withXml { provider ->
-		def node = provider.asNode()
-		node.appendNode('classpathentry', [kind: 'src', path: 'build/resources/main'])
-	}
 }

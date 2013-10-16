@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.dataload;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -34,6 +34,10 @@ import java.util.zip.GZIPOutputStream;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.juzidian.dataload.DictionaryResource;
+import org.juzidian.dataload.DictionaryResourceDownloader;
+import org.juzidian.dataload.DictionaryResourceDownloaderException;
+import org.juzidian.dataload.DownloadProgressHandler;
 import org.juzidian.util.HexUtil;
 import org.mockito.Matchers;
 import org.mockito.Mockito;

@@ -16,28 +16,23 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.dataload;
+package org.juzidian.dataload.inject;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import javax.inject.Provider;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
-/**
- * A registry of available {@link DictionaryResource}s.
- */
-public class DictionaryResourceRegistry {
+public class SaxParserProvider implements Provider<SAXParser> {
 
-	private final List<DictionaryResource> dictionaryResources;
+	private final SAXParserFactory parserFactory = SAXParserFactory.newInstance();
 
-	public DictionaryResourceRegistry(final List<DictionaryResource> dictionaryResources) {
-		this.dictionaryResources = new ArrayList<DictionaryResource>(dictionaryResources);
-	}
-
-	/**
-	 * @return the available dictionary resources.
-	 */
-	public List<DictionaryResource> getDictionaryResources() {
-		return Collections.unmodifiableList(this.dictionaryResources);
+	@Override
+	public SAXParser get() {
+		try {
+			return this.parserFactory.newSAXParser();
+		} catch (final Exception e) {
+			throw new ModuleConfigurationException(e);
+		}
 	}
 
 }

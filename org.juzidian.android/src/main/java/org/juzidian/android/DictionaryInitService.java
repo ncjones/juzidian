@@ -18,7 +18,7 @@
  */
 package org.juzidian.android;
 
-import org.juzidian.core.dataload.DictionaryResource;
+import org.juzidian.dataload.DictionaryResource;
 
 /**
  * Service for downloading and installing dictionaries.
