@@ -1,0 +1,83 @@
+buildscript {
+	repositories {
+		mavenCentral()
+		mavenRepo name: 'Bintray', url: 'http://dl.bintray.com/content/aalmiray/kordamp'
+	}
+	dependencies {
+		classpath 'org.kordamp:markdown-gradle-plugin:0.1'
+	}
+}
+
+apply plugin: 'markdown'
+
+def markdownDir = file("build/markdown")
+def htmlFragmentsDir = file("build/html-fragments")
+def genSiteDir = file("build/site")
+def htmlHeaderFile = file("src/html/header")
+def htmlFooterFile = file("src/html/footer")
+
+task copyCss(type: Copy) {
+	from "src/css"
+	into "$genSiteDir/css"
+}
+
+task copyMarkdown(type: Copy) {
+	from "src/markdown"
+	into markdownDir
+}
+
+task copyChangeLog(type: Copy) {
+	from "../CHANGES"
+	into markdownDir
+	rename {
+		"changelog.md"
+	}
+}
+
+markdownToHtml {
+	dependsOn copyChangeLog, copyMarkdown
+	sourceDir markdownDir
+	outputDir htmlFragmentsDir
+}
+
+task build {
+	dependsOn markdownToHtml, copyCss
+	inputs.file htmlFragmentsDir
+	outputs.file genSiteDir
+	doLast {
+		def tree = fileTree(htmlFragmentsDir)
+		tree.visit { element ->
+			def targetHtmlFile = file("$genSiteDir/$element.relativePath")
+			if (!element.isDirectory()) {
+				targetHtmlFile.parentFile.mkdirs()
+				concatFiles([htmlHeaderFile, element.file, htmlFooterFile], targetHtmlFile)
+			}
+		}
+	}
+}
+
+task clean(type: Delete) {
+	delete 'build'
+}
+
+def concatFiles (inputFiles, outputFile) {
+	def inputStreams = inputFiles*.newInputStream()
+	outputFile.withOutputStream { it << joinStreams(inputStreams) }
+}
+
+def joinStreams (Collection<InputStream> streams) {
+	return new SequenceInputStream(enumeration(streams))
+}
+
+def enumeration (Collection items) {
+	def itemsCopy = new ArrayList(items)
+	return new Enumeration() {
+		public boolean hasMoreElements() {
+			return !itemsCopy.isEmpty()
+		}
+		public Object nextElement() {
+			return itemsCopy.remove(0)
+		}
+	}
+}
+
