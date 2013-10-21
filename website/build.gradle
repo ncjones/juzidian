@@ -1,3 +1,6 @@
+import javax.imageio.ImageIO
+import org.juzidian.build.imggen.JuzidianLauncherIcon
+
 buildscript {
 	repositories {
 		mavenCentral()
@@ -40,8 +43,19 @@ markdownToHtml {
 	outputDir htmlFragmentsDir
 }
 
+task generateIconImage {
+	def iconFile = file("$genSiteDir/img/juzidian-icon.png")
+	def iconScale = 1.0
+	inputs.property "iconScale", iconScale
+	outputs.file iconFile
+	doLast {
+		iconFile.parentFile.mkdirs()
+		ImageIO.write(new JuzidianLauncherIcon().render(iconScale), "png", iconFile);
+	}
+}
+
 task build {
-	dependsOn markdownToHtml, copyCss
+	dependsOn markdownToHtml, copyCss, generateIconImage
 	inputs.file htmlFragmentsDir
 	outputs.file genSiteDir
 	doLast {
