@@ -25,10 +25,10 @@
 				</a>
 				<nav>
 					<ul>
-						<li><a href="">About</a></li>
-						<li><a href="download">Download</a></li>
-						<li><a href="support">Support</a></li>
-						<li><a href="develop">Develop</a></li>
+						<li><a href="/">About</a></li>
+						<li><a href="/download.html">Download</a></li>
+						<li><a href="/support.html">Support</a></li>
+						<li><a href="/develop.html">Develop</a></li>
 					</ul>
 				</nav>
 			</header>
