@@ -57,6 +57,8 @@ task generateIconImage {
 task build {
 	dependsOn markdownToHtml, copyCss, generateIconImage
 	inputs.file htmlFragmentsDir
+	inputs.file htmlHeaderFile
+	inputs.file htmlFooterFile
 	outputs.file genSiteDir
 	doLast {
 		def tree = fileTree(htmlFragmentsDir)
