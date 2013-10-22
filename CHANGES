@@ -1,5 +1,7 @@
-Version 0.9.0
--------------
+Juzidian Change Log
+-------------------
+
+### Version 0.9.0 ###
 
 Enhancements:
 
@@ -13,8 +15,7 @@ Bugfixes:
 * Prevent UI reset when device rotated.
 
 
-Version 0.8.0
--------------
+### Version 0.8.0 ###
 
 Enhancements:
 
@@ -22,8 +23,7 @@ Enhancements:
 * About page
 
 
-Version 0.7.0
--------------
+### Version 0.7.0 ###
 
 Enhancements:
 
@@ -34,8 +34,7 @@ Bugfixes:
 * Allow apostrophe character in search input.
 
 
-Version 0.6.0
--------------
+### Version 0.6.0 ###
 
 Enhancements:
 
@@ -49,8 +48,7 @@ Bugfixes:
   "hanguo", which were previously considered invalid.
 
 
-Version 0.5.0
--------------
+### Version 0.5.0 ###
 
 Enhancements:
 
@@ -63,8 +61,7 @@ Bugfixes:
 * Prevent selection of loading indicator in search results.
 
 
-Version 0.4.0
--------------
+### Version 0.4.0 ###
 
 Enhancements:
 
@@ -75,8 +72,7 @@ Bugfixes:
 * Prevent unresponsive UI while executing queries.
 
 
-Version 0.3.0
--------------
+### Version 0.3.0 ###
 
 Enhancements:
 
@@ -89,24 +85,21 @@ Bugfixes:
 * Prevent fatal error due to submission of invalid Pinyin queries.
 
 
-Version 0.2.1
--------------
+### Version 0.2.1 ###
 
 Bugfixes:
 
 * Fix fatal NoClassDefFound error.
 
 
-Version 0.2.0
--------------
+### Version 0.2.0 ###
 
 Enhancements:
 
 * Store CEDict data in database for faster querying.
 
 
-Version 0.1.0
--------------
+### Version 0.1.0 ###
 
 Enhancements:
 
