@@ -134,6 +134,11 @@ nav a:hover {
 	line-height: 18px;
 }
 
+a.title-link {
+	color: #222;
+	text-decoration: none;
+}
+
 .footer-container {
 	padding-top: 20px;
 	background: none repeat scroll 0 0 #444;

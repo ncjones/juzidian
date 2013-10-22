@@ -18,9 +18,11 @@
 
 		<div class="header-container">
 			<header class="wrapper clearfix">
-				<h1 class="title">Juzidian
-					<span class="sub-title">Chinese Learners Dictionary</span>
-				</h1>
+				<a href="/" class="title-link">
+					<h1 class="title">Juzidian
+						<span class="sub-title">Chinese Learners Dictionary</span>
+					</h1>
+				</a>
 				<nav>
 					<ul>
 						<li><a href="">About</a></li>
