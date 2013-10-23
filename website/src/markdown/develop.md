@@ -19,6 +19,6 @@ instructions.
 ### Patches ###
 
 Pull requests are the preferred mechanism for receiving patches. Patches may
-also be submitted to the [dev mailing list]
-(mailto:juzidian-developers@lists.sourceforge.net).
+also be submitted to the dev mailing list. See [support](/support.html) for
+mailing list details.
 
