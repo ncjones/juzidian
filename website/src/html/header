@@ -18,14 +18,13 @@
 
 		<div class="header-container">
 			<header class="wrapper clearfix">
-				<a href="/" class="title-link">
+				<a href="/" class="title-link" title="About Juzidian">
 					<h1 class="title">Juzidian
 						<span class="sub-title">Chinese Learners Dictionary</span>
 					</h1>
 				</a>
 				<nav>
 					<ul>
-						<li><a href="/">About</a></li>
 						<li><a href="/download.html">Download</a></li>
 						<li><a href="/support.html">Support</a></li>
 						<li><a href="/develop.html">Develop</a></li>
