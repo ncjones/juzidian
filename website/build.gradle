@@ -18,6 +18,7 @@ def htmlFragmentsDir = file("build/html-fragments")
 def genSiteDir = file("build/site")
 def htmlHeaderFile = file("src/html/header")
 def htmlFooterFile = file("src/html/footer")
+def webSitePublishInfoFile = file("build/sitePublishInfo")
 
 task copyCss(type: Copy) {
 	from "src/css"
@@ -55,6 +56,7 @@ task generateIconImage {
 }
 
 task build {
+	description "Generates web site."
 	dependsOn markdownToHtml, copyCss, generateIconImage
 	inputs.file htmlFragmentsDir
 	inputs.file htmlHeaderFile
@@ -73,7 +75,30 @@ task build {
 }
 
 task clean(type: Delete) {
+	description "Deletes built artifacts."
 	delete 'build'
+}
+
+task publish {
+	description "Publishes web site to network server."
+	dependsOn build
+	def host = webSitePublishHost
+	def path = webSitePublishPath
+	inputs.property 'publishHost', host
+	inputs.property 'publishPath', path
+	inputs.file genSiteDir
+	outputs.file webSitePublishInfoFile
+	doLast {
+		println "Uploading web site to $host:$path"
+		def user = prompt("rsync.username.$host", "Username for rsync to $host:")
+		exec({
+			commandLine 'rsync'
+			/* trailing slash ensures only dir contents are copied (not dir itself) */
+			args "-r", "$genSiteDir/", "$user@$host:$path"
+		})
+		/* create arbitrary output file for up-to-date check */
+		webSitePublishInfoFile << "$host $path"
+	}
 }
 
 def concatFiles (inputFiles, outputFile) {

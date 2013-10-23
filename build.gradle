@@ -38,6 +38,12 @@ subprojects {
 
 }
 
+def prompt(key, message) {
+	def promptPropertyName = "prompt.$key"
+	ant.input(message: message, addproperty: promptPropertyName)
+	return ant.properties[promptPropertyName]
+}
+
 def getGitHeadCommit() {
 	def out = new ByteArrayOutputStream();
 	exec({

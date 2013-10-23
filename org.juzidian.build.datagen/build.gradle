@@ -226,12 +226,6 @@ def promptRsyncUsername(host) {
 	return prompt("rsync.username.$host", "Username for rsync to $host:")
 }
 
-def prompt(key, message) {
-	def promptPropertyName = "prompt.$key"
-	ant.input(message: message, addproperty: promptPropertyName)
-	return ant.properties[promptPropertyName]
-}
-
 class DataBuildModule extends AbstractModule {
 
 	def jdbcUrl;
