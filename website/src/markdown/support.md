@@ -1,5 +1,5 @@
-Support
--------
+Juzidian Support
+----------------
 
 Juzidian user and developer support can be obtained via the mailing lists.
 
