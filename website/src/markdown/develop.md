@@ -7,8 +7,7 @@ Obtain source code via Git:
 
 	$ git clone git://git.code.sf.net/p/juzidian/code
 
-or browse online at [http://sourceforge.net/p/juzidian/code]
-(http://sourceforge.net/p/juzidian/code).
+or browse online at <http://sourceforge.net/p/juzidian/code>
 
 
 ### Building ###
