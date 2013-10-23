@@ -97,7 +97,7 @@ nav a:hover {
 }
 
 .main {
-	padding: 0;
+	padding: 0 0 30px;
 }
 
 .main article h1 {
@@ -186,6 +186,10 @@ a.title-link {
 	nav {
 		float: right;
 		width: 38%;
+	}
+
+	.main {
+		padding-top: 15px;
 	}
 
 	.main article {
