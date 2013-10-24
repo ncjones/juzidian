@@ -144,6 +144,13 @@ a.title-link {
 	background: none repeat scroll 0 0 #444;
 }
 
+article img {
+	padding: 35px 10px;
+	margin-left: 15px;
+	background-color: black;
+	border-radius: 5px;
+}
+
 /* ==========================================================================
    Media Queries
    ========================================================================== */
@@ -194,7 +201,11 @@ a.title-link {
 
 	.main article {
 		float: left;
-		width: 57%;
+		width: 65%;
+	}
+
+	article img {
+		float: right;
 	}
 
 }
@@ -295,5 +306,4 @@ a.title-link {
 		page-break-after: avoid;
 	}
 }
-
 

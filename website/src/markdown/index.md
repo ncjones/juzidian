@@ -4,6 +4,7 @@ About Juzidian
 Juzidian is an offline Chinese-English dictionary for Android, targeted at
 English-speaking learners of Mandarin Chinese.
 
+![Juzidian screen shot](https://s3.amazonaws.com/juzidian-screenshots/juzidian-0.9.0-search-ui-180.png)
 
 ### Features ###
 
