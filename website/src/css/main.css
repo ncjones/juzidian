@@ -193,6 +193,7 @@ article img {
 	nav {
 		float: right;
 		width: 42%;
+		margin-right: 20%;
 	}
 
 	.main {
