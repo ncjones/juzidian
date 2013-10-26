@@ -21,7 +21,7 @@ Juzidian user and developer support can be obtained via the mailing lists.
     [Subscribe / Unsubscribe][5] | [Search / Browse Archive][6]
 
 
-[1]: <https://lists.sourceforge.net/lists/listinfo/juzidian-announcements> "Juzidian announcements subscription"
+[1]: https://lists.sourceforge.net/lists/listinfo/juzidian-announcements "Juzidian announcements subscription"
 
 [2]: https://sourceforge.net/p/juzidian/mailman/juzidian-announcements "Juzidian announcements archive"
 
