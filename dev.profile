@@ -27,5 +27,5 @@ ext.dictionaryArtifactPublishPath = '/usr/share/juzidian-dictionary-repo'
 
 /* Remote server details for publishing web site */
 ext.webSitePublishHost = 'localhost'
-ext.webSitePublishPath = '/srv/juzidian.localhost'
+ext.webSitePublishPath = '/srv/http/juzidian.org'
 
