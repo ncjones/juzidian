@@ -5,7 +5,21 @@
 
 		<div class="footer-container">
 			<footer class="wrapper">
-				<p>Copyright Nathan Jones 2013</p>
+				<nav>
+					<ul>
+						<li><a href="/">About</a></li>
+						<li><a href="/download.html">Download</a></li>
+						<li><a href="/support.html">Support</a></li>
+						<li><a href="/develop.html">Develop</a></li>
+					</ul>
+				</nav>
+				<div class="disclaimers">
+					<p>&copy; 2013 Nathan Jones</p>
+					<p>Except where otherwise noted, content on this site is licensed under a
+						<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution 3.0 License</a>.
+					</p>
+					<p>Responsive page layout by <a href="http://www.initializr.com/">Initializr</a>.</p>
+				</div>
 			</footer>
 		</div>
 

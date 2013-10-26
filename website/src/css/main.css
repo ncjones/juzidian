@@ -68,12 +68,12 @@ body {
 	margin: 0 5%;
 }
 
-nav ul {
+header nav ul {
 	margin: 25px 0 0;
 	padding: 0;
 }
 
-nav a {
+header nav a {
 	display: block;
 	margin-bottom: 10px;
 	padding: 15px 0;
@@ -140,8 +140,42 @@ a.title-link {
 }
 
 .footer-container {
-	padding-top: 20px;
+	padding-bottom: 20px;
 	background: none repeat scroll 0 0 #444;
+}
+
+.footer-container a {
+	color: white;
+	font-weight: bold;
+	text-decoration: none;
+}
+
+.footer-container a:hover {
+	text-decoration: underline;
+}
+
+.footer-container a:hover,
+.footer-container a:visited {
+	color: white;
+}
+
+.footer-container ul {
+	margin: 0;
+	padding: 0;
+}
+
+.footer-container nav li {
+	display: inline;
+	margin-right: 1em;
+}
+
+.footer-container nav {
+	margin-bottom: 25px;
+}
+
+.footer-container .disclaimers {
+	font-size: 0.8em;
+	line-height: 1.3em;
 }
 
 article img {
@@ -157,7 +191,7 @@ article img {
 
 @media only screen and (min-width: 480px) {
 
-	nav a {
+	header nav a {
 		float: left;
 		width: 27%;
 		margin: 0 1.7%;
@@ -171,6 +205,24 @@ article img {
 
 	nav li:last-child a {
 		margin-right: 0;
+	}
+
+	.footer-container footer {
+		overflow: auto;
+	}
+
+	.footer-container .disclaimers {
+		width: 40%;
+	}
+
+	.footer-container nav {
+		width: 60%;
+		float: right;
+	}
+
+	.footer-container nav li {
+		display: list-item;
+		margin-left: 4em;
 	}
 
 	/* IE Fixes */
@@ -190,7 +242,7 @@ article img {
 		float: left;
 	}
 
-	nav {
+	header nav {
 		float: right;
 		width: 42%;
 		margin-right: 20%;
