@@ -10,13 +10,13 @@ Juzidian user and developer support can be obtained via the mailing lists.
 
     [Subscribe / Unsubscribe][1] | [Search / Browse Archive][2]
 
- *  **User discussion**: discussion of bug reports and other user-related
-    issues.
+ *  **User discussion**: discussion of bug reports, feature requests and other
+    user-related issues.
 
     [Subscribe / Unsubscribe][3] | [Search / Browse Archive][4]
 
- *  **Developer discussion**: discussion of feature development, patch
-    submissions and other development related issues.
+ *  **Developer discussion**: discussion of bug fixes, feature development,
+    patch submissions and other development related issues.
 
     [Subscribe / Unsubscribe][5] | [Search / Browse Archive][6]
 
