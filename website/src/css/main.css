@@ -169,6 +169,11 @@ a.title-link {
 	margin-right: 1em;
 }
 
+.footer-container nav a {
+	display: inline-block;
+	padding: 0.5em 0;
+}
+
 .footer-container nav {
 	margin-bottom: 25px;
 }
