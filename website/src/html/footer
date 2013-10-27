@@ -16,7 +16,8 @@
 				<div class="disclaimers">
 					<p>&copy; 2013 Nathan Jones</p>
 					<p>Except where otherwise noted, content on this site is licensed under a
-						<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution 3.0 License</a>.
+						<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/"
+							title="Collective Commons Attribution-ShareAlike 3.0 Unported License">CC BY-SA 3.0 License</a>.
 					</p>
 					<p>Responsive page layout by <a href="http://www.initializr.com/">Initializr</a>.</p>
 					<p>Updated @buildDate@</p>
