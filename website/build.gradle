@@ -1,4 +1,5 @@
 import javax.imageio.ImageIO
+import org.apache.tools.ant.filters.ReplaceTokens
 import org.juzidian.build.imggen.JuzidianLauncherIcon
 
 buildscript {
@@ -15,9 +16,10 @@ apply plugin: 'markdown'
 
 def markdownDir = file("build/markdown")
 def htmlFragmentsDir = file("build/html-fragments")
+def htmlContentsDir = file("${htmlFragmentsDir}/content")
+def htmlHeaderFile = file("${htmlFragmentsDir}/header")
+def htmlFooterFile = file("${htmlFragmentsDir}/footer")
 def genSiteDir = file("build/site")
-def htmlHeaderFile = file("src/html/header")
-def htmlFooterFile = file("src/html/footer")
 def webSitePublishInfoFile = file("build/sitePublishInfo")
 
 task copyCss(type: Copy) {
@@ -28,6 +30,12 @@ task copyCss(type: Copy) {
 task copyMarkdown(type: Copy) {
 	from "src/markdown"
 	into markdownDir
+}
+
+task copyHtml(type: Copy) {
+	from "src/html"
+	into htmlFragmentsDir
+	filter(ReplaceTokens, tokens: [buildDate: buildInfo.buildDate.format('yyyy-MM-dd HH:mm:ss Z')])
 }
 
 task copyChangeLog(type: Copy) {
@@ -41,7 +49,7 @@ task copyChangeLog(type: Copy) {
 markdownToHtml {
 	dependsOn copyChangeLog, copyMarkdown
 	sourceDir markdownDir
-	outputDir htmlFragmentsDir
+	outputDir htmlContentsDir
 }
 
 task generateIconImage {
@@ -57,13 +65,13 @@ task generateIconImage {
 
 task build {
 	description "Generates web site."
-	dependsOn markdownToHtml, copyCss, generateIconImage
-	inputs.file htmlFragmentsDir
+	dependsOn markdownToHtml, copyCss, copyHtml, generateIconImage
+	inputs.file htmlContentsDir
 	inputs.file htmlHeaderFile
 	inputs.file htmlFooterFile
 	outputs.file genSiteDir
 	doLast {
-		def tree = fileTree(htmlFragmentsDir)
+		def tree = fileTree(htmlContentsDir)
 		tree.visit { element ->
 			def targetHtmlFile = file("$genSiteDir/$element.relativePath")
 			if (!element.isDirectory()) {

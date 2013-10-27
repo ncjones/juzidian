@@ -19,6 +19,7 @@
 						<a rel="license" href="http://creativecommons.org/licenses/by-sa/3.0/">Creative Commons Attribution 3.0 License</a>.
 					</p>
 					<p>Responsive page layout by <a href="http://www.initializr.com/">Initializr</a>.</p>
+					<p>Updated @buildDate@</p>
 				</div>
 			</footer>
 		</div>
