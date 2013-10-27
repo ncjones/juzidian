@@ -1,0 +1,47 @@
+About
+=====
+
+The website build generates the static-HTML project website.
+
+
+Dependencies
+============
+
+The same Java and Gradle dependencies as the Juzidian Core build requirements,
+plus:
+
+ * rsync (for site publishing only)
+
+
+Building
+========
+
+Note: Gradle commands should be invoked from the top-level project.
+
+ * Generate the site:
+
+	$ gradle -c website-settings.gradle build
+
+
+Publishing
+==========
+
+Note: Gradle commands should be invoked from the top-level project.
+
+ * Publish generated site to network server:
+
+	$ gradle -c website-settings.gradle publish
+
+   Note: the rsync publishing mechanism does not remove deleted files. Removal
+   of files from the remote server requires manual intervention.
+
+
+Alternative Server
+==================
+
+The generated site can be published to an alternative server by specifying a
+build profile which defines alternative site publication configuration. For
+example, to publish to the server defined in the "dev" profile:
+
+	$ gradle -c website-settings.gradle -Pprofile=dev publish
+
