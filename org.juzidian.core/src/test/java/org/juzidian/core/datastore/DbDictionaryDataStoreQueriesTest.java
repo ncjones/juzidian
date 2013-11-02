@@ -61,7 +61,6 @@ public class DbDictionaryDataStoreQueriesTest {
 	@Before
 	public void setUp() throws Exception {
 		this.connectionSource = new JdbcConnectionSource("jdbc:sqlite::memory:");
-		new DbDictionaryDataStoreSchemaCreator().createSchema(this.connectionSource);
 		this.dictionaryEntryDao = DaoManager.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry> createDao(this.connectionSource,
 				DbDictionaryEntry.class);
 		this.dictionaryMetadataDao = DaoManager.<Dao<DbDictionaryMetadata, Long>, DbDictionaryMetadata> createDao(this.connectionSource,
