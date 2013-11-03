@@ -88,6 +88,24 @@ public class DictionaryTest {
 	}
 
 	@Test
+	public void findShouldTrimPinyinSearchQueryString() {
+		this.dictionary.find(new SearchQuery(PINYIN, " han ", 5, 0));
+		verify(this.dataStore).findPinyin(pinyinSyllables("han"), 5, 0, null);
+	}
+
+	@Test
+	public void findShouldTrimHanziSearchQueryString() {
+		this.dictionary.find(new SearchQuery(HANZI, " 汉 ", 5, 0));
+		verify(this.dataStore).findChinese("汉", 5, 0, null);
+	}
+
+	@Test
+	public void findShouldTrimReverseSearchQueryString() {
+		this.dictionary.find(new SearchQuery(REVERSE, " foo ", 5, 0));
+		verify(this.dataStore).findDefinitions("foo", 5, 0, null);
+	}
+
+	@Test
 	public void findPinyinShouldInvokeDataStoreFindPinyinWithPageOffset() {
 		this.dictionary.find(new SearchQuery(PINYIN, "han", 5, 2));
 		verify(this.dataStore).findPinyin(Matchers.<List<PinyinSyllable>> any(), eq(5L), eq(10L), (SearchCanceller) isNull());

@@ -93,7 +93,7 @@ public class Dictionary {
 
 	private SearchResults find(final SearchQuery query, final SearchCanceller canceller) {
 		final long start = System.nanoTime();
-		final List<DictionaryEntry> searchResults = query.getSearchType().doSearch(this, query.getSearchText(), query.getPageSize(),
+		final List<DictionaryEntry> searchResults = query.getSearchType().doSearch(this, query.getSearchText().trim(), query.getPageSize(),
 				query.getPageSize() * query.getPageIndex(), canceller);
 		final long end = System.nanoTime();
 		LOGGER.info("Found {} words matching '{}' in {} seconds.", new Object[] { searchResults.size(), query.getSearchText(),
