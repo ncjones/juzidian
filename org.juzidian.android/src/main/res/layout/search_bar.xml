@@ -16,7 +16,7 @@
             android:layout_weight="1"
             android:background="@null"
             android:hint="@string/search_hint"
-            android:imeOptions="actionDone"
+            android:imeOptions="actionDone|flagNoExtractUi"
             android:inputType="text"
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
