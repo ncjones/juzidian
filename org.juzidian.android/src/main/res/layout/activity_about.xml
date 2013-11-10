@@ -40,15 +40,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/about_item_spacing"
-            android:text="Copyright Nathan Jones 2013"
-            android:textIsSelectable="true"
-            android:textSize="@dimen/about_text_size_normal" />
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginTop="@dimen/about_item_spacing"
             android:autoLink="web"
             android:text="http://www.juzidian.org/"
             android:textIsSelectable="true"
@@ -68,6 +59,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/about_text_size_small" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="@dimen/about_item_spacing"
+            android:text="© 2013 Nathan Jones"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/about_text_size_small" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/about_item_spacing"
+            android:text="@string/about_license_summary"
+            android:textIsSelectable="true"
+            android:textSize="@dimen/about_text_size_small" />
+
+        <TextView
+            android:id="@+id/dictionaryDataDisclaimer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/about_item_spacing"
             android:textIsSelectable="true"
             android:textSize="@dimen/about_text_size_small" />
     </LinearLayout>
