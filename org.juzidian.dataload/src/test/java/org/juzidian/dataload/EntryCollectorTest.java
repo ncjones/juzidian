@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.datastore;
+package org.juzidian.dataload;
 
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +27,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictPinyinSyllable;
-import org.juzidian.core.datastore.EntryCollector;
 
 public class EntryCollectorTest {
 
@@ -35,7 +34,7 @@ public class EntryCollectorTest {
 
 	@Before
 	public void setUp() {
-		this.entryCollector = new EntryCollector();
+		this.entryCollector = new EntryCollector(new CedictEntryToDictionaryEntryConverter());
 	}
 
 	@Test

@@ -8,9 +8,9 @@ import groovy.xml.MarkupBuilder
 import org.juzidian.cedict.CedictInputStreamProvider
 import org.juzidian.cedict.CedictLoader
 import org.juzidian.core.datastore.DbDictionaryDataStore
-import org.juzidian.core.datastore.DbDictionaryDataStoreDbInitializer
-import org.juzidian.core.datastore.DbDictionaryDataStoreEntryPopulator
 import org.juzidian.core.inject.DictionaryModule
+import org.juzidian.dataload.DbDictionaryDataStoreDbInitializer
+import org.juzidian.dataload.DbDictionaryDataStoreEntryPopulator
 
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3Client
@@ -30,7 +30,7 @@ buildscript {
 	dependencies {
 		classpath "org.juzidian:org.juzidian.cedict:${juzidianVersion}"
 		classpath "org.juzidian:org.juzidian.core:${juzidianVersion}"
-		classpath "org.juzidian:org.juzidian.pinyin:${juzidianVersion}"
+		classpath "org.juzidian:org.juzidian.dataload:${juzidianVersion}"
 		classpath libraries.guice
 		classpath libraries.ormlite_jdbc
 		classpath libraries.sqlite_jdbc

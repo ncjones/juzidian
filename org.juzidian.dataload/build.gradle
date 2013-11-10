@@ -4,6 +4,9 @@ apply plugin: 'maven'
 sourceCompatibility = '1.6'
 
 dependencies {
+	compile project(':org.juzidian.core')
+	compile project(':org.juzidian.pinyin')
+	compile project(':org.juzidian.cedict')
 	compile project(':org.juzidian.util')
 	compile libraries.guice
 	compile libraries.slf4j_api

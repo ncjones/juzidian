@@ -5,7 +5,6 @@ sourceCompatibility = '1.6'
 
 dependencies {
 	compile project(':org.juzidian.pinyin')
-	compile project(':org.juzidian.cedict')
 	compile libraries.guice
 	compile libraries.ormlite_core
 	compile libraries.slf4j_api

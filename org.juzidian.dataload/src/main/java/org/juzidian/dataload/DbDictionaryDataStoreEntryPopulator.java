@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.datastore;
+package org.juzidian.dataload;
 
 import java.io.IOException;
 
@@ -33,13 +33,16 @@ public class DbDictionaryDataStoreEntryPopulator {
 
 	private final CedictLoader cedictLoader;
 
+	private final CedictEntryToDictionaryEntryConverter entryConverter;
+
 	@Inject
-	public DbDictionaryDataStoreEntryPopulator(final CedictLoader cedictLoader) {
+	public DbDictionaryDataStoreEntryPopulator(final CedictLoader cedictLoader, final CedictEntryToDictionaryEntryConverter entryConverter) {
 		this.cedictLoader = cedictLoader;
+		this.entryConverter = entryConverter;
 	}
 
 	public void populateEntries(final DictionaryDataStore dictionaryDataStore) {
-		final EntryCollector entryCollector = new EntryCollector();
+		final EntryCollector entryCollector = new EntryCollector(entryConverter);
 		try {
 			this.cedictLoader.loadEntries(entryCollector);
 		} catch (final IOException e) {

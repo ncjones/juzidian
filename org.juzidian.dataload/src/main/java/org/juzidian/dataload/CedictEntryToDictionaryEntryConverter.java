@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.datastore;
+package org.juzidian.dataload;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,38 +24,34 @@ import java.util.List;
 import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictPinyinSyllable;
 import org.juzidian.core.DictionaryEntry;
+import org.juzidian.core.datastore.BasicDictionaryEntry;
 import org.juzidian.pinyin.PinyinSyllable;
 import org.juzidian.pinyin.Tone;
 
 /**
- * A {@link DictionaryEntry} which delegates to a {@link CedictEntry}.
+ * Creates {@link DictionaryEntry} instances from {@link CedictEntry} instances.
  */
-class CedictDictionaryEntryAdaptor extends DictionaryEntry {
+class CedictEntryToDictionaryEntryConverter {
 
-	private final CedictEntry cedictEntry;
-
-	public CedictDictionaryEntryAdaptor(final CedictEntry cedictEntry) {
-		this.cedictEntry = cedictEntry;
+	public DictionaryEntry convert(final CedictEntry cedictEntry) {
+		return new BasicDictionaryEntry(getTraditional(cedictEntry), getSimplified(cedictEntry), getPinyin(cedictEntry),
+				getDefinitions(cedictEntry));
 	}
 
-	@Override
-	public String getTraditional() {
-		return this.cedictEntry.getTraditionalCharacters();
+	private String getTraditional(final CedictEntry cedictEntry) {
+		return cedictEntry.getTraditionalCharacters();
 	}
 
-	@Override
-	public String getSimplified() {
-		return this.cedictEntry.getSimplifiedCharacters();
+	private String getSimplified(final CedictEntry cedictEntry) {
+		return cedictEntry.getSimplifiedCharacters();
 	}
 
-	@Override
-	public List<PinyinSyllable> getPinyin() {
-		return this.createPinyinSyllables(this.cedictEntry.getPinyinSyllables());
+	private List<PinyinSyllable> getPinyin(final CedictEntry cedictEntry) {
+		return this.createPinyinSyllables(cedictEntry.getPinyinSyllables());
 	}
 
-	@Override
-	public List<String> getDefinitions() {
-		return this.cedictEntry.getDefinitions();
+	private List<String> getDefinitions(final CedictEntry cedictEntry) {
+		return cedictEntry.getDefinitions();
 	}
 
 	private List<PinyinSyllable> createPinyinSyllables(final List<CedictPinyinSyllable> pinyinSyllables) {

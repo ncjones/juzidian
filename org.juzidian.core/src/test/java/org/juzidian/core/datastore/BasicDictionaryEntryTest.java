@@ -1,6 +1,6 @@
 /*
- * Copyright Nathan Jones 2012
- * 
+ * Copyright Nathan Jones 2013
+ *
  * This file is part of Juzidian.
  *
  * Juzidian is free software: you can redistribute it and/or modify
@@ -19,18 +19,13 @@
 package org.juzidian.core.datastore;
 
 import java.util.Arrays;
-import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
-import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictPinyinSyllable;
 import org.juzidian.core.DictionaryEntry;
 import org.juzidian.core.DictionaryEntryTest;
-import org.juzidian.core.datastore.CedictDictionaryEntryAdaptor;
 import org.juzidian.pinyin.PinyinSyllable;
 
-public class CedictDictionaryEntryAdaptorTest extends DictionaryEntryTest {
+public class BasicDictionaryEntryTest extends DictionaryEntryTest {
 
 	@Override
 	protected DictionaryEntry createChineseWord(final PinyinSyllable... pinyinSyllables) {
@@ -41,40 +36,7 @@ public class CedictDictionaryEntryAdaptorTest extends DictionaryEntryTest {
 					.getTone().getNumber());
 			cedictPinyinSyllables[i] = cedictPinyinSyllable;
 		}
-		return new CedictDictionaryEntryAdaptor(this.createMockCedictEntry(cedictPinyinSyllables));
-	}
-
-	private CedictEntry createMockCedictEntry(final CedictPinyinSyllable... pinyinSyllables) {
-		return new CedictEntry() {
-
-			@Override
-			public String getTraditionalCharacters() {
-				return null;
-			}
-
-			@Override
-			public String getSimplifiedCharacters() {
-				return null;
-			}
-
-			@Override
-			public List<CedictPinyinSyllable> getPinyinSyllables() {
-				return Arrays.asList(pinyinSyllables);
-			}
-
-			@Override
-			public List<String> getDefinitions() {
-				return null;
-			}
-		};
-	}
-
-	@Test
-	public void pinyinSyllablesShouldPreserveCase() {
-		final CedictEntry cedictEntry = this.createMockCedictEntry(new CedictPinyinSyllable("Zhang", 1));
-		final DictionaryEntry dictionaryEntry = new CedictDictionaryEntryAdaptor(cedictEntry);
-		final PinyinSyllable pinyinSyllable = dictionaryEntry.getPinyin().get(0);
-		Assert.assertEquals("Zhang", pinyinSyllable.getLetters());
+		return new BasicDictionaryEntry(null, null, Arrays.asList(pinyinSyllables), null);
 	}
 
 }

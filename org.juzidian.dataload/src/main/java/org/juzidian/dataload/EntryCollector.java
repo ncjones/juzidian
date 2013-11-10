@@ -16,11 +16,13 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.datastore;
+package org.juzidian.dataload;
 
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictLoadHandler;
@@ -32,7 +34,14 @@ class EntryCollector implements CedictLoadHandler {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EntryCollector.class);
 
+	private final CedictEntryToDictionaryEntryConverter entryConverter;
+
 	private final List<DictionaryEntry> entries = new LinkedList<DictionaryEntry>();
+
+	@Inject
+	public EntryCollector(final CedictEntryToDictionaryEntryConverter entryConverter) {
+		this.entryConverter = entryConverter;
+	}
 
 	public Collection<DictionaryEntry> getEntries() {
 		return this.entries;
@@ -45,8 +54,7 @@ class EntryCollector implements CedictLoadHandler {
 
 	@Override
 	public void entryLoaded(final CedictEntry cedictEntry) {
-		final DictionaryEntry entry = new CedictDictionaryEntryAdaptor(cedictEntry);
-		this.entries.add(entry);
+		this.entries.add(entryConverter.convert(cedictEntry));
 	}
 
 	@Override
