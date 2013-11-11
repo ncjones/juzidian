@@ -86,6 +86,17 @@
             android:layout_marginTop="@dimen/about_item_spacing"
             android:textIsSelectable="true"
             android:textSize="@dimen/about_text_size_small" />
+        
+        <Button
+            android:layout_marginTop="@dimen/about_item_spacing"
+            android:layout_gravity="center_horizontal"
+            android:id="@+id/licensingDetailsButton"
+            style="?android:attr/buttonStyleSmall"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/about_licensing_details_button_label"
+            android:onClick="showLicensingDetails"/>
+        
     </LinearLayout>
 
 </ScrollView>

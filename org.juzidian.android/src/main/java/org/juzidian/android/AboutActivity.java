@@ -22,11 +22,14 @@ import javax.inject.Inject;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
+import android.content.Intent;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.text.Html;
 import android.text.format.DateFormat;
 import android.text.method.LinkMovementMethod;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 /**
@@ -46,6 +49,9 @@ public class AboutActivity extends RoboActivity {
 	@InjectView(R.id.dictionaryDataDisclaimer)
 	private TextView dictionaryDataDisclaimerTextView;
 
+	@InjectView(R.id.licensingDetailsButton)
+	private Button licensingDetailsButton;
+
 	@Inject
 	private BuildInfo buildInfo;
 
@@ -58,6 +64,11 @@ public class AboutActivity extends RoboActivity {
 		this.headCommitTextView.setText(this.getString(R.string.about_source_id, this.getSourceId()));
 		this.dictionaryDataDisclaimerTextView.setText(Html.fromHtml(this.getString(R.string.about_data_disclaimer_html)));
 		this.dictionaryDataDisclaimerTextView.setMovementMethod(LinkMovementMethod.getInstance());
+	}
+
+	public void showLicensingDetails(final View view) {
+		final Intent intent = new Intent(this, AboutLicensesActivity.class);
+		this.startActivity(intent);
 	}
 
 	private String getVersionName() {

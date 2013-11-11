@@ -19,5 +19,6 @@
 				<a href=\"http://cc-cedict.org/\">CC-CEDICT</a> project and licensed under a
 				<a href=\"https://creativecommons.org/licenses/by-sa/3.0/\">Creative Commons
 				Attribution-Share Alike 3.0 License</a>.]]></string>
+    <string name="about_licensing_details_button_label">Full License Details</string>
 
 </resources>
