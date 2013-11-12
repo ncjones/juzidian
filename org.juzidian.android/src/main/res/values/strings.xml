@@ -13,12 +13,12 @@
     <string name="about_version">Version: %s</string>
     <string name="about_build_date">Build Date: %s</string>
     <string name="about_source_id">Source Id: %s</string>
-    <string name="about_license_summary">Juzidian is free software and distributed under the terms
-        of the GNU General Public License version 3.</string>
+    <string name="about_license_summary">This program comes with ABSOLUTELY NO WARRANTY.
+        This is free software, and you are welcome to redistribute it under certain conditions. See Licensing for more details.</string>
     <string name="about_data_disclaimer_html"><![CDATA[Dictionary data is produced by the
 				<a href=\"http://cc-cedict.org/\">CC-CEDICT</a> project and licensed under a
 				<a href=\"https://creativecommons.org/licenses/by-sa/3.0/\">Creative Commons
 				Attribution-Share Alike 3.0 License</a>.]]></string>
-    <string name="about_licensing_details_button_label">Full License Details</string>
+    <string name="about_licensing_details_button_label">Licensing</string>
 
 </resources>

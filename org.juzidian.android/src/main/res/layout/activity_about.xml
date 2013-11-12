@@ -67,7 +67,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/about_item_spacing"
-            android:text="© 2013 Nathan Jones"
+            android:text="Copyright © 2013 Nathan Jones"
             android:textIsSelectable="true"
             android:textSize="@dimen/about_text_size_small" />
 
