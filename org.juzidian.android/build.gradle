@@ -131,7 +131,6 @@ android.applicationVariants.all { appVariant ->
 	def generateImagesTaskName = "generateImages${appVariant.name}"
 	def generateBuildInfoFileTaskName = "generateBuildInfoFile${appVariant.name}"
 	def licensesHtmlTaskName = "licensesHtml${appVariant.name}"
-	def licensesHtmlCleanupTaskName = "licensesHtmlCleanup${appVariant.name}"
 	def resDir = file("build/res/all/${appVariant.baseName}")
 	def assetsDir = file("build/assets/${appVariant.baseName}")
 	task(generateImagesTaskName) {
@@ -161,6 +160,7 @@ android.applicationVariants.all { appVariant ->
 				}
 				filter(ReplaceTokens, tokens: ['license-texts': licensesTextsHtmlFile.text])
 			}
+			delete("$assetsDir/$licensesHtmlTemplateFile.name")
 		}
 	}
 	appVariant.processResources.dependsOn generateImagesTaskName, generateBuildInfoFileTaskName, licensesHtmlTaskName
