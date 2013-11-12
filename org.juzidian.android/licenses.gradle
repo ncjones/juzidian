@@ -1,0 +1,15 @@
+ext.licenses = [
+
+	[
+		key: 'gpl',
+		title: 'GNU General Public License Version 3',
+		textUrl: "file:$projectDir.parent/COPYING",
+	],
+
+	[
+		key: 'asl',
+		title: 'Apache License Version 2.0',
+		textUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
+	]
+
+]

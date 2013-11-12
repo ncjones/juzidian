@@ -6,6 +6,7 @@ import org.juzidian.build.imggen.InputTypeToggleIcon
 import org.juzidian.build.imggen.JuzidianLauncherIcon
 
 apply plugin: 'android'
+apply from: 'licenses.gradle'
 
 ext.androidSdkDir = localProperties['sdk.dir']
 ext.licensesDir = file("build/licenses")
@@ -40,19 +41,6 @@ android {
 		buildToolsVersion "17.0"
 	}
 }
-
-def licenses = [
-	[
-		key: 'gpl',
-		title: 'GNU General Public License Version 3',
-		textUrl: "file:$projectDir.parent/COPYING",
-	],
-	[
-		key: 'asl',
-		title: 'Apache License Version 2.0',
-		textUrl: 'https://www.apache.org/licenses/LICENSE-2.0.txt',
-	]
-]
 
 def generateImages(resDir) {
 	def iconImageGenerator = new AndroidImageResourceGenerator(resDir)
