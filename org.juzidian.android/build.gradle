@@ -92,13 +92,18 @@ licenses.each { license ->
 		def licenseFile = licenseFile(license)
 		def licenseUrl = license.textUrl
 		inputs.property 'url', licenseUrl
+		inputs.property 'text', license.text
 		outputs.file licenseFile
 		doLast {
 			licensesDir.mkdirs()
 			def outputStream = new FileOutputStream(licenseFile)
-			println "Downloading license text from $licenseUrl"
-			new URL(licenseUrl).withInputStream {
-				outputStream << it
+			if (license.text) {
+				outputStream << license.text
+			} else {
+				println "Downloading license text from $licenseUrl"
+				new URL(licenseUrl).withInputStream {
+					outputStream << it
+				}
 			}
 		}
 	}
