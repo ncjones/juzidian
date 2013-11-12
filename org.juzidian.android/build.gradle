@@ -148,6 +148,7 @@ android.applicationVariants.all { appVariant ->
 	}
 	task(licensesHtmlTaskName) {
 		dependsOn licensesTextsHtml
+		dependsOn appVariant.mergeAssets
 		inputs.file licensesTextsHtmlFile
 		inputs.file licensesHtmlTemplateFile
 		outputs.file "$assetsDir/licenses.html"
