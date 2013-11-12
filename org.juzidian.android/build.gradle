@@ -1,4 +1,5 @@
-import org.apache.tools.ant.filters.ReplaceTokens
+import freemarker.template.Configuration
+
 import org.juzidian.build.imggen.AndroidImageResourceGenerator
 import org.juzidian.build.imggen.CrossIcon
 import org.juzidian.build.imggen.IconDescriptor
@@ -8,10 +9,19 @@ import org.juzidian.build.imggen.JuzidianLauncherIcon
 apply plugin: 'android'
 apply from: 'licenses.gradle'
 
+buildscript {
+	repositories {
+		mavenCentral()
+	}
+	dependencies {
+		classpath libraries.freemarker
+	}
+}
+
 ext.androidSdkDir = localProperties['sdk.dir']
 ext.licensesDir = file("build/licenses")
-def licensesHtmlTemplateFile = file("src/main/assets/licenses-template.html")
-def licensesTextsHtmlFile = file("build/licenses-content.html")
+def licensesHtmlTemplateFile = file("src/main/assets/licenses-template.ftl")
+def licensesTextsHtmlFile = file("build/licenses.html")
 
 dependencies {
 	compile (project(':org.juzidian.core')) {
@@ -67,9 +77,11 @@ def licenseFile(license) {
 	return file("$licensesDir/${license.key}.txt")
 }
 
-def retrieveLicenseTaskName(license) {
-	return "retrieveLicense-$license.key"
-}
+def retrieveLicenseTaskName(license) { "retrieveLicense-$license.key" }
+
+def loadLicenseTextTaskName(license) { "loadLicenseText-$license.key" }
+
+def createLicenseHtmlTaskName(license) { "createLicenseHtml-$license.key" }
 
 def createHtml(text) {
 	return text
@@ -77,52 +89,58 @@ def createHtml(text) {
 		.replaceAll('\n\n', '\n<br><br>\n')
 }
 
-def createLicenseHtml(license) {
-	def licenseText = licenseFile(license).text
-	return """
-		<h2>$license.title</h2>
-		<p>
-			${createHtml(licenseText)}
-		</p>
-		"""
-}
-
 licenses.each { license ->
-	task (retrieveLicenseTaskName(license)) {
+	if (!license.text) {
 		def licenseFile = licenseFile(license)
-		def licenseUrl = license.textUrl
-		inputs.property 'url', licenseUrl
-		inputs.property 'text', license.text
-		outputs.file licenseFile
-		doLast {
-			licensesDir.mkdirs()
-			def outputStream = new FileOutputStream(licenseFile)
-			if (license.text) {
-				outputStream << license.text
-			} else {
+		task (retrieveLicenseTaskName(license)) {
+			def licenseUrl = license.textUrl
+			inputs.property 'url', licenseUrl
+			outputs.file licenseFile
+			doLast {
+				licensesDir.mkdirs()
+				def outputStream = new FileOutputStream(licenseFile)
 				println "Downloading license text from $licenseUrl"
 				new URL(licenseUrl).withInputStream {
 					outputStream << it
 				}
 			}
 		}
+		task(loadLicenseTextTaskName(license)) {
+			dependsOn retrieveLicenseTaskName(license)
+			doLast {
+				license.text = licenseFile.text
+			}
+		}
+	}
+	task(createLicenseHtmlTaskName(license)) {
+		if (!license.text) {
+			dependsOn loadLicenseTextTaskName(license)
+		}
+		doLast {
+			license.html = createHtml(license.text)
+		}
 	}
 }
 
 task retrieveLicenses {
 	licenses.each {
-		dependsOn retrieveLicenseTaskName(it)
+		dependsOn createLicenseHtmlTaskName(it)
 	}
 }
 
-task licensesTextsHtml {
+task licensesHtml {
 	dependsOn retrieveLicenses
 	inputs.file licensesDir
+	inputs.property 'licenses', licenses
+	inputs.file licensesHtmlTemplateFile
 	outputs.file licensesTextsHtmlFile
+	def config = new Configuration()
+	config.setDirectoryForTemplateLoading(file(licensesHtmlTemplateFile.parent))
+	def template = config.getTemplate(licensesHtmlTemplateFile.name);
 	doLast {
 		licensesTextsHtmlFile.delete()
-		licenses.each {
-			licensesTextsHtmlFile << createLicenseHtml(it)
+		licensesTextsHtmlFile.withWriter {
+			template.process([licenses: licenses], it)
 		}
 	}
 }
@@ -131,6 +149,7 @@ android.applicationVariants.all { appVariant ->
 	def generateImagesTaskName = "generateImages${appVariant.name}"
 	def generateBuildInfoFileTaskName = "generateBuildInfoFile${appVariant.name}"
 	def licensesHtmlTaskName = "licensesHtml${appVariant.name}"
+	def removeLicensesTemplateTaskName = "deleteLicensesTemplate${appVariant.name}"
 	def resDir = file("build/res/all/${appVariant.baseName}")
 	def assetsDir = file("build/assets/${appVariant.baseName}")
 	task(generateImagesTaskName) {
@@ -145,25 +164,18 @@ android.applicationVariants.all { appVariant ->
 			generateBuildInfoFile(resDir)
 		}
 	}
-	task(licensesHtmlTaskName) {
-		dependsOn licensesTextsHtml
+	task(licensesHtmlTaskName, type: Copy) {
+		dependsOn licensesHtml
 		dependsOn appVariant.mergeAssets
-		inputs.file licensesTextsHtmlFile
-		inputs.file licensesHtmlTemplateFile
-		outputs.file "$assetsDir/licenses.html"
-		doLast {
-			copy {
-				from licensesHtmlTemplateFile
-				into assetsDir
-				rename {
-					'licenses.html'
-				}
-				filter(ReplaceTokens, tokens: ['license-texts': licensesTextsHtmlFile.text])
-			}
-			delete("$assetsDir/$licensesHtmlTemplateFile.name")
-		}
+		from licensesTextsHtmlFile
+		into assetsDir
 	}
-	appVariant.processResources.dependsOn generateImagesTaskName, generateBuildInfoFileTaskName, licensesHtmlTaskName
+	task(removeLicensesTemplateTaskName, type: Delete) {
+		dependsOn appVariant.mergeAssets
+		delete("$assetsDir/$licensesHtmlTemplateFile.name")
+	}
+	appVariant.processResources.dependsOn generateImagesTaskName, generateBuildInfoFileTaskName, licensesHtmlTaskName,
+		removeLicensesTemplateTaskName
 }
 
 eclipse {

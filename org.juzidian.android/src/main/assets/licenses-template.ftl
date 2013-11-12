@@ -17,7 +17,12 @@
 		<p>The full license text for each of the applicable licenses are listed
 		below.</p>
 
-		@license-texts@
+		<#list licenses as license>
+			<h2>${license.title}</h2>
+			<p>
+				${license.html}
+			</p>
+		</#list>
 
 	</body>
 </html>
