@@ -17,8 +17,15 @@
 		<p>The full license text for each of the applicable licenses are listed
 		below.</p>
 
+		<ul>
+			<#list licenses as license>
+				<li><a href="#${license.key?html}">${license.title?html}</a></li>
+			</#list>
+		</ul>
+
 		<#list licenses as license>
-			<h2>${license.title}</h2>
+			<a name="${license.key?html}"/>
+			<h2>${license.title?html}</h2>
 			<p>
 				${license.html}
 			</p>

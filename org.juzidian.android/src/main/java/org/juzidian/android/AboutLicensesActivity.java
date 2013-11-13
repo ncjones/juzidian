@@ -24,12 +24,23 @@ import android.webkit.WebView;
 
 public class AboutLicensesActivity extends Activity {
 
+	private WebView webview;
+
 	@Override
 	protected void onCreate(final Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		final WebView webview = new WebView(this);
-		webview.loadUrl("file:///android_asset/licenses.html");
-		this.setContentView(webview);
+		this.webview = new WebView(this);
+		this.webview.loadUrl("file:///android_asset/licenses.html");
+		this.setContentView(this.webview);
+	}
+
+	@Override
+	public void onBackPressed() {
+		if (this.webview.canGoBack()) {
+			this.webview.goBack();
+		} else {
+			super.onBackPressed();
+		}
 	}
 
 }
