@@ -4,5 +4,6 @@ configurations {
 
 rootProject.dependencies {
   runtime project(':org.juzidian.build.imggen')
+  runtime project(':org.juzidian.gradle.licenses')
 }
 

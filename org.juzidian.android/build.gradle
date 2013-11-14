@@ -7,6 +7,7 @@ import org.juzidian.build.imggen.InputTypeToggleIcon
 import org.juzidian.build.imggen.JuzidianLauncherIcon
 
 apply plugin: 'android'
+apply plugin: 'juzidian-licenses'
 apply from: 'licenses.gradle'
 
 buildscript {
@@ -19,7 +20,6 @@ buildscript {
 }
 
 ext.androidSdkDir = localProperties['sdk.dir']
-ext.licensesDir = file("build/licenses")
 def licensesHtmlTemplateFile = file("src/main/assets/licenses-template.ftl")
 def licensesTextsHtmlFile = file("build/licenses.html")
 
@@ -73,65 +73,19 @@ def generateBuildInfoFile(resDir) {
 	}
 }
 
-def licenseFile(license) {
-	return file("$licensesDir/${license.key}.txt")
+def licenseAsMap(license) {
+	license.properties.subMap(['name', 'title', 'text'])
 }
 
-def retrieveLicenseTaskName(license) { "retrieveLicense-$license.key" }
-
-def loadLicenseTextTaskName(license) { "loadLicenseText-$license.key" }
-
-def createLicenseHtmlTaskName(license) { "createLicenseHtml-$license.key" }
-
-def createHtml(text) {
-	return text
-		.replaceAll('<', '&lt;')
-		.replaceAll('\n\n', '\n<br><br>\n')
-}
-
-licenses.each { license ->
-	if (!license.text) {
-		def licenseFile = licenseFile(license)
-		task (retrieveLicenseTaskName(license)) {
-			def licenseUrl = license.textUrl
-			inputs.property 'url', licenseUrl
-			outputs.file licenseFile
-			doLast {
-				licensesDir.mkdirs()
-				def outputStream = new FileOutputStream(licenseFile)
-				println "Downloading license text from $licenseUrl"
-				new URL(licenseUrl).withInputStream {
-					outputStream << it
-				}
-			}
-		}
-		task(loadLicenseTextTaskName(license)) {
-			dependsOn retrieveLicenseTaskName(license)
-			doLast {
-				license.text = licenseFile.text
-			}
-		}
-	}
-	task(createLicenseHtmlTaskName(license)) {
-		if (!license.text) {
-			dependsOn loadLicenseTextTaskName(license)
-		}
-		doLast {
-			license.html = createHtml(license.text)
-		}
-	}
-}
-
-task retrieveLicenses {
-	licenses.each {
-		dependsOn createLicenseHtmlTaskName(it)
-	}
+def sortedLicenses() {
+	def sortedLicenses = new LinkedHashSet()
+	sortedLicenses += licenses.getByName('gpl')
+	sortedLicenses += licenses.sort { it.title }
 }
 
 task licensesHtml {
-	dependsOn retrieveLicenses
-	inputs.file licensesDir
-	inputs.property 'licenses', licenses
+	dependsOn initializeLicenses
+	inputs.property 'licenses', licenses.collect { licenseAsMap(it) }
 	inputs.file licensesHtmlTemplateFile
 	outputs.file licensesTextsHtmlFile
 	def config = new Configuration()
@@ -140,7 +94,7 @@ task licensesHtml {
 	doLast {
 		licensesTextsHtmlFile.delete()
 		licensesTextsHtmlFile.withWriter {
-			template.process([licenses: licenses], it)
+			template.process([licenses: sortedLicenses()], it)
 		}
 	}
 }

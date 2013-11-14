@@ -1,2 +1,2 @@
 include "org.juzidian.build.imggen"
-
+include "org.juzidian.gradle.licenses"

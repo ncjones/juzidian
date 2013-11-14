@@ -19,12 +19,12 @@
 
 		<ul>
 			<#list licenses as license>
-				<li><a href="#${license.key?html}">${license.title?html}</a></li>
+				<li><a href="#${license.name?html}">${license.title?html}</a></li>
 			</#list>
 		</ul>
 
 		<#list licenses as license>
-			<a name="${license.key?html}"/>
+			<a name="${license.name?html}"/>
 			<h2>${license.title?html}</h2>
 			<p>
 				${license.html}
