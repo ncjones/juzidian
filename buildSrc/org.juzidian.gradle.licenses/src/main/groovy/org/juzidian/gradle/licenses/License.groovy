@@ -6,7 +6,7 @@ class License {
 	String textUrl
 	String text
 	String html
-
+	List<LicensedComponent> components
 
 	License(String name) {
 		this.name = name;

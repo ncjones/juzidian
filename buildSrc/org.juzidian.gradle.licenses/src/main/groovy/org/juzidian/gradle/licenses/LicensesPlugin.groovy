@@ -1,7 +1,8 @@
 package org.juzidian.gradle.licenses
 
-import java.io.FileOutputStream
-
+import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.ModuleVersionIdentifier
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 
@@ -57,15 +58,44 @@ class LicensesPlugin implements Plugin<Project> {
 		}
 	}
 
+	def capitalize(s) {
+		s[0].toUpperCase() + s.substring(1)
+	}
+
+	def dependencyHasModuleId(Dependency dependency, ModuleVersionIdentifier moduleId) {
+		return moduleId.group == dependency.group &&
+		moduleId.name == dependency.name &&
+		moduleId.version == dependency.version
+	}
+
+	def verifyExternalDependenciesHaveLicenses(project, licensedComponents, licenses) {
+		Collection<String> licensedArtifacts = licensedComponents.collect { it.artifacts }.flatten()
+		Collection<Dependency> licensedArtifactDeps = licensedArtifacts.collect(project.dependencies.&create)
+		project.configurations.compile.getIncoming().getResolutionResult().allDependencies {
+			ModuleVersionIdentifier moduleId = it.selected.id
+			if (moduleId.group != project.group && !(licensedArtifactDeps.any { dependencyHasModuleId(it, moduleId) })) {
+				throw new InvalidUserDataException("$moduleId does not have a license reference")
+			}
+		}
+	}
+
 	void apply(final Project project) {
 		def licenses = project.container(License)
+		def licensedComponents = project.container(LicensedComponent)
 		project.task('initializeLicenses')
 		project.afterEvaluate {
 			licenses.each {
 				createLicenseTasks(project, it)
 				project.tasks.initializeLicenses.dependsOn initializeLicenseTaskName(it)
+				it.components = []
+			}
+			verifyExternalDependenciesHaveLicenses(project, licensedComponents, licenses)
+			licensedComponents.each {
+				it.title = it.title ?: capitalize(it.name)
+				licenses.getByName(it.license).components += it
 			}
 		}
 		project.extensions.licenses = licenses
+		project.extensions.licensedComponents = licensedComponents
 	}
 }

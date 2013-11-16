@@ -26,6 +26,16 @@
 		<#list licenses as license>
 			<a name="${license.name?html}"/>
 			<h2>${license.title?html}</h2>
+			<#if license.components?has_content>
+				<p>
+					<strong>
+						License applies to:
+						<#list license.components as component>
+							${component.title?html}<#if component_has_next>, </#if>
+						</#list>
+					</strong>
+				</p>
+			</#if>
 			<p>
 				${license.html}
 			</p>

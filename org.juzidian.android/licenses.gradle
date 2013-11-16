@@ -1,3 +1,30 @@
+licensedComponents {
+	roboguice {
+		license = 'asl'
+		artifacts = ['org.roboguice:roboguice:2.0']
+	}
+	guice {
+		license = 'asl'
+		artifacts = ['com.google.inject:guice:3.0']
+	}
+	javaxInject {
+		title = 'Javax Inject'
+		license = 'asl'
+		artifacts = ['javax.inject:javax.inject:1']
+	}
+	ormLite {
+		license = 'isc'
+		artifacts = [
+			'com.j256.ormlite:ormlite-core:4.48-NCJONES',
+			'com.j256.ormlite:ormlite-android:4.48-NCJONES'
+		]
+	}
+	slf4j {
+		license = 'slf4j'
+		artifacts = ['org.slf4j:slf4j-android:1.6.1-RC1']
+	}
+}
+
 licenses {
 	gpl {
 		title = 'GNU General Public License Version 3'
