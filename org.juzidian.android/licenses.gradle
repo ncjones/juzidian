@@ -35,7 +35,7 @@ licenses {
 		textUrl = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
 	}
 	isc {
-		title = 'The ISC License'
+		title = 'ISC License'
 		text = '''\
 Permission to use, copy, modify, and/or distribute this software for any
 purpose with or without fee is hereby granted, provided that this permission
@@ -50,7 +50,7 @@ OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
 PERFORMANCE OF THIS SOFTWARE.'''
 	}
 	slf4j {
-		title = 'SLF4JLicense'
+		title = 'SLF4J License'
 		text = '''\
 Copyright (c) 2004-2013 QOS.ch
 
