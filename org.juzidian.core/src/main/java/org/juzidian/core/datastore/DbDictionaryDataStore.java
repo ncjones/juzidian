@@ -272,7 +272,7 @@ public class DbDictionaryDataStore implements DictionaryDataStore {
 		final String simplified = dbEntry.getSimplified();
 		final String pinyin = dbEntry.getPinyin();
 		final String english = dbEntry.getEnglish();
-		return new BasicDictionaryEntry(traditional, simplified, this.unformatPinyin(pinyin), this.unformatDefinitions(english));
+		return new DictionaryEntry(traditional, simplified, this.unformatPinyin(pinyin), this.unformatDefinitions(english));
 	}
 
 	@Override

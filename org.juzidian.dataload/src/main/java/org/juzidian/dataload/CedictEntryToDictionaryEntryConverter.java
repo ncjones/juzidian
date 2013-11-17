@@ -24,7 +24,6 @@ import java.util.List;
 import org.juzidian.cedict.CedictEntry;
 import org.juzidian.cedict.CedictPinyinSyllable;
 import org.juzidian.core.DictionaryEntry;
-import org.juzidian.core.datastore.BasicDictionaryEntry;
 import org.juzidian.pinyin.PinyinSyllable;
 import org.juzidian.pinyin.Tone;
 
@@ -34,7 +33,7 @@ import org.juzidian.pinyin.Tone;
 class CedictEntryToDictionaryEntryConverter {
 
 	public DictionaryEntry convert(final CedictEntry cedictEntry) {
-		return new BasicDictionaryEntry(getTraditional(cedictEntry), getSimplified(cedictEntry), getPinyin(cedictEntry),
+		return new DictionaryEntry(getTraditional(cedictEntry), getSimplified(cedictEntry), getPinyin(cedictEntry),
 				getDefinitions(cedictEntry));
 	}
 

@@ -109,6 +109,8 @@ public abstract class DictionaryEntryTest {
 		assertFalse(entry.pinyinStartsWith(pinyinSyllables));
 	}
 
-	protected abstract DictionaryEntry createChineseWord(final PinyinSyllable... pinyinSyllable);
+	protected DictionaryEntry createChineseWord(final PinyinSyllable... pinyinSyllables) {
+		return new DictionaryEntry(null, null, Arrays.asList(pinyinSyllables), null);
+	}
 
 }

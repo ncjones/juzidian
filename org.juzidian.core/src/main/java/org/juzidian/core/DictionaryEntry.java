@@ -19,6 +19,7 @@
 package org.juzidian.core;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import org.juzidian.pinyin.PinyinSyllable;
@@ -26,27 +27,51 @@ import org.juzidian.pinyin.PinyinSyllable;
 /**
  * A dictionary definition of a Chinese word.
  */
-public abstract class DictionaryEntry {
+public class DictionaryEntry {
+
+	private final String traditional;
+
+	private final String simplified;
+
+	private final List<PinyinSyllable> pinyin;
+
+	private final List<String> definitions;
+
+	public DictionaryEntry(final String traditional, final String simplified, final List<PinyinSyllable> pinyin,
+			final List<String> definitions) {
+		this.traditional = traditional;
+		this.simplified = simplified;
+		this.pinyin = pinyin;
+		this.definitions = definitions;
+	}
 
 	/**
 	 * @return the traditional Chinese representation of the word.
 	 */
-	public abstract String getTraditional();
+	public String getTraditional() {
+		return this.traditional;
+	}
 
 	/**
 	 * @return the simplified Chinese representation of the word.
 	 */
-	public abstract String getSimplified();
+	public String getSimplified() {
+		return this.simplified;
+	}
 
 	/**
 	 * @return the Pinyin phonetic representation of the word.
 	 */
-	public abstract List<PinyinSyllable> getPinyin();
+	public List<PinyinSyllable> getPinyin() {
+		return Collections.unmodifiableList(this.pinyin);
+	}
 
 	/**
 	 * @return a list of English definitions for the word.
 	 */
-	public abstract List<String> getDefinitions();
+	public List<String> getDefinitions() {
+		return Collections.unmodifiableList(this.definitions);
+	}
 
 	/**
 	 * @param pinyinSyllables a list of {@link PinyinSyllable}.

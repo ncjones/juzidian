@@ -86,7 +86,7 @@ public class DbDictionaryDataStoreQueriesTest {
 	}
 
 	private DictionaryEntry createDictionaryEntry(final String chinese, final String english, final PinyinSyllable... pinyin) {
-		return new BasicDictionaryEntry(chinese, chinese, Arrays.asList(pinyin), Arrays.asList(english.split(";")));
+		return new DictionaryEntry(chinese, chinese, Arrays.asList(pinyin), Arrays.asList(english.split(";")));
 	}
 
 	private static Matcher<DictionaryEntry> entryWithSimplified(final String chineseWord) {
