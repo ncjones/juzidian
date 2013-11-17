@@ -1,16 +1,14 @@
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.InputStream
 import java.sql.SQLException
 
 import groovy.xml.MarkupBuilder
 
 import org.juzidian.cedict.CedictInputStreamProvider
 import org.juzidian.cedict.CedictLoader
-import org.juzidian.core.datastore.DbDictionaryDataStore
+import org.juzidian.core.DictionaryDataStore
 import org.juzidian.core.inject.DictionaryModule
-import org.juzidian.dataload.DbDictionaryDataStoreDbInitializer
-import org.juzidian.dataload.DbDictionaryDataStoreEntryPopulator
+import org.juzidian.dataload.CedictEntryToDictionaryEntryConverter
+import org.juzidian.dataload.DictionaryDataStoreInitializer
+import org.juzidian.dataload.DictionaryDataStoreEntryPopulator
 
 import com.amazonaws.auth.BasicAWSCredentials
 import com.amazonaws.services.s3.AmazonS3Client
@@ -53,7 +51,7 @@ ext.compressedDictionaryDbSha1Path = "${compressedDictionaryDbPath}.SHA1"
 
 ext.artifactRegistryPath = "$buildDir/registry.xml"
 
-ext.dbFormat = "${DbDictionaryDataStore.DATA_FORMAT_VERSION}"
+ext.dbFormat = "${DictionaryDataStore.DATA_FORMAT_VERSION}"
 
 ext.artifactPublishInfoPath = "$buildDir/artifactPublishInfo"
 
@@ -246,14 +244,14 @@ class DictionaryDataBaseCreator {
 	static def createDataBase(cedictDataFile, dbFileName) {
 		def jdbcUrl = "jdbc:sqlite:" + dbFileName
 		def injector = Guice.createInjector(new DictionaryModule(), new DataBuildModule(jdbcUrl))
-		def dbInitializer = new DbDictionaryDataStoreDbInitializer(
-				new DbDictionaryDataStoreEntryPopulator(new CedictLoader(new CedictInputStreamProvider() {
+		def dbInitializer = new DictionaryDataStoreInitializer(
+				new DictionaryDataStoreEntryPopulator(new CedictLoader(new CedictInputStreamProvider() {
 					@Override
 					public InputStream getInputStream() {
 						return new FileInputStream(cedictDataFile)
 					}
-				})));
-		def dictionaryDataStore = injector.getInstance(DbDictionaryDataStore.class)
+				}), new CedictEntryToDictionaryEntryConverter()));
+		def dictionaryDataStore = injector.getInstance(DictionaryDataStore.class)
 		dbInitializer.initializeDb(dictionaryDataStore)
 	}
 
