@@ -18,10 +18,8 @@
  */
 package org.juzidian.core.inject;
 
-import org.juzidian.core.DictionaryDataStore;
-import org.juzidian.core.datastore.DbDictionaryDataStore;
-import org.juzidian.core.datastore.DbDictionaryEntry;
-import org.juzidian.core.datastore.DbDictionaryMetadata;
+import org.juzidian.core.DictionaryDataStoreEntry;
+import org.juzidian.core.DictionaryDataStoreMetadata;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.TypeLiteral;
@@ -31,9 +29,8 @@ public class DictionaryModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
-		this.bind(DictionaryDataStore.class).to(DbDictionaryDataStore.class);
-		this.bind(new TypeLiteral<Dao<DbDictionaryEntry, Long>>() {}).toProvider(DictionaryEntryDaoProvider.class);
-		this.bind(new TypeLiteral<Dao<DbDictionaryMetadata, Long>>() {}).toProvider(DictionaryMetadataDaoProvider.class);
+		this.bind(new TypeLiteral<Dao<DictionaryDataStoreEntry, Long>>() {}).toProvider(DictionaryEntryDaoProvider.class);
+		this.bind(new TypeLiteral<Dao<DictionaryDataStoreMetadata, Long>>() {}).toProvider(DictionaryMetadataDaoProvider.class);
 	}
 
 }

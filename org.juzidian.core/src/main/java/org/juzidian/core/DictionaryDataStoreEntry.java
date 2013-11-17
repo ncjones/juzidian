@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.datastore;
+package org.juzidian.core;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -25,7 +25,7 @@ import com.j256.ormlite.table.DatabaseTable;
  * A dictionary entry persisted to a database.
  */
 @DatabaseTable(tableName = "dictionary_entry")
-public class DbDictionaryEntry {
+public class DictionaryDataStoreEntry {
 
 	static final String COLUMN_HANZI_TRADITIONAL = "hanzi_traditional";
 
@@ -109,7 +109,7 @@ public class DbDictionaryEntry {
 		if (this.getClass() != obj.getClass()) {
 			return false;
 		}
-		final DbDictionaryEntry other = (DbDictionaryEntry) obj;
+		final DictionaryDataStoreEntry other = (DictionaryDataStoreEntry) obj;
 		if (this.id == null) {
 			if (other.id != null) {
 				return false;

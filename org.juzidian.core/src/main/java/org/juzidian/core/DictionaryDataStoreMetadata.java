@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.datastore;
+package org.juzidian.core;
 
 import java.util.Date;
 
@@ -27,7 +27,7 @@ import com.j256.ormlite.table.DatabaseTable;
  * The metadata for the dictionary data base.
  */
 @DatabaseTable(tableName = "dictionary_metadata")
-public class DbDictionaryMetadata {
+public class DictionaryDataStoreMetadata {
 
 	@DatabaseField(id = true)
 	private Long id;

@@ -16,25 +16,26 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.datastore;
+package org.juzidian.core;
 
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.juzidian.core.DictionaryDataStoreSchemaCreator;
 
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 import com.j256.ormlite.support.DatabaseConnection;
 
-public class DbDictionaryDataStoreSchemaCreatorTest {
+public class DictionaryDataStoreSchemaCreatorTest {
 
 	private JdbcConnectionSource connectionSource;
 
-	private DbDictionaryDataStoreSchemaCreator dbDictionaryDataStoreSchemaCreator;
+	private DictionaryDataStoreSchemaCreator dbDictionaryDataStoreSchemaCreator;
 
 	@Before
 	public void setUp() throws Exception {
 		this.connectionSource = new JdbcConnectionSource("jdbc:sqlite::memory:");
-		this.dbDictionaryDataStoreSchemaCreator = new DbDictionaryDataStoreSchemaCreator();
+		this.dbDictionaryDataStoreSchemaCreator = new DictionaryDataStoreSchemaCreator();
 	}
 
 	@Test

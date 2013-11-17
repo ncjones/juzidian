@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.datastore;
+package org.juzidian.core;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -29,13 +29,13 @@ import com.j256.ormlite.table.TableUtils;
 /**
  * Creates a {@link DbDictionaryDataStore} database schema.
  */
-public class DbDictionaryDataStoreSchemaCreator {
+public class DictionaryDataStoreSchemaCreator {
 
 	final static List<Class<?>> DICTIONARY_ENTITY_CLASSES = new ArrayList<Class<?>>();
 
 	static {
-		DICTIONARY_ENTITY_CLASSES.add(DbDictionaryEntry.class);
-		DICTIONARY_ENTITY_CLASSES.add(DbDictionaryMetadata.class);
+		DICTIONARY_ENTITY_CLASSES.add(DictionaryDataStoreEntry.class);
+		DICTIONARY_ENTITY_CLASSES.add(DictionaryDataStoreMetadata.class);
 	}
 
 	/**

@@ -24,7 +24,7 @@ import java.io.FileOutputStream;
 
 import javax.inject.Inject;
 
-import org.juzidian.core.datastore.DbDictionaryDataStore;
+import org.juzidian.core.DictionaryDataStore;
 import org.juzidian.dataload.DictionaryResource;
 import org.juzidian.dataload.DictionaryResourceDownloader;
 import org.juzidian.dataload.DictionaryResourceRegistry;
@@ -38,7 +38,7 @@ class DictionaryDbInitializer {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DictionaryDbInitializer.class);
 
-	final DbDictionaryDataStore dictionaryDataStore;
+	final DictionaryDataStore dictionaryDataStore;
 
 	final DictionaryResourceRegistryService dictionaryRegistryService;
 
@@ -47,7 +47,7 @@ class DictionaryDbInitializer {
 	final File dictionaryDbFile;
 
 	@Inject
-	public DictionaryDbInitializer(final DbDictionaryDataStore dataStore, final DictionaryResourceRegistryService registryService,
+	public DictionaryDbInitializer(final DictionaryDataStore dataStore, final DictionaryResourceRegistryService registryService,
 			final DictionaryResourceDownloader dictionaryDownloader, @DictionaryDbPath final File dictionaryDbFile) {
 		this.dictionaryDataStore = dataStore;
 		this.dictionaryRegistryService = registryService;
@@ -60,7 +60,7 @@ class DictionaryDbInitializer {
 			LOGGER.info("Dictionary DB missing.");
 			this.downloadDb();
 		} else {
-			if (this.dictionaryDataStore.getCurrentDataFormatVersion() != DbDictionaryDataStore.DATA_FORMAT_VERSION) {
+			if (this.dictionaryDataStore.getCurrentDataFormatVersion() != DictionaryDataStore.DATA_FORMAT_VERSION) {
 				LOGGER.info("Dictionary DB incompatible.");
 				this.downloadDb();
 			} else {
@@ -85,7 +85,7 @@ class DictionaryDbInitializer {
 
 	private DictionaryResourceRegistry getDictionaryResourceRegistry() throws DictonaryResourceRegistryServiceException {
 		LOGGER.debug("Getting registry of available dictionary DBs.");
-		return this.dictionaryRegistryService.getDictionaryResourceRegistry(DbDictionaryDataStore.DATA_FORMAT_VERSION);
+		return this.dictionaryRegistryService.getDictionaryResourceRegistry(DictionaryDataStore.DATA_FORMAT_VERSION);
 	}
 
 }

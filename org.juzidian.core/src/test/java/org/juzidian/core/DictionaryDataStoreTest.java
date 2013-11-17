@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.datastore;
+package org.juzidian.core;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
@@ -35,9 +35,6 @@ import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.juzidian.core.DictionaryDataStoreException;
-import org.juzidian.core.DictionaryDataStoreQueryCancelledException;
-import org.juzidian.core.SearchCanceller;
 import org.juzidian.core.SearchCanceller.Listener;
 import org.juzidian.pinyin.PinyinSyllable;
 import org.mockito.ArgumentCaptor;
@@ -53,23 +50,23 @@ import com.j256.ormlite.stmt.Where;
 import com.j256.ormlite.support.CancellationSignaller;
 import com.j256.ormlite.support.CancellationSignaller.Cancellable;
 
-public class DbDictionaryDataStoreTest {
+public class DictionaryDataStoreTest {
 
 	@Mock
-	private Dao<DbDictionaryEntry, Long> dictionaryEntryDao;
+	private Dao<DictionaryDataStoreEntry, Long> dictionaryEntryDao;
 
 	@Mock
-	private Dao<DbDictionaryMetadata, Long> dictionaryMetadataDao;
+	private Dao<DictionaryDataStoreMetadata, Long> dictionaryMetadataDao;
 
-	private DbDictionaryDataStore dbDictionaryDataStore;
+	private DictionaryDataStore dictionaryDataStore;
 
 	@Before
 	@SuppressWarnings("unchecked")
 	public void setUp() throws Exception {
 		MockitoAnnotations.initMocks(this);
-		this.dbDictionaryDataStore = new DbDictionaryDataStore(this.dictionaryEntryDao, dictionaryMetadataDao);
-		QueryBuilder<DbDictionaryEntry, Long> mockQueryBuilder = Mockito.mock(QueryBuilder.class);
-		Where<DbDictionaryEntry, Long> mockWhere = Mockito.mock(Where.class);
+		this.dictionaryDataStore = new DictionaryDataStore(this.dictionaryEntryDao, dictionaryMetadataDao);
+		QueryBuilder<DictionaryDataStoreEntry, Long> mockQueryBuilder = Mockito.mock(QueryBuilder.class);
+		Where<DictionaryDataStoreEntry, Long> mockWhere = Mockito.mock(Where.class);
 		when(mockQueryBuilder.limit(anyLong())).thenReturn(mockQueryBuilder);
 		when(mockQueryBuilder.offset(anyLong())).thenReturn(mockQueryBuilder);
 		when(mockQueryBuilder.orderByRaw(anyString(), (ArgumentHolder[]) anyVararg())).thenReturn(mockQueryBuilder);
@@ -83,24 +80,24 @@ public class DbDictionaryDataStoreTest {
 	}
 
 	@SuppressWarnings("unchecked")
-	private static PreparedQuery<DbDictionaryEntry> anyDictionaryEntryPreparedQuery() {
+	private static PreparedQuery<DictionaryDataStoreEntry> anyDictionaryEntryPreparedQuery() {
 		return any(PreparedQuery.class);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void findPinyinShouldRejectNegativeLimit() {
-		this.dbDictionaryDataStore.findPinyin(pinyinSyllables("gou"), -1, 0, null);
+		this.dictionaryDataStore.findPinyin(pinyinSyllables("gou"), -1, 0, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void findPinyinShouldRejectNegativeOffset() {
-		this.dbDictionaryDataStore.findPinyin(pinyinSyllables("gou"), 25, -1, null);
+		this.dictionaryDataStore.findPinyin(pinyinSyllables("gou"), 25, -1, null);
 	}
 
 	@Test
 	public void findPinyinShouldRegisterCancellationListener() {
 		SearchCanceller canceller = Mockito.mock(SearchCanceller.class);
-		dbDictionaryDataStore.findPinyin(pinyinSyllables("wei"), 25, 0, canceller);
+		dictionaryDataStore.findPinyin(pinyinSyllables("wei"), 25, 0, canceller);
 		verify(canceller).register(isA(Listener.class));
 	}
 
@@ -109,7 +106,7 @@ public class DbDictionaryDataStoreTest {
 		SearchCanceller canceller = new SearchCanceller();
 		Cancellable mockOrmliteCancellable = Mockito.mock(Cancellable.class);
 		ArgumentCaptor<CancellationSignaller> ormliteSignallerCaptor = ArgumentCaptor.forClass(CancellationSignaller.class);
-		dbDictionaryDataStore.findPinyin(pinyinSyllables("wei"), 25, 0, canceller);
+		dictionaryDataStore.findPinyin(pinyinSyllables("wei"), 25, 0, canceller);
 		verify(this.dictionaryEntryDao).query(anyDictionaryEntryPreparedQuery(), ormliteSignallerCaptor.capture());
 		CancellationSignaller ormliteSignaller = ormliteSignallerCaptor.getValue();
 		ormliteSignaller.attach(mockOrmliteCancellable);
@@ -119,43 +116,43 @@ public class DbDictionaryDataStoreTest {
 
 	@Test
 	public void findPinyinShouldQueryWithoutCancellationSignalWhenCancellerIsNull() throws Exception {
-		dbDictionaryDataStore.findPinyin(pinyinSyllables("wei"), 25, 0, null);
+		dictionaryDataStore.findPinyin(pinyinSyllables("wei"), 25, 0, null);
 		verify(this.dictionaryEntryDao).query(anyDictionaryEntryPreparedQuery());
 	}
 
 	@Test(expected = DictionaryDataStoreException.class)
 	public void findPinyinShouldThrowExceptionWhenQueryCreationFails() throws Exception {
 		when(dictionaryEntryDao.queryBuilder().offset(anyLong())).thenThrow(new SQLException());
-		dbDictionaryDataStore.findPinyin(pinyinSyllables("bang"), 25, 0, new SearchCanceller());
+		dictionaryDataStore.findPinyin(pinyinSyllables("bang"), 25, 0, new SearchCanceller());
 	}
 
 	@Test(expected = DictionaryDataStoreException.class)
 	public void findPinyinShouldThrowExceptionWhenQueryFails() throws Exception {
 		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(new SQLException());
-		dbDictionaryDataStore.findPinyin(pinyinSyllables("bang"), 25, 0, new SearchCanceller());
+		dictionaryDataStore.findPinyin(pinyinSyllables("bang"), 25, 0, new SearchCanceller());
 	}
 
 	@Test(expected = DictionaryDataStoreQueryCancelledException.class)
 	public void findPinyinShouldThrowExceptionWhenQueryCancelled() throws Exception {
 		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(
 				new SQLException("ORMLITE: query cancelled"));
-		dbDictionaryDataStore.findPinyin(pinyinSyllables("bang"), 25, 0, new SearchCanceller());
+		dictionaryDataStore.findPinyin(pinyinSyllables("bang"), 25, 0, new SearchCanceller());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void findDefinitionsShouldRejectNegativeLimit() {
-		this.dbDictionaryDataStore.findDefinitions("good", -1, 0, null);
+		this.dictionaryDataStore.findDefinitions("good", -1, 0, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void findDefinitionsShouldRejectNegativeOffset() {
-		this.dbDictionaryDataStore.findDefinitions("good", 25, -1, null);
+		this.dictionaryDataStore.findDefinitions("good", 25, -1, null);
 	}
 
 	@Test
 	public void findDefinitionsShouldRegisterCancellationListener() {
 		SearchCanceller canceller = Mockito.mock(SearchCanceller.class);
-		dbDictionaryDataStore.findDefinitions("hello", 25, 0, canceller);
+		dictionaryDataStore.findDefinitions("hello", 25, 0, canceller);
 		verify(canceller).register(isA(Listener.class));
 	}
 
@@ -164,7 +161,7 @@ public class DbDictionaryDataStoreTest {
 		SearchCanceller canceller = new SearchCanceller();
 		Cancellable mockOrmliteCancellable = Mockito.mock(Cancellable.class);
 		ArgumentCaptor<CancellationSignaller> ormliteSignallerCaptor = ArgumentCaptor.forClass(CancellationSignaller.class);
-		dbDictionaryDataStore.findDefinitions("hello", 25, 0, canceller);
+		dictionaryDataStore.findDefinitions("hello", 25, 0, canceller);
 		verify(this.dictionaryEntryDao).query(anyDictionaryEntryPreparedQuery(), ormliteSignallerCaptor.capture());
 		CancellationSignaller ormliteSignaller = ormliteSignallerCaptor.getValue();
 		ormliteSignaller.attach(mockOrmliteCancellable);
@@ -174,43 +171,43 @@ public class DbDictionaryDataStoreTest {
 
 	@Test
 	public void findDefinitionsShouldQueryWithoutCancellationSignalWhenCancellerIsNull() throws Exception {
-		dbDictionaryDataStore.findDefinitions("hello", 25, 0, null);
+		dictionaryDataStore.findDefinitions("hello", 25, 0, null);
 		verify(this.dictionaryEntryDao).query(anyDictionaryEntryPreparedQuery());
 	}
 
 	@Test(expected = DictionaryDataStoreException.class)
 	public void findDefinitionsShouldThrowExceptionWhenQueryCreationFails() throws Exception {
 		when(dictionaryEntryDao.queryBuilder().offset(anyLong())).thenThrow(new SQLException());
-		dbDictionaryDataStore.findDefinitions("hello", 25, 0, new SearchCanceller());
+		dictionaryDataStore.findDefinitions("hello", 25, 0, new SearchCanceller());
 	}
 
 	@Test(expected = DictionaryDataStoreException.class)
 	public void findDefinitionsShouldThrowExceptionWhenQueryFails() throws Exception {
 		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(new SQLException());
-		dbDictionaryDataStore.findDefinitions("hello", 25, 0, new SearchCanceller());
+		dictionaryDataStore.findDefinitions("hello", 25, 0, new SearchCanceller());
 	}
 
 	@Test(expected = DictionaryDataStoreQueryCancelledException.class)
 	public void findDefinitionsShouldThrowExceptionWhenQueryCancelled() throws Exception {
 		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(
 				new SQLException("ORMLITE: query cancelled"));
-		dbDictionaryDataStore.findDefinitions("hello", 25, 0, new SearchCanceller());
+		dictionaryDataStore.findDefinitions("hello", 25, 0, new SearchCanceller());
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void findChineseShouldRejectNegativeLimit() {
-		this.dbDictionaryDataStore.findChinese("好", -1, 0, null);
+		this.dictionaryDataStore.findChinese("好", -1, 0, null);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void findChineseShouldRejectNegativeOffset() {
-		this.dbDictionaryDataStore.findChinese("好", 25, -1, null);
+		this.dictionaryDataStore.findChinese("好", 25, -1, null);
 	}
 
 	@Test
 	public void findChineseShouldRegisterCancellationListener() {
 		SearchCanceller canceller = Mockito.mock(SearchCanceller.class);
-		dbDictionaryDataStore.findChinese("好", 25, 0, canceller);
+		dictionaryDataStore.findChinese("好", 25, 0, canceller);
 		verify(canceller).register(isA(Listener.class));
 	}
 
@@ -219,7 +216,7 @@ public class DbDictionaryDataStoreTest {
 		SearchCanceller canceller = new SearchCanceller();
 		Cancellable mockOrmliteCancellable = Mockito.mock(Cancellable.class);
 		ArgumentCaptor<CancellationSignaller> ormliteSignallerCaptor = ArgumentCaptor.forClass(CancellationSignaller.class);
-		dbDictionaryDataStore.findChinese("好", 25, 0, canceller);
+		dictionaryDataStore.findChinese("好", 25, 0, canceller);
 		verify(this.dictionaryEntryDao).query(anyDictionaryEntryPreparedQuery(), ormliteSignallerCaptor.capture());
 		CancellationSignaller ormliteSignaller = ormliteSignallerCaptor.getValue();
 		ormliteSignaller.attach(mockOrmliteCancellable);
@@ -229,45 +226,45 @@ public class DbDictionaryDataStoreTest {
 
 	@Test
 	public void findChineseShouldQueryWithoutCancellationSignalWhenCancellerIsNull() throws Exception {
-		dbDictionaryDataStore.findChinese("好", 25, 0, null);
+		dictionaryDataStore.findChinese("好", 25, 0, null);
 		verify(this.dictionaryEntryDao).query(anyDictionaryEntryPreparedQuery());
 	}
 
 	@Test(expected = DictionaryDataStoreException.class)
 	public void findChineseShouldThrowExceptionWhenQueryCreationFails() throws Exception {
 		when(dictionaryEntryDao.queryBuilder().offset(anyLong())).thenThrow(new SQLException());
-		dbDictionaryDataStore.findChinese("好", 25, 0, new SearchCanceller());
+		dictionaryDataStore.findChinese("好", 25, 0, new SearchCanceller());
 	}
 
 	@Test(expected = DictionaryDataStoreException.class)
 	public void findChineseShouldThrowExceptionWhenQueryFails() throws Exception {
 		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(new SQLException());
-		dbDictionaryDataStore.findChinese("好", 25, 0, new SearchCanceller());
+		dictionaryDataStore.findChinese("好", 25, 0, new SearchCanceller());
 	}
 
 	@Test(expected = DictionaryDataStoreQueryCancelledException.class)
 	public void findChineseShouldThrowExceptionWhenQueryCancelled() throws Exception {
 		when(dictionaryEntryDao.query(anyDictionaryEntryPreparedQuery(), isA(CancellationSignaller.class))).thenThrow(
 				new SQLException("ORMLITE: query cancelled"));
-		dbDictionaryDataStore.findChinese("好", 25, 0, new SearchCanceller());
+		dictionaryDataStore.findChinese("好", 25, 0, new SearchCanceller());
 	}
 
 	@Test
 	public void populateMetadataShouldSaveCurrentFormatVersionToMetadataTable() throws Exception {
-		ArgumentCaptor<DbDictionaryMetadata> captor = ArgumentCaptor.forClass(DbDictionaryMetadata.class);
-		this.dbDictionaryDataStore.populateMetadata();
+		ArgumentCaptor<DictionaryDataStoreMetadata> captor = ArgumentCaptor.forClass(DictionaryDataStoreMetadata.class);
+		this.dictionaryDataStore.populateMetadata();
 		verify(dictionaryMetadataDao).createOrUpdate(captor.capture());
-		DbDictionaryMetadata metadata = captor.getValue();
+		DictionaryDataStoreMetadata metadata = captor.getValue();
 		assertThat(metadata.getId(), is(1L));
-		assertThat(metadata.getVersion(), is(DbDictionaryDataStore.DATA_FORMAT_VERSION));
+		assertThat(metadata.getVersion(), is(DictionaryDataStore.DATA_FORMAT_VERSION));
 	}
 
 	@Test
 	public void currentFormatVersionShouldRetrieveVersionFromMetadataTable() throws Exception {
-		final DbDictionaryMetadata metadata = Mockito.mock(DbDictionaryMetadata.class);
+		final DictionaryDataStoreMetadata metadata = Mockito.mock(DictionaryDataStoreMetadata.class);
 		when(metadata.getVersion()).thenReturn(5);
 		when(dictionaryMetadataDao.queryForId(1L)).thenReturn(metadata);
-		assertThat(this.dbDictionaryDataStore.getCurrentDataFormatVersion(), equalTo(5));
+		assertThat(this.dictionaryDataStore.getCurrentDataFormatVersion(), equalTo(5));
 	}
 
 }

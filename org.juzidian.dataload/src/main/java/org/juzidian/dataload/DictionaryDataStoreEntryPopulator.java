@@ -29,14 +29,14 @@ import org.juzidian.core.DictionaryDataStore;
  * Populates entries into a {@link DictionaryDataStore} from a
  * {@link CedictLoader}.
  */
-public class DbDictionaryDataStoreEntryPopulator {
+public class DictionaryDataStoreEntryPopulator {
 
 	private final CedictLoader cedictLoader;
 
 	private final CedictEntryToDictionaryEntryConverter entryConverter;
 
 	@Inject
-	public DbDictionaryDataStoreEntryPopulator(final CedictLoader cedictLoader, final CedictEntryToDictionaryEntryConverter entryConverter) {
+	public DictionaryDataStoreEntryPopulator(final CedictLoader cedictLoader, final CedictEntryToDictionaryEntryConverter entryConverter) {
 		this.cedictLoader = cedictLoader;
 		this.entryConverter = entryConverter;
 	}

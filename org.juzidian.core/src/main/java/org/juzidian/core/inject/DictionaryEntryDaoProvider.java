@@ -20,11 +20,11 @@ package org.juzidian.core.inject;
 
 import javax.inject.Inject;
 
-import org.juzidian.core.datastore.DbDictionaryEntry;
+import org.juzidian.core.DictionaryDataStoreEntry;
 
 import com.j256.ormlite.support.ConnectionSource;
 
-public class DictionaryEntryDaoProvider extends OrmLiteDaoProvider<DbDictionaryEntry, Long> {
+public class DictionaryEntryDaoProvider extends OrmLiteDaoProvider<DictionaryDataStoreEntry, Long> {
 
 	@Inject
 	public DictionaryEntryDaoProvider(final ConnectionSource connectionSource) {
@@ -32,8 +32,8 @@ public class DictionaryEntryDaoProvider extends OrmLiteDaoProvider<DbDictionaryE
 	}
 
 	@Override
-	protected Class<DbDictionaryEntry> getEntityClass() {
-		return DbDictionaryEntry.class;
+	protected Class<DictionaryDataStoreEntry> getEntityClass() {
+		return DictionaryDataStoreEntry.class;
 	}
 
 }

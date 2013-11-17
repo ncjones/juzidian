@@ -20,18 +20,18 @@ package org.juzidian.dataload;
 
 import javax.inject.Inject;
 
-import org.juzidian.core.datastore.DbDictionaryDataStore;
+import org.juzidian.core.DictionaryDataStore;
 
-public class DbDictionaryDataStoreDbInitializer {
+public class DictionaryDataStoreInitializer {
 
-	private final DbDictionaryDataStoreEntryPopulator entryPopulator;
+	private final DictionaryDataStoreEntryPopulator entryPopulator;
 
 	@Inject
-	public DbDictionaryDataStoreDbInitializer(final DbDictionaryDataStoreEntryPopulator entryPopulator) {
+	public DictionaryDataStoreInitializer(final DictionaryDataStoreEntryPopulator entryPopulator) {
 		this.entryPopulator = entryPopulator;
 	}
 
-	public void initializeDb(final DbDictionaryDataStore dictionaryDataStore) {
+	public void initializeDb(final DictionaryDataStore dictionaryDataStore) {
 		dictionaryDataStore.createSchema();
 		dictionaryDataStore.populateMetadata();
 		this.entryPopulator.populateEntries(dictionaryDataStore);

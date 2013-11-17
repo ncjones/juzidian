@@ -20,11 +20,11 @@ package org.juzidian.core.inject;
 
 import javax.inject.Inject;
 
-import org.juzidian.core.datastore.DbDictionaryMetadata;
+import org.juzidian.core.DictionaryDataStoreMetadata;
 
 import com.j256.ormlite.support.ConnectionSource;
 
-public class DictionaryMetadataDaoProvider extends OrmLiteDaoProvider<DbDictionaryMetadata, Long> {
+public class DictionaryMetadataDaoProvider extends OrmLiteDaoProvider<DictionaryDataStoreMetadata, Long> {
 
 	@Inject
 	public DictionaryMetadataDaoProvider(final ConnectionSource connectionSource) {
@@ -32,8 +32,8 @@ public class DictionaryMetadataDaoProvider extends OrmLiteDaoProvider<DbDictiona
 	}
 
 	@Override
-	protected Class<DbDictionaryMetadata> getEntityClass() {
-		return DbDictionaryMetadata.class;
+	protected Class<DictionaryDataStoreMetadata> getEntityClass() {
+		return DictionaryDataStoreMetadata.class;
 	}
 
 }

@@ -2,9 +2,9 @@ package org.juzidian.android;
 
 import javax.inject.Inject;
 
+import org.juzidian.core.DictionaryDataStore;
 import org.juzidian.core.SearchQuery;
 import org.juzidian.core.SearchType;
-import org.juzidian.core.datastore.DbDictionaryDataStore;
 import org.juzidian.dataload.DictionaryResource;
 import org.juzidian.dataload.DictionaryResourceRegistry;
 import org.juzidian.dataload.DictionaryResourceRegistryService;
@@ -115,7 +115,7 @@ public class MainActivity extends RoboActivity {
 	}
 
 	private DictionaryResource getDictionaryResource() throws DictonaryResourceRegistryServiceException {
-		final DictionaryResourceRegistry registry = this.registryService.getDictionaryResourceRegistry(DbDictionaryDataStore.DATA_FORMAT_VERSION);
+		final DictionaryResourceRegistry registry = this.registryService.getDictionaryResourceRegistry(DictionaryDataStore.DATA_FORMAT_VERSION);
 		final DictionaryResource dictionaryResource = registry.getDictionaryResources().get(0);
 		return dictionaryResource;
 	}

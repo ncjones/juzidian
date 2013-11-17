@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Juzidian.  If not, see <http://www.gnu.org/licenses/>.
  */
-package org.juzidian.core.datastore;
+package org.juzidian.core;
 
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.empty;
@@ -37,7 +37,6 @@ import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.juzidian.core.DictionaryEntry;
 import org.juzidian.pinyin.PinyinParser;
 import org.juzidian.pinyin.PinyinSyllable;
 import org.juzidian.pinyin.Tone;
@@ -46,26 +45,26 @@ import com.j256.ormlite.dao.Dao;
 import com.j256.ormlite.dao.DaoManager;
 import com.j256.ormlite.jdbc.JdbcConnectionSource;
 
-public class DbDictionaryDataStoreQueriesTest {
+public class DictionaryDataStoreQueriesTest {
 
 	private JdbcConnectionSource connectionSource;
 
-	private Dao<DbDictionaryEntry, Long> dictionaryEntryDao;
+	private Dao<DictionaryDataStoreEntry, Long> dictionaryEntryDao;
 
-	private Dao<DbDictionaryMetadata, Long> dictionaryMetadataDao;
+	private Dao<DictionaryDataStoreMetadata, Long> dictionaryMetadataDao;
 
-	private DbDictionaryDataStore dbDictionaryDataStore;
+	private DictionaryDataStore dbDictionaryDataStore;
 
 	private PinyinParser pinyinParser;
 
 	@Before
 	public void setUp() throws Exception {
 		this.connectionSource = new JdbcConnectionSource("jdbc:sqlite::memory:");
-		this.dictionaryEntryDao = DaoManager.<Dao<DbDictionaryEntry, Long>, DbDictionaryEntry> createDao(this.connectionSource,
-				DbDictionaryEntry.class);
-		this.dictionaryMetadataDao = DaoManager.<Dao<DbDictionaryMetadata, Long>, DbDictionaryMetadata> createDao(this.connectionSource,
-				DbDictionaryMetadata.class);
-		this.dbDictionaryDataStore = new DbDictionaryDataStore(this.dictionaryEntryDao, dictionaryMetadataDao);
+		this.dictionaryEntryDao = DaoManager.<Dao<DictionaryDataStoreEntry, Long>, DictionaryDataStoreEntry> createDao(this.connectionSource,
+				DictionaryDataStoreEntry.class);
+		this.dictionaryMetadataDao = DaoManager.<Dao<DictionaryDataStoreMetadata, Long>, DictionaryDataStoreMetadata> createDao(this.connectionSource,
+				DictionaryDataStoreMetadata.class);
+		this.dbDictionaryDataStore = new DictionaryDataStore(this.dictionaryEntryDao, this.dictionaryMetadataDao);
 		this.dbDictionaryDataStore.createSchema();
 		this.pinyinParser = new PinyinParser();
 	}
@@ -92,6 +91,7 @@ public class DbDictionaryDataStoreQueriesTest {
 	private static Matcher<DictionaryEntry> entryWithSimplified(final String chineseWord) {
 		return new FeatureMatcher<DictionaryEntry, String>(CoreMatchers.equalTo(chineseWord), "DictionaryEntry with simplified",
 				"simplified") {
+
 			@Override
 			protected String featureValueOf(final DictionaryEntry actual) {
 				return actual.getSimplified();
@@ -424,11 +424,11 @@ public class DbDictionaryDataStoreQueriesTest {
 
 	@Test
 	public void currentFormatVersionShouldRetrieveVersionFromMetadataTable() throws Exception {
-		final DbDictionaryMetadata metadata = new DbDictionaryMetadata();
+		final DictionaryDataStoreMetadata metadata = new DictionaryDataStoreMetadata();
 		metadata.setId(1L);
 		metadata.setVersion(5);
 		metadata.setBuildDate(new Date());
-		dictionaryMetadataDao.create(metadata);
+		this.dictionaryMetadataDao.create(metadata);
 		assertThat(this.dbDictionaryDataStore.getCurrentDataFormatVersion(), equalTo(5));
 	}
 
