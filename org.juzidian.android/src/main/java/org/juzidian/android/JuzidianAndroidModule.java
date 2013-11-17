@@ -22,7 +22,7 @@ import java.util.Properties;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.juzidian.core.inject.AsyncQueryExecutor;
+import org.juzidian.core.AsyncQueryExecutor;
 
 import roboguice.inject.SharedPreferencesProvider;
 import roboguice.inject.SystemServiceProvider;

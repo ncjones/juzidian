@@ -32,7 +32,6 @@ import java.util.concurrent.Future;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
-import org.juzidian.core.inject.AsyncQueryExecutor;
 import org.juzidian.pinyin.PinyinParser;
 import org.juzidian.pinyin.PinyinSyllable;
 import org.slf4j.Logger;

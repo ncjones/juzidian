@@ -23,7 +23,7 @@ import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.juzidian.core.inject.AsyncQueryExecutor;
+import org.juzidian.core.AsyncQueryExecutor;
 import org.juzidian.core.inject.DictionaryModule;
 import org.juzidian.core.inject.ModuleConfigurationException;
 import org.juzidian.dataload.inject.DataloadModule;
