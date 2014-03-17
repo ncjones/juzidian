@@ -5,7 +5,7 @@ Juzidian Development
 
 Obtain source code via Git:
 
-	$ git clone git://git.code.sf.net/p/juzidian/code
+	$ git clone git://git.code.sf.net/p/juzidian/code juzidian
 
 or browse online at <http://sourceforge.net/p/juzidian/code>
 
