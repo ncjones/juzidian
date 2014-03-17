@@ -17,6 +17,7 @@ public class AndroidImageResourceGenerator {
 		new RenderingScale("mdpi", 0.667),
 		new RenderingScale("hdpi", 1.0),
 		new RenderingScale("xhdpi", 1.33),
+		new RenderingScale("xxhdpi", 2.0),
 	};
 
 	private final File resDir;
