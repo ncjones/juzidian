@@ -41,7 +41,18 @@ Building
 
  * Build Juzidian APK:
 
-	$ gradle build
+	$ gradle assembleDebug
+
+
+Releasing
+=========
+
+To build a signed release APK, define the "ANDROID_KEYSTORE" environment
+variable to point to a Java keystore file and run:
+
+	$ gradle assembleRelease
+
+You will be prompted for keystore and key pass phrases.
 
 
 Installing
@@ -50,6 +61,10 @@ Installing
 Install the built APK on to a connected Android device:
 
 	$ gradle installDebug
+
+or
+
+	$ gradle installRelease
 
 
 Installing Data

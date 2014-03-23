@@ -50,6 +50,19 @@ android {
 		targetSdkVersion = 17
 		buildToolsVersion "17.0"
 	}
+	signingConfigs {
+		release {
+			storeFile file(System.getenv("ANDROID_KEYSTORE"))
+			storePassword ""
+			keyAlias "juzidian"
+			keyPassword ""
+		}
+	}
+	buildTypes {
+		release {
+			signingConfig signingConfigs.release
+		}
+	}
 }
 
 def generateImages(resDir) {
@@ -145,3 +158,13 @@ eclipse {
 		}
 	}
 }
+
+gradle.taskGraph.whenReady { taskGraph ->
+	if(taskGraph.hasTask(':org.juzidian.android:assembleRelease')) {
+		def storePassword = System.console().readLine("\n\$ Enter keystore password: ")
+		def keyPassword = System.console().readLine("\n\$ Enter key password: ")
+		android.signingConfigs.release.storePassword = storePassword
+		android.signingConfigs.release.keyPassword = keyPassword
+	}
+}
+
